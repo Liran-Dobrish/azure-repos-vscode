@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamProject, TeamProjectCollection } from "vso-node-api/interfaces/CoreInterfaces";
+import { TeamProject, TeamProjectCollection } from "azure-devops-node-api/interfaces/CoreInterfaces";
 import { CoreApiService } from "../services/coreapi";
 
 export class CoreApiClient {

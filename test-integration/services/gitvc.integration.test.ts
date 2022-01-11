@@ -6,7 +6,7 @@
 
 import { assert, expect } from "chai";
 
-import { GitPullRequest, GitRepository } from "vso-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, GitRepository } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { Mocks } from "../helpers-integration/mocks";
 import { TestSettings } from "../helpers-integration/testsettings";
 import { CredentialManager } from "../../src/helpers/credentialmanager";

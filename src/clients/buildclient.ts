@@ -5,11 +5,11 @@
 "use strict";
 
 import { StatusBarItem } from "vscode";
-import { Build, BuildBadge, BuildResult, BuildStatus } from "vso-node-api/interfaces/BuildInterfaces";
+import { Build, BuildBadge, BuildResult, BuildStatus } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { Logger } from "../helpers/logger";
 import { BuildService } from "../services/build";
 import { Telemetry } from "../services/telemetry";
-import { TeamServerContext} from "../contexts/servercontext";
+import { TeamServerContext } from "../contexts/servercontext";
 import { CommandNames, TelemetryEvents, WellKnownRepositoryTypes } from "../helpers/constants";
 import { Strings } from "../helpers/strings";
 import { Utils } from "../helpers/utils";
@@ -89,8 +89,8 @@ export class BuildClient extends BaseClient {
             }
             if (b.repository &&
                 b.repository.type.toLowerCase() === "tfsversioncontrol") {
-                    matchingBuild = b;
-                    break;
+                matchingBuild = b;
+                break;
             }
         }
         if (matchingBuild) {
@@ -111,7 +111,7 @@ export class BuildClient extends BaseClient {
         Utils.OpenUrl(url);
     }
 
-    public static GetOfflineBuildStatusText() : string {
+    public static GetOfflineBuildStatusText(): string {
         return `$(package) ` + `???`;
     }
 }

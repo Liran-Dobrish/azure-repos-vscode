@@ -4,12 +4,12 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamContext } from "vso-node-api/interfaces/CoreInterfaces";
-import { WebApi } from "vso-node-api/WebApi";
-import { IWorkItemTrackingApi } from "vso-node-api/WorkItemTrackingApi";
+import { TeamContext } from "azure-devops-node-api/interfaces/CoreInterfaces";
+import { WebApi } from "azure-devops-node-api/WebApi";
+import { IWorkItemTrackingApi } from "azure-devops-node-api/WorkItemTrackingApi";
 import { QueryExpand, QueryHierarchyItem, QueryResultType, Wiql, WorkItem,
          WorkItemExpand, WorkItemQueryResult, WorkItemType, WorkItemTypeCategory,
-         WorkItemTypeReference } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+         WorkItemTypeReference } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { TeamServerContext } from "../contexts/servercontext";
 import { CredentialManager } from "../helpers/credentialmanager";
 import { UrlBuilder } from "../helpers/urlbuilder";

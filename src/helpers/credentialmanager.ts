@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { CredentialInfo } from "../info/credentialinfo";
 import { TeamServerContext } from "../contexts/servercontext";
 import { CredentialStore } from "../credentialstore/credentialstore";

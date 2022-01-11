@@ -7,35 +7,28 @@
 // ${cwd}: the current working directory of the spawned process
 
 {
-	"version": "2.0.0",
+	"version": "0.1.0",
 	"command": "gulp",
+	"isShellCommand": true,
 	"problemMatcher": "$gulp-tsc",
 	"args": [
 		"--no-color"
 	],
 	"tasks": [
 		{
-			"label": "publishall",
-			"type": "gulp",
-			"task": "--no-color",
-			"group": {
-				"_id": "build",
-				"isDefault": false
-			}
+			"isBuildCommand": true,
+			"taskName": "publishall",
+			"showOutput": "always"
 		},
 		{
-			"label": "test",
-			"type": "gulp",
-			"task": "--no-color",
-			"group": {
-				"_id": "test",
-				"isDefault": false
-			}
+			"isTestCommand": true,
+			"taskName": "test",
+			"showOutput": "always"
 		},
 		{
-			"label": "clean",
-			"type": "gulp",
-			"task": "--no-color"
+			"isBuildCommand": false,
+			"taskName": "clean",
+			"showOutput": "always"
 		}
 	]
 }

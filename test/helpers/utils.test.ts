@@ -7,7 +7,7 @@
 import { assert, expect } from "chai";
 const path = require("path");
 
-import { BuildResult } from "vso-node-api/interfaces/BuildInterfaces";
+import { BuildResult } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { Utils } from "../../src/helpers/utils";
 import { Strings } from "../../src/helpers/strings";
 

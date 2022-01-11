@@ -5,7 +5,7 @@
 "use strict";
 
 import { StatusBarItem, window } from "vscode";
-import { GitPullRequest, PullRequestStatus} from "vso-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, PullRequestStatus} from "azure-devops-node-api/interfaces/GitInterfaces";
 import { BaseQuickPickItem, VsCodeUtils } from "../helpers/vscodeutils";
 import { CommandNames, TelemetryEvents } from "../helpers/constants";
 import { Logger } from "../helpers/logger";

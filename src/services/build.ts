@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { Build, BuildBadge, BuildQueryOrder, BuildStatus, DefinitionReference, QueryDeletedOption } from "vso-node-api/interfaces/BuildInterfaces";
-import { IBuildApi } from "vso-node-api/BuildApi";
-import { WebApi } from "vso-node-api/WebApi";
+import { Build, BuildBadge, BuildQueryOrder, BuildStatus, DefinitionReference, QueryDeletedOption } from "azure-devops-node-api/interfaces/BuildInterfaces";
+import { IBuildApi } from "azure-devops-node-api/BuildApi";
+import { WebApi } from "azure-devops-node-api/WebApi";
 import { TeamServerContext } from "../contexts/servercontext";
 import { CredentialManager } from "../helpers/credentialmanager";
 import { UrlBuilder } from "../helpers/urlbuilder";

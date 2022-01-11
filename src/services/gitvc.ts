@@ -5,9 +5,9 @@
 "use strict";
 
 import { GitPullRequest, GitPullRequestSearchCriteria, GitRepository,
-         PullRequestAsyncStatus, PullRequestStatus} from "vso-node-api/interfaces/GitInterfaces";
-import { IGitApi } from "vso-node-api/GitApi";
-import { WebApi } from "vso-node-api/WebApi";
+         PullRequestAsyncStatus, PullRequestStatus} from "azure-devops-node-api/interfaces/GitInterfaces";
+import { IGitApi } from "azure-devops-node-api/GitApi";
+import { WebApi } from "azure-devops-node-api/WebApi";
 import { TeamServerContext } from "../contexts/servercontext";
 import { CredentialManager } from "../helpers/credentialmanager";
 import { UrlBuilder } from "../helpers/urlbuilder";

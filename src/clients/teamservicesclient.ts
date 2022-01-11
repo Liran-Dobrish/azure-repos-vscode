@@ -4,8 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import basem = require("vso-node-api/ClientApiBases");
-import VsoBaseInterfaces = require("vso-node-api/interfaces/common/VsoBaseInterfaces");
+import basem = require("azure-devops-node-api/ClientApiBases");
+import VsoBaseInterfaces = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
 export class TeamServicesApi extends basem.ClientApiBase {
     constructor(baseUrl: string, handlers: VsoBaseInterfaces.IRequestHandler[]) {
             super(baseUrl, handlers, "node-vsts-vscode-api");

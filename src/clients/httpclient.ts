@@ -12,7 +12,7 @@ import http = require("http");
 import zlib = require("zlib");
 import https = require("https");
 import tunnel = require("tunnel");
-import ifm = require("vso-node-api/interfaces/common/VsoBaseInterfaces");
+import ifm = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
 
 http.globalAgent.maxSockets = 100;
 

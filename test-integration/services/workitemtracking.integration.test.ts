@@ -6,7 +6,7 @@
 
 import { assert, expect } from "chai";
 
-import { QueryHierarchyItem, WorkItem, WorkItemType } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { QueryHierarchyItem, WorkItem, WorkItemType } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { Mocks } from "../helpers-integration/mocks";
 import { TestSettings } from "../helpers-integration/testsettings";
 import { WitQueries } from "../../src/helpers/constants";

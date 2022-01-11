@@ -4,8 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import VsoBaseInterfaces = require("vso-node-api/interfaces/common/VsoBaseInterfaces");
-import { TeamProject, TeamProjectCollection } from "vso-node-api/interfaces/CoreInterfaces";
+import VsoBaseInterfaces = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
+import { TeamProject, TeamProjectCollection } from "azure-devops-node-api/interfaces/CoreInterfaces";
 import { CoreApiClient } from "./coreapiclient";
 import { Logger } from "../helpers/logger";
 import { RepoUtils } from "../helpers/repoutils";

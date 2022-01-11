@@ -5,7 +5,7 @@
 "use strict";
 
 import Q = require("q");
-import { IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterfaces";
+import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { SoapClient } from "./soapclient";
 import { UserAgentProvider } from "../helpers/useragentprovider";
 

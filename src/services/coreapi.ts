@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamProject, TeamProjectCollection } from "vso-node-api/interfaces/CoreInterfaces";
-import { WebApi } from "vso-node-api/WebApi";
-import { ICoreApi } from "vso-node-api/CoreApi";
+import { TeamProject, TeamProjectCollection } from "azure-devops-node-api/interfaces/CoreInterfaces";
+import { WebApi } from "azure-devops-node-api/WebApi";
+import { ICoreApi } from "azure-devops-node-api/CoreApi";
 import { CredentialManager } from "../helpers/credentialmanager";
 
 export class CoreApiService {

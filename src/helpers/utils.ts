@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { BuildResult } from "vso-node-api/interfaces/BuildInterfaces";
+import { BuildResult } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { Strings } from "./strings";
 import * as vscode from "vscode";
 

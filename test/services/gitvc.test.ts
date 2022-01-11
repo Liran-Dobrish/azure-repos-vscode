@@ -6,7 +6,7 @@
 
 import { assert } from "chai";
 
-import { GitPullRequest, PullRequestAsyncStatus } from "vso-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, PullRequestAsyncStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { GitVcService, PullRequestScore } from "../../src/services/gitvc";
 
 describe("GitVcService", function() {

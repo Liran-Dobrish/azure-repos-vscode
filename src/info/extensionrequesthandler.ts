@@ -4,9 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { IHttpResponse, IRequestHandler } from "vso-node-api/interfaces/common/VsoBaseInterfaces";
-import { getBasicHandler } from "vso-node-api/WebApi";
-import { getNtlmHandler } from "vso-node-api/WebApi";
+import { IHttpResponse, IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import { getBasicHandler } from "azure-devops-node-api/WebApi";
+import { getNtlmHandler } from "azure-devops-node-api/WebApi";
 import { Constants } from "../helpers/constants";
 import { UserAgentProvider } from "../helpers/useragentprovider";
 

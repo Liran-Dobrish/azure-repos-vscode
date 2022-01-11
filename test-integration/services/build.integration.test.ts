@@ -6,7 +6,7 @@
 
 import { assert, expect } from "chai";
 
-import { Build, BuildBadge } from "vso-node-api/interfaces/BuildInterfaces";
+import { Build, BuildBadge } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { Mocks } from "../helpers-integration/mocks";
 import { TestSettings } from "../helpers-integration/testsettings";
 import { CredentialManager } from "../../src/helpers/credentialmanager";

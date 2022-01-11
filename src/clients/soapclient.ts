@@ -7,7 +7,7 @@
 //jeyou: Based on RestClient from vso-node-api (v5.1.2)
 /* tslint:disable */
 import { env } from "vscode";
-import ifm = require("vso-node-api/interfaces/common/VsoBaseInterfaces");
+import ifm = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
 import { HttpClient } from "./httpclient";
 
 var httpCodes = {

@@ -5,7 +5,7 @@
 "use strict";
 
 import { StatusBarItem, window } from "vscode";
-import { QueryHierarchyItem, WorkItemType } from "vso-node-api/interfaces/WorkItemTrackingInterfaces";
+import { QueryHierarchyItem, WorkItemType } from "azure-devops-node-api/interfaces/WorkItemTrackingInterfaces";
 import { Logger } from "../helpers/logger";
 import { SimpleWorkItem, WorkItemTrackingService } from "../services/workitemtracking";
 import { Telemetry } from "../services/telemetry";
