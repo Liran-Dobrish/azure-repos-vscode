@@ -7,20 +7,20 @@
 //jeyou: Brought over from vso-node-api (v5.1.2), added support for sending SOAP and handling gzip compression
 /* tslint:disable */
 import url = require("url");
-
+import * as tunnel from "tunnel"
 import http = require("http");
 import zlib = require("zlib");
 import https = require("https");
-import tunnel = require("tunnel");
+//import tunnel = require("tunnel");
 import ifm = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
 
 http.globalAgent.maxSockets = 100;
 
 export class HttpClient {
     userAgent: string;
-    handlers: ifm.IRequestHandler[];
+    handlers: ifm.IRequestHandler[] | undefined;
     socketTimeout: number;
-    isSsl: boolean;
+    isSsl: boolean = false;
 
     constructor(userAgent: string, handlers?: ifm.IRequestHandler[], socketTimeout?: number) {
         this.userAgent = userAgent;
@@ -34,7 +34,7 @@ export class HttpClient {
     }
 
     // POST, PATCH, PUT
-    send(verb: string, requestUrl: string, objs: any, headers: ifm.IHeaders, onResult: (err: any, res: http.ClientResponse, contents: string) => void): void {
+    send(verb: string, requestUrl: string, objs: any, headers: ifm.IHeaders, onResult: (err: any, res: ifm.IHttpClientResponse | null, contents: string | null) => void): void {
         var options = this._getOptions(verb, requestUrl, headers);
         this.request(options.protocol, options.options, objs, onResult);
     }
@@ -46,7 +46,7 @@ export class HttpClient {
         var defaultPort = usingSsl ? 443 : 80;
         this.isSsl = usingSsl;
 
-        var proxyUrl: url.Url;
+        var proxyUrl: url.Url | undefined;
         if (process.env.HTTPS_PROXY && usingSsl) {
             proxyUrl = url.parse(process.env.HTTPS_PROXY);
         } else if (process.env.HTTP_PROXY) {
@@ -66,24 +66,24 @@ export class HttpClient {
 
         var useProxy = proxyUrl && proxyUrl.hostname;
         if (useProxy) {
-            var agentOptions: tunnel.TunnelOptions = {
+            var agentOptions = {
                 maxSockets: http.globalAgent.maxSockets,
                 proxy: {
                     // TODO: support proxy-authorization
                     //proxyAuth: "user:password",
-                    host: proxyUrl.hostname,
-                    port: proxyUrl.port
+                    host: proxyUrl?.hostname,
+                    port: proxyUrl?.port
                 }
             };
 
             var tunnelAgent: Function;
-            var overHttps = proxyUrl.protocol === 'https:';
+            var overHttps = proxyUrl?.protocol === 'https:';
             if (usingSsl) {
                 tunnelAgent = overHttps ? tunnel.httpsOverHttps : tunnel.httpsOverHttp;
             } else {
                 tunnelAgent = overHttps ? tunnel.httpOverHttps : tunnel.httpOverHttp;
             }
-            
+
             options.agent = tunnelAgent(agentOptions);
         }
 
@@ -99,14 +99,14 @@ export class HttpClient {
         };
     }
 
-    request(protocol: any, options: any, objs: any, onResult: (err: any, res: http.ClientResponse, contents: string) => void): void {
+    request(protocol: any, options: any, objs: any, onResult: (err: any, res: ifm.IHttpClientResponse | null, contents: string | null) => void): void {
         // Set up a callback to pass off 401s to an authentication handler that can deal with it
-        var callback = (err: any, res: http.ClientResponse, contents: string) => {
-            var authHandler;
+        var callback = (err: any, res: ifm.IHttpClientResponse | null, contents: string | null) => {
+            var authHandler: ifm.IRequestHandler | undefined;
             if (this.handlers) {
                 this.handlers.some(function (handler /*, index, handlers*/) {
                     // Find the first one that can handle the auth based on the response
-                    if (handler.canHandleAuthentication(res)) {
+                    if (res && handler.canHandleAuthentication(res)) {
                         authHandler = handler;
                         return true;
                     }
@@ -114,7 +114,10 @@ export class HttpClient {
                 });
             }
             if (authHandler !== undefined) {
-                authHandler.handleAuthentication(this, protocol, options, objs, onResult);
+                authHandler.handleAuthentication(this, { options: options }, objs).then(async (value: ifm.IHttpClientResponse) => {
+                    onResult(value.message, value, await value.readBody());
+
+                });
             } else {
                 // No auth handler found, call onResult normally
                 onResult(err, res, contents);
@@ -124,24 +127,24 @@ export class HttpClient {
         this.requestInternal(protocol, options, objs, callback);
     }
 
-    requestInternal(protocol: any, options: any, objs: any, onResult: (err: any, res: http.ClientResponse, contents: string) => void): void {
-        var reqData;
-        var socket;
+    requestInternal(protocol: any, options: any, objs: any, onResult: (err: any, res: ifm.IHttpClientResponse | null, contents: string | null) => void): void {
+        var reqData: any;
+        var socket: any;
 
         if (objs) {
             reqData = objs;
         }
 
         var callbackCalled: boolean = false;
-        var handleResult = (err: any, res: http.ClientResponse, contents: string) => {
+        var handleResult = (err: any, res: ifm.IHttpClientResponse | null, contents: string | null) => {
             if (!callbackCalled) {
                 callbackCalled = true;
                 onResult(err, res, contents);
             }
         };
 
-        var req = protocol.request(options, function (res) {
-            var buffer = [];
+        var req = protocol.request(options, function (res: any) {
+            var buffer: string[] = [];
             var output = '';
 
             // If we're handling gzip compression, don't set the encoding to utf8
@@ -149,16 +152,16 @@ export class HttpClient {
                 var gunzip = zlib.createGunzip();
                 res.pipe(gunzip);
 
-                gunzip.on('data', function(data) {
+                gunzip.on('data', function (data) {
                     buffer.push(data.toString());
-                }).on('end', function() {
+                }).on('end', function () {
                     handleResult(null, res, buffer.join(""));
-                }).on('error', function(err) {
+                }).on('error', function (err) {
                     handleResult(err, null, null);
                 });
             } else {
                 res.setEncoding('utf8'); //Do this only if we expect we're getting a string back
-                res.on('data', function (chunk) {
+                res.on('data', function (chunk: string) {
                     output += chunk;
                 });
                 res.on('end', function () {
@@ -168,19 +171,19 @@ export class HttpClient {
             }
         });
 
-        req.on('socket', function(sock) {
+        req.on('socket', function (sock: any) {
             socket = sock;
         });
 
         // If we ever get disconnected, we want the socket to timeout eventually
-        req.setTimeout(this.socketTimeout, function() {
+        req.setTimeout(this.socketTimeout, function () {
             if (socket) {
                 socket.end();
             }
             handleResult(new Error('Request timeout: ' + options.path), null, null);
         });
 
-        req.on('error', function (err) {
+        req.on('error', function (err: any) {
             // err has statusCode property
             // res should have headers
             handleResult(err, null, null);

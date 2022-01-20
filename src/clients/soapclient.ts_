@@ -10,7 +10,7 @@ import { env } from "vscode";
 import ifm = require("azure-devops-node-api/interfaces/common/VsoBaseInterfaces");
 import { HttpClient } from "./httpclient";
 
-var httpCodes = {
+let httpCodes: { [Key: number]: string; } = {
     300: "Multiple Choices",
     301: "Moved Permanantly",
     302: "Resource Moved",
@@ -37,7 +37,7 @@ var httpCodes = {
     504: "Gateway Timeout"
 }
 
-export function processResponse(url, res, contents, onResult) {
+export function processResponse(url: any, res: any, contents: any, onResult: any) {
     if (res.statusCode > 299) {
         // not success
         var msg = httpCodes[res.statusCode] ? "Failed Request: " + httpCodes[res.statusCode] : "Failed Request";
@@ -71,8 +71,8 @@ export function processResponse(url, res, contents, onResult) {
 };
 
 export class SoapClient {
-    baseUrl: string;
-    basePath: string;
+    baseUrl: string = "";
+    basePath: string = "";
     httpClient: HttpClient;
 
     constructor(userAgent: string, handlers?: ifm.IRequestHandler[]) {
@@ -91,7 +91,7 @@ export class SoapClient {
         headers["Chunked"] = "false";
         headers["Content-Length"] = requestEnvelope.length;
 
-        this.httpClient.send(verb, url, requestEnvelope, headers, (err: any, res: ifm.IHttpResponse, responseEnvelope: string) => {
+        this.httpClient.send(verb, url, requestEnvelope, headers, (err: any, res: ifm.IHttpClientResponse | null, responseEnvelope: string | null) => {
             if (err) {
                 onResult(err, err.statusCode, null);
                 return;
