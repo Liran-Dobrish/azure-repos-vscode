@@ -43,7 +43,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.tfvcErrorCode, TfvcErrorCodes.NotAnEnuTfCommandLine);
             assert.isTrue(err.message.startsWith(Strings.NotAnEnuTfCommandLine));
             threw = true;
@@ -63,7 +63,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.tfvcErrorCode, TfvcErrorCodes.NotAnEnuTfCommandLine);
             assert.isTrue(err.message.startsWith(Strings.NotAnEnuTfCommandLine));
             threw = true;
@@ -107,7 +107,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.exitCode, 42);
             assert.isTrue(err.message.startsWith(Strings.TfExecFailedError));
             threw = true;
@@ -128,7 +128,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.tfvcErrorCode, TfvcErrorCodes.NotFound);
             assert.isTrue(err.message.startsWith(Strings.TfInitializeFailureError));
             threw = true;
@@ -148,7 +148,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.exitCode, 42);
             assert.isTrue(err.message.startsWith(Strings.TfExecFailedError));
             threw = true;
@@ -168,7 +168,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.tfvcErrorCode, TfvcErrorCodes.NotAnEnuTfCommandLine);
             assert.isTrue(err.message.startsWith(Strings.NotAnEnuTfCommandLine));
             threw = true;
@@ -188,7 +188,7 @@ describe("Tfvc-GetVersionCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.tfvcErrorCode, TfvcErrorCodes.NotAnEnuTfCommandLine);
             assert.isTrue(err.message.startsWith(Strings.NotAnEnuTfCommandLine));
             threw = true;

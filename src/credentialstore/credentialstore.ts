@@ -20,9 +20,9 @@ import { Credential } from "./credential";
  */
 export class CredentialStore implements ICredentialStore {
     private _credentialStore: ICredentialStore;
-    private _filename: string;
-    private _folder: string;
-    private _prefix: string;
+    private _filename: string | undefined;
+    private _folder: string | undefined;
+    private _prefix: string | undefined;
     private _defaultPrefix: string = "secret:";
     private _defaultFilename: string = "secrets.json";
     private _defaultFolder: string = ".secrets";
@@ -44,34 +44,34 @@ export class CredentialStore implements ICredentialStore {
                 if (prefix === undefined) {
                     this._prefix = this._defaultPrefix;
                 }
-                this._credentialStore = new WindowsCredentialStoreApi(this._prefix);
+                this._credentialStore = new WindowsCredentialStoreApi(this._prefix!);
                 break;
             case "darwin":
                 if (prefix === undefined) {
                     this._prefix = this._defaultPrefix;
                 }
-                this._credentialStore = new OsxKeychainApi(this._prefix);
+                this._credentialStore = new OsxKeychainApi(this._prefix!);
                 break;
             /* tslint:disable:no-switch-case-fall-through */
             case "linux":
             default:
-            /* tslint:enable:no-switch-case-fall-through */
+                /* tslint:enable:no-switch-case-fall-through */
                 if (folder === undefined) {
                     this._folder = this._defaultFolder;
                 }
                 if (filename === undefined) {
                     this._filename = this._defaultFilename;
                 }
-                this._credentialStore = new LinuxFileApi(this._folder, this._filename);
+                this._credentialStore = new LinuxFileApi(this._folder!, this._filename!);
                 break;
         }
     }
 
-    public GetCredential(service: string) : Q.Promise<Credential> {
+    public GetCredential(service: string): Q.Promise<Credential> {
         return this._credentialStore.GetCredential(service);
     }
 
-    public SetCredential(service: string, username: string, password: any) : Q.Promise<void> {
+    public SetCredential(service: string, username: string, password: any): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
 
         // First, look to see if we have a credential for this service already.  If so, remove it
@@ -102,17 +102,17 @@ export class CredentialStore implements ICredentialStore {
         return deferred.promise;
     }
 
-    public RemoveCredential(service: string) : Q.Promise<void> {
+    public RemoveCredential(service: string): Q.Promise<void> {
         return this._credentialStore.RemoveCredential(service);
     }
 
     // Used by tests to ensure certain credentials we create don't exist
-    public getCredentialByName(service: string, username: string) : Q.Promise<Credential> {
+    public getCredentialByName(service: string, username: string): Q.Promise<Credential> {
         return this._credentialStore.getCredentialByName(service, username);
     }
 
     // Used by tests to remove certain credentials
-    public removeCredentialByName(service: string, username: string) : Q.Promise<void> {
+    public removeCredentialByName(service: string, username: string): Q.Promise<void> {
         return this._credentialStore.removeCredentialByName(service, username);
     }
 }

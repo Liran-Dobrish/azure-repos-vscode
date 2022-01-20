@@ -25,8 +25,8 @@ import { UIHelper } from "./uihelper";
 import { AutoResolveType, ICheckinInfo, IItemInfo, ISyncResults } from "./interfaces";
 import { TfvcOutput } from "./tfvcoutput";
 
-export class TfvcExtension  {
-    private _repo: TfvcRepository;
+export class TfvcExtension {
+    private _repo: TfvcRepository | undefined;
     private _manager: ExtensionManager;
 
     constructor(manager: ExtensionManager) {
@@ -37,15 +37,15 @@ export class TfvcExtension  {
         this.displayErrors(
             async () => {
                 // get the checkin info from the SCM viewlet
-                const checkinInfo: ICheckinInfo = TfvcSCMProvider.GetCheckinInfo();
+                const checkinInfo: ICheckinInfo | undefined = TfvcSCMProvider.GetCheckinInfo();
                 if (!checkinInfo) {
                     window.showInformationMessage(Strings.NoChangesToCheckin);
                     return;
                 }
 
-                Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.CheckinExe : TfvcTelemetryEvents.CheckinClc);
-                const changeset: string =
-                    await this._repo.Checkin(checkinInfo.files, checkinInfo.comment, checkinInfo.workItemIds);
+                Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.CheckinExe : TfvcTelemetryEvents.CheckinClc);
+                const changeset: string | undefined =
+                    await this._repo?.Checkin(checkinInfo.files, checkinInfo.comment, checkinInfo.workItemIds);
                 TfvcOutput.AppendLine(`Changeset ${changeset} checked in.`);
                 TfvcSCMProvider.ClearCheckinMessage();
                 TfvcSCMProvider.Refresh();
@@ -64,10 +64,10 @@ export class TfvcExtension  {
                     try {
                         const message: string = `Are you sure you want to delete '${basename}'?`;
                         if (await UIHelper.PromptForConfirmation(message, Strings.DeleteFile)) {
-                            Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.DeleteExe : TfvcTelemetryEvents.DeleteClc);
-                            await this._repo.Delete([uri.fsPath]);
+                            Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.DeleteExe : TfvcTelemetryEvents.DeleteClc);
+                            await this._repo?.Delete([uri.fsPath]);
                         }
-                    } catch (err) {
+                    } catch (err: any) {
                         //Provide a better error message if the file to be deleted isn't in the workspace (e.g., it's a new file)
                         if (err.tfvcErrorCode && err.tfvcErrorCode === TfvcErrorCodes.FileNotInWorkspace) {
                             this._manager.DisplayErrorMessage(`Cannot delete '${basename}' as it is not in your workspace.`);
@@ -122,13 +122,13 @@ export class TfvcExtension  {
 
                     //If we need to add files, run a single Add with those files
                     if (pathsToAdd.length > 0) {
-                        Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.AddExe : TfvcTelemetryEvents.AddClc);
-                        await this._repo.Add(pathsToAdd);
+                        Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.AddExe : TfvcTelemetryEvents.AddClc);
+                        await this._repo?.Add(pathsToAdd);
                     }
                     //If we need to delete files, run a single Delete with those files
                     if (pathsToDelete.length > 0) {
-                        Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.DeleteExe : TfvcTelemetryEvents.DeleteClc);
-                        await this._repo.Delete(pathsToDelete);
+                        Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.DeleteExe : TfvcTelemetryEvents.DeleteClc);
+                        await this._repo?.Delete(pathsToDelete);
                     }
 
                     //Otherwise, ensure its not in the explicitly excluded list (if it's already there)
@@ -149,7 +149,7 @@ export class TfvcExtension  {
         this.displayErrors(
             async () => {
                 if (resource) {
-                    const left: Uri = TfvcSCMProvider.GetLeftResource(resource);
+                    const left: Uri | undefined = TfvcSCMProvider.GetLeftResource(resource);
                     const right: Uri = TfvcSCMProvider.GetRightResource(resource);
                     const title: string = resource.GetTitle();
 
@@ -205,15 +205,15 @@ export class TfvcExtension  {
             async () => {
                 if (uri) {
                     const basename: string = path.basename(uri.fsPath);
-                    const newFilename: string = await window.showInputBox({ value: basename, prompt: Strings.RenamePrompt, placeHolder: undefined, password: false });
+                    const newFilename: string | undefined = await window.showInputBox({ value: basename, prompt: Strings.RenamePrompt, placeHolder: undefined, password: false });
                     if (newFilename && newFilename !== basename) {
                         const dirName: string = path.dirname(uri.fsPath);
                         const destination: string = path.join(dirName, newFilename);
 
                         try {
-                            Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.RenameExe : TfvcTelemetryEvents.RenameClc);
-                            await this._repo.Rename(uri.fsPath, destination);
-                        } catch (err) {
+                            Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.RenameExe : TfvcTelemetryEvents.RenameClc);
+                            await this._repo?.Rename(uri.fsPath, destination);
+                        } catch (err: any) {
                             //Provide a better error message if the file to be renamed isn't in the workspace (e.g., it's a new file)
                             if (err.tfvcErrorCode && err.tfvcErrorCode === TfvcErrorCodes.FileNotInWorkspace) {
                                 this._manager.DisplayErrorMessage(`Cannot rename '${basename}' as it is not in your workspace.`);
@@ -238,8 +238,8 @@ export class TfvcExtension  {
                     const basename: string = path.basename(localPath);
                     const message: string = `Are you sure you want to resolve changes in '${basename}' as ${resolveTypeString}?`;
                     if (await UIHelper.PromptForConfirmation(message, resolveTypeString)) {
-                        Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.ResolveConflictsExe : TfvcTelemetryEvents.ResolveConflictsClc);
-                        await this._repo.ResolveConflicts([localPath], autoResolveType);
+                        Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.ResolveConflictsExe : TfvcTelemetryEvents.ResolveConflictsClc);
+                        await this._repo?.ResolveConflicts([localPath], autoResolveType);
                         TfvcSCMProvider.Refresh();
                     }
                 } else {
@@ -260,9 +260,11 @@ export class TfvcExtension  {
     public async Sync(): Promise<void> {
         this.displayErrors(
             async () => {
-                Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.SyncExe : TfvcTelemetryEvents.SyncClc);
-                const results: ISyncResults = await this._repo.Sync([this._repo.Path], true);
-                await UIHelper.ShowSyncResults(results, results.hasConflicts || results.hasErrors, true);
+                Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.SyncExe : TfvcTelemetryEvents.SyncClc);
+                const results: ISyncResults | undefined = await this._repo?.Sync([this._repo.Path], true);
+                if (results) {
+                    await UIHelper.ShowSyncResults(results, results.hasConflicts || results.hasErrors, true);
+                }
             },
             "Sync");
     }
@@ -288,8 +290,8 @@ export class TfvcExtension  {
                             message = `Are you sure you want to undo changes to ${pathsToUndo.length.toString()} files?`;
                         }
                         if (await UIHelper.PromptForConfirmation(message, Strings.UndoChanges)) {
-                            Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.UndoExe : TfvcTelemetryEvents.UndoClc);
-                            await this._repo.Undo(pathsToUndo);
+                            Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.UndoExe : TfvcTelemetryEvents.UndoClc);
+                            await this._repo?.Undo(pathsToUndo);
                         }
                     }
                 }
@@ -308,8 +310,8 @@ export class TfvcExtension  {
                 if (TfvcSCMProvider.HasItems()) {
                     const message: string = `Are you sure you want to undo all changes?`;
                     if (await UIHelper.PromptForConfirmation(message, Strings.UndoChanges)) {
-                        Telemetry.SendEvent(this._repo.IsExe ? TfvcTelemetryEvents.UndoAllExe : TfvcTelemetryEvents.UndoAllClc);
-                        await this._repo.Undo(["*"]);
+                        Telemetry.SendEvent(this._repo?.IsExe ? TfvcTelemetryEvents.UndoAllExe : TfvcTelemetryEvents.UndoAllClc);
+                        await this._repo?.Undo(["*"]);
                     }
                 } else {
                     window.showInformationMessage(Strings.NoChangesToUndo);
@@ -332,7 +334,7 @@ export class TfvcExtension  {
         }
 
         try {
-            let itemPath: string;
+            let itemPath: string | undefined;
             const editor = window.activeTextEditor;
             //Get the path to the file open in the VSCode editor (if any)
             if (editor) {
@@ -344,13 +346,13 @@ export class TfvcExtension  {
                 return;
             }
 
-            const itemInfos: IItemInfo[] = await this._repo.GetInfo([itemPath]);
+            const itemInfos: IItemInfo[] | undefined = await this._repo?.GetInfo([itemPath]);
             //With a single file, show that file's history
             if (itemInfos && itemInfos.length === 1) {
                 Telemetry.SendEvent(TfvcTelemetryEvents.OpenFileHistory);
-                const serverPath: string = itemInfos[0].serverItem;
+                const serverPath: string = itemInfos[0].serverItem!;
                 const file: string = encodeURIComponent(serverPath);
-                let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext.RemoteUrl, "_versionControl");
+                let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl, "_versionControl");
                 historyUrl = UrlBuilder.AddQueryParams(historyUrl, `path=${file}`, `_a=history`);
                 Utils.OpenUrl(historyUrl);
                 return;
@@ -358,7 +360,7 @@ export class TfvcExtension  {
                 //If the file is in the workspace folder (but not mapped), just display the history url of the entire repo
                 this.showRepositoryHistory();
             }
-        } catch (err) {
+        } catch (err: any) {
             if (err.tfvcErrorCode && err.tfvcErrorCode === TfvcErrorCodes.FileNotInMappings) {
                 //If file open in editor is not in the mappings, just display the history url of the entire repo
                 this.showRepositoryHistory();
@@ -368,7 +370,7 @@ export class TfvcExtension  {
         }
     }
 
-    private async displayErrors(funcToTry: (prefix) => Promise<void>, prefix: string): Promise<void> {
+    private async displayErrors(funcToTry: (prefix: any) => Promise<void>, prefix: string): Promise<void> {
         if (!this._manager.EnsureInitializedForTFVC()) {
             this._manager.DisplayErrorMessage();
             return;
@@ -382,7 +384,7 @@ export class TfvcExtension  {
 
         try {
             await funcToTry(prefix);
-        } catch (err) {
+        } catch (err: any) {
             let messageOptions: IButtonMessageItem[] = [];
             TfvcOutput.AppendLine(Utils.FormatMessage(`[${prefix}] ${err.message}`));
             //If we also have text in err.stdout, provide that to the output channel
@@ -393,7 +395,7 @@ export class TfvcExtension  {
             if (err.messageOptions && err.messageOptions.length > 0) {
                 messageOptions = err.messageOptions;
             } else {
-                messageOptions.push({ title : Strings.ShowTfvcOutput, command: TfvcCommandNames.ShowOutput });
+                messageOptions.push({ title: Strings.ShowTfvcOutput, command: TfvcCommandNames.ShowOutput });
             }
             VsCodeUtils.ShowErrorMessage(err.message, ...messageOptions);
         }
@@ -411,7 +413,7 @@ export class TfvcExtension  {
 
     private showRepositoryHistory(): void {
         Telemetry.SendEvent(TfvcTelemetryEvents.OpenRepositoryHistory);
-        let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext.RemoteUrl, "_versionControl");
+        let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl, "_versionControl");
         historyUrl = UrlBuilder.AddQueryParams(historyUrl, `_a=history`);
         Utils.OpenUrl(historyUrl);
     }

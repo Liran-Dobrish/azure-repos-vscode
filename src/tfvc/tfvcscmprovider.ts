@@ -28,13 +28,13 @@ import { ICheckinInfo } from "./interfaces";
  */
 export class TfvcSCMProvider {
     public static scmScheme: string = "tfvc";
-    private static instance: TfvcSCMProvider = undefined;
+    private static instance: TfvcSCMProvider | undefined = undefined;
 
     private _extensionManager: ExtensionManager;
-    private _model: Model;
+    private _model: Model | undefined;
     private _disposables: Disposable[] = [];
     private _tempDisposables: Disposable[] = [];
-    private _sourceControl: SourceControl;
+    private _sourceControl: SourceControl | undefined;
 
     constructor(extensionManager: ExtensionManager) {
         this._extensionManager = extensionManager;
@@ -45,21 +45,23 @@ export class TfvcSCMProvider {
         scm.inputBox.value = "";
     }
 
-    public static GetCheckinInfo(): ICheckinInfo {
+    public static GetCheckinInfo(): ICheckinInfo | undefined {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
         try {
-            const files: string[] = [];
+            const files: (string)[] = [];
             const commitMessage: string = scm.inputBox.value;
             const workItemIds: number[] = TfvcSCMProvider.getWorkItemIdsFromMessage(commitMessage);
 
-            const resources: Resource[] = tfvcProvider._model.IncludedGroup.resources;
+            const resources: Resource[] | undefined = tfvcProvider._model?.IncludedGroup.resources;
             if (!resources || resources.length === 0) {
                 return undefined;
             }
 
             for (let i: number = 0; i < resources.length; i++) {
-                files.push(resources[i].PendingChange.localItem);
+                if (resources[i].PendingChange && resources[i].PendingChange.localItem) {
+                    files.push(resources[i].PendingChange.localItem!);
+                }
             }
 
             return {
@@ -67,7 +69,7 @@ export class TfvcSCMProvider {
                 comment: commitMessage,
                 workItemIds: workItemIds
             };
-        } catch (err) {
+        } catch (err: any) {
             Logger.LogDebug("Failed to GetCheckinInfo. Details: " + err.message);
             throw TfvcError.CreateUnknownError(err);
         }
@@ -78,7 +80,7 @@ export class TfvcSCMProvider {
         try {
             // Find all the work item mentions in the string.
             // This returns an array like: ["#1", "#12", "#33"]
-            const matches: string[] = message ? message.match(/#(\d+)/gm) : [];
+            const matches: string[] | null = message ? message.match(/#(\d+)/gm) : [];
             if (matches) {
                 for (let i: number = 0; i < matches.length; i++) {
                     const id: number = parseInt(matches[i].slice(1));
@@ -87,7 +89,7 @@ export class TfvcSCMProvider {
                     }
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             Logger.LogDebug("Failed to get all workitems from message: " + message);
         }
         return ids;
@@ -96,26 +98,26 @@ export class TfvcSCMProvider {
     public static async Exclude(paths: string[]): Promise<void> {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
-        await tfvcProvider._model.Exclude(paths);
+        await tfvcProvider._model?.Exclude(paths);
     };
 
     public static async Refresh(): Promise<void> {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
-        await tfvcProvider._model.Refresh();
+        await tfvcProvider._model?.Refresh();
     };
 
     public static async Unexclude(paths: string[]): Promise<void> {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
-        await tfvcProvider._model.Unexclude(paths);
+        await tfvcProvider._model?.Unexclude(paths);
     };
 
     /* Public methods */
 
-    private conflictsGroup: SourceControlResourceGroup;
-    private includedGroup: SourceControlResourceGroup;
-    private excludedGroup: SourceControlResourceGroup;
+    private conflictsGroup: SourceControlResourceGroup | undefined;
+    private includedGroup: SourceControlResourceGroup | undefined;
+    private excludedGroup: SourceControlResourceGroup | undefined;
     public async Initialize(): Promise<void> {
         await TfvcOutput.CreateChannel(this._disposables);
         await this.setup();
@@ -126,17 +128,24 @@ export class TfvcSCMProvider {
         this._sourceControl = scm.createSourceControl(TfvcSCMProvider.scmScheme, "TFVC");
         this._disposables.push(this._sourceControl);
 
-        this.conflictsGroup = this._sourceControl.createResourceGroup(this._model.ConflictsGroup.id, this._model.ConflictsGroup.label);
-        this.includedGroup = this._sourceControl.createResourceGroup(this._model.IncludedGroup.id, this._model.IncludedGroup.label);
-        this.excludedGroup = this._sourceControl.createResourceGroup(this._model.ExcludedGroup.id, this._model.ExcludedGroup.label);
-        this.conflictsGroup.hideWhenEmpty = true;
+        if (this._model) {
+            this.conflictsGroup = this._sourceControl.createResourceGroup(this._model.ConflictsGroup.id, this._model.ConflictsGroup.label);
+            this.includedGroup = this._sourceControl.createResourceGroup(this._model.IncludedGroup.id, this._model.IncludedGroup.label);
+            this.excludedGroup = this._sourceControl.createResourceGroup(this._model.ExcludedGroup.id, this._model.ExcludedGroup.label);
+        }
+        if (this.conflictsGroup) {
+            this.conflictsGroup.hideWhenEmpty = true;
+        }
 
         //Set the command to run when user accepts changes via Ctrl+Enter in input box.
         this._sourceControl.acceptInputCommand = { command: TfvcCommandNames.Checkin, title: "Checkin" };
 
-        this._disposables.push(this.conflictsGroup);
-        this._disposables.push(this.includedGroup);
-        this._disposables.push(this.excludedGroup);
+        if (this.conflictsGroup)
+            this._disposables.push(this.conflictsGroup);
+        if (this.includedGroup)
+            this._disposables.push(this.includedGroup);
+        if (this.excludedGroup)
+            this._disposables.push(this.excludedGroup);
     }
 
     private onDidModelChange(): void {
@@ -144,10 +153,14 @@ export class TfvcSCMProvider {
             return;
         }
 
-        this.conflictsGroup.resourceStates = this._model.ConflictsGroup.resources;
-        this.includedGroup.resourceStates = this._model.IncludedGroup.resources;
-        this.excludedGroup.resourceStates = this._model.ExcludedGroup.resources;
-        this._sourceControl.count = this.count;
+        if (this._model && this.includedGroup && this.excludedGroup) {
+            this.conflictsGroup.resourceStates = this._model.ConflictsGroup.resources;
+            this.includedGroup.resourceStates = this._model.IncludedGroup.resources;
+            this.excludedGroup.resourceStates = this._model.ExcludedGroup.resources;
+        }
+        if (this._sourceControl) {
+            this._sourceControl.count = this.count;
+        }
     }
 
     public async Reinitialize(): Promise<void> {
@@ -174,20 +187,20 @@ export class TfvcSCMProvider {
         const fsWatcher = workspace.createFileSystemWatcher("**");
         const onWorkspaceChange = anyEvent(fsWatcher.onDidChange, fsWatcher.onDidCreate, fsWatcher.onDidDelete);
         const onTfvcChange = filterEvent(onWorkspaceChange, (uri) => /^\$tf\//.test(workspace.asRelativePath(uri)));
-        this._model = new Model(repoContext.RepoFolder, repoContext.TfvcRepository, onWorkspaceChange);
+        this._model = new Model(repoContext.RepoFolder, repoContext.TfvcRepository!, onWorkspaceChange);
         // Hook up the model change event to trigger our own event
         this._disposables.push(this._model.onDidChange(this.onDidModelChange, this));
 
-        let version: string = "unknown";
+        let version: string | undefined = "unknown";
         try {
-            version = await repoContext.TfvcRepository.CheckVersion();
-        } catch (err) {
+            version = await repoContext.TfvcRepository!.CheckVersion();
+        } catch (err: any) {
             this._extensionManager.DisplayWarningMessage(err.message);
         }
-        TfvcOutput.AppendLine("Using TFVC command line: " + repoContext.TfvcRepository.TfvcLocation + " (" + version + ")");
+        TfvcOutput.AppendLine("Using TFVC command line: " + repoContext.TfvcRepository!.TfvcLocation + " (" + version + ")");
 
         const commitHoverProvider: CommitHoverProvider = new CommitHoverProvider();
-        const contentProvider: TfvcContentProvider = new TfvcContentProvider(repoContext.TfvcRepository, rootPath, onTfvcChange);
+        const contentProvider: TfvcContentProvider = new TfvcContentProvider(repoContext.TfvcRepository!, rootPath, onTfvcChange);
         //const checkoutStatusBar = new CheckoutStatusBar(model);
         //const syncStatusBar = new SyncStatusBar(model);
         //const autoFetcher = new AutoFetcher(model);
@@ -222,10 +235,16 @@ export class TfvcSCMProvider {
     }
 
     get onDidChange(): Event<this> {
+        if (!this._model) {
+            return () => this;
+        }
         return mapEvent(this._model.onDidChange, () => this);
     }
 
     public get count(): number {
+        if (!this._model) {
+            return -1;
+        }
         // TODO is this too simple? The Git provider does more
         return this._model.Resources.reduce((r, g) => r + g.resources.length, 0);
     }
@@ -243,7 +262,7 @@ export class TfvcSCMProvider {
      * If Tfvc is the active provider, returns the number of items it is tracking.
      */
     public static HasItems(): boolean {
-        const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.instance;
+        const tfvcProvider: TfvcSCMProvider | undefined = TfvcSCMProvider.instance;
         if (tfvcProvider) {
             if (tfvcProvider.count > 0) {
                 return true;
@@ -255,11 +274,11 @@ export class TfvcSCMProvider {
     /**
      * Gets the uri for the previous version of the file.
      */
-    public static  GetLeftResource(resource: Resource): Uri {
+    public static GetLeftResource(resource: Resource): Uri | undefined {
         if (resource.HasStatus(Status.CONFLICT) ||
             resource.HasStatus(Status.EDIT) ||
             resource.HasStatus(Status.RENAME)) {
-                return resource.GetServerUri();
+            return resource.GetServerUri();
         } else {
             return undefined;
         }
@@ -278,7 +297,7 @@ export class TfvcSCMProvider {
     }
 
     private static getProviderInstance(): TfvcSCMProvider {
-        const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.instance;
+        const tfvcProvider: TfvcSCMProvider | undefined = TfvcSCMProvider.instance;
         if (!tfvcProvider) {
             // We are not the active provider
             Logger.LogDebug("TFVC is not the active provider.");

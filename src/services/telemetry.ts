@@ -15,11 +15,11 @@ import * as os from "os";
 import * as crypto from "crypto";
 
 export class Telemetry {
-    private static _appInsightsClient: Client;
-    private static _serverContext: TeamServerContext;
-    private static _telemetryEnabled: boolean = true;
+    private static _appInsightsClient: appInsights.TelemetryClient;
+    private static _serverContext: TeamServerContext | undefined;
+    private static _telemetryEnabled: boolean | undefined = true;
     //Default to a new uuid in case the extension fails before being initialized
-    private static _userId: string =  "UNKNOWN";
+    private static _userId: string = "UNKNOWN";
     private static _sessionId: string = uuid.v4(); //The sessionId can be updated later
     private static _productionKey: string = "44267cbb-b9ba-4bce-a37a-338588aa4da3";
 
@@ -38,12 +38,12 @@ export class Telemetry {
         }
 
         appInsights.setup(insightsKey)
-                    .setAutoCollectConsole(false)
-                    .setAutoCollectPerformance(false)
-                    .setAutoCollectRequests(false)
-                    .setAutoCollectExceptions(false)
-                    .start();
-        Telemetry._appInsightsClient = appInsights.getClient(insightsKey);
+            .setAutoCollectConsole(false)
+            .setAutoCollectPerformance(false)
+            .setAutoCollectRequests(false)
+            .setAutoCollectExceptions(false)
+            .start();
+        Telemetry._appInsightsClient = appInsights.defaultClient;
         //Need to use HTTPS with v0.15.16 of App Insights
         Telemetry._appInsightsClient.config.endpointUrl = "https://dc.services.visualstudio.com/v2/track";
 
@@ -57,7 +57,7 @@ export class Telemetry {
         Telemetry.ensureInitialized();
 
         if (Telemetry._telemetryEnabled === true) {
-            Telemetry._appInsightsClient.trackEvent(event, properties);
+            Telemetry._appInsightsClient.trackEvent({name: event, properties: properties});
         }
     }
 
@@ -65,14 +65,14 @@ export class Telemetry {
         Telemetry.ensureInitialized();
 
         // SendFeedback doesn't honor the _telemetryEnabled flag
-        Telemetry._appInsightsClient.trackEvent(event, properties);
+        Telemetry._appInsightsClient.trackEvent({name: event, properties: properties});
     }
 
     public static SendException(err: Error, properties?: any): void {
         Telemetry.ensureInitialized();
 
-        if (Telemetry._telemetryEnabled === true) {
-            Telemetry._appInsightsClient.trackException(err, properties);
+        if (Telemetry._telemetryEnabled === true && properties) {
+            Telemetry._appInsightsClient.trackException({exception: err});
         }
     }
 
@@ -101,14 +101,14 @@ export class Telemetry {
 
     private static setCommonProperties(): void {
         Telemetry._appInsightsClient.commonProperties = {
-            "VSTS.TeamFoundationServer.IsHostedServer" : Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo.IsTeamServices.toString(),
-            "VSTS.TeamFoundationServer.ServerId" : Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo.Host,
-            "VSTS.TeamFoundationServer.Protocol" : Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo.Protocol,
-            "VSTS.Core.Machine.OS.Platform" : os.platform(),
-            "VSTS.Core.Machine.OS.Type" : os.type(),
-            "VSTS.Core.Machine.OS.Release" : os.release(),
-            "VSTS.Core.User.Id" : Telemetry._userId,
-            "Plugin.Version" : Constants.ExtensionVersion
+            "VSTS.TeamFoundationServer.IsHostedServer": Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo!.IsTeamServices.toString(),
+            "VSTS.TeamFoundationServer.ServerId": Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo!.Host,
+            "VSTS.TeamFoundationServer.Protocol": Telemetry._serverContext === undefined ? "UNKNOWN" : Telemetry._serverContext.RepoInfo!.Protocol,
+            "VSTS.Core.Machine.OS.Platform": os.platform(),
+            "VSTS.Core.Machine.OS.Type": os.type(),
+            "VSTS.Core.Machine.OS.Release": os.release(),
+            "VSTS.Core.User.Id": Telemetry._userId,
+            "Plugin.Version": Constants.ExtensionVersion
         };
 
         //Set the userid on the AI context so that we can get user counts in the telemetry

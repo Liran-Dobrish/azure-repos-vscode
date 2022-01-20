@@ -6,13 +6,16 @@
         "sourceMap": true,
         "removeComments": false,
         "lib": [
-            "ES2020"
+            "ES2020",
+            "DOM"
         ],
         "strict": true,   /* enable all strict type-checking options */
         "allowJs": true,
         "noUnusedParameters": true,
-        "noUnusedLocals": true,
-        "forceConsistentCasingInFileNames": true
+        "noUnusedLocals": false,
+        "forceConsistentCasingInFileNames": true,
+        "importHelpers": true,
+        "esModuleInterop": true
     },
     "include": [
         "src/**/*",

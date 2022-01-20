@@ -19,8 +19,8 @@ import { CommandHelper } from "./commandhelper";
 export class GetFileContent implements ITfvcCommand<string> {
     private _serverContext: TeamServerContext;
     private _localPath: string;
-    private _versionSpec: string;
-    private _ignoreFileNotFound: boolean;
+    private _versionSpec?: string;
+    private _ignoreFileNotFound?: boolean;
 
     public constructor(serverContext: TeamServerContext, localPath: string, versionSpec?: string, ignoreFileNotFound?: boolean) {
         CommandHelper.RequireStringArgument(localPath, "localPath");

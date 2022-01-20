@@ -22,7 +22,7 @@ export class Model implements Disposable {
     private _disposables: Disposable[] = [];
     private _repositoryRoot: string;
     private _repository: TfvcRepository;
-    private _statusAlreadyInProgress: boolean;
+    private _statusAlreadyInProgress: boolean = false;
     private _explicitlyExcluded: string[] = [];
 
     private _onDidChange = new EventEmitter<void>();
@@ -90,7 +90,7 @@ export class Model implements Disposable {
         this.status();
     }
 
-    private async run(fn: () => Promise<void>): Promise<void> {
+    private async run(fn: (() => Promise<void>) | undefined): Promise<void> {
         return window.withProgress({ location: ProgressLocation.SourceControl }, async () => {
             if (fn) {
                 await fn();
@@ -132,22 +132,22 @@ export class Model implements Disposable {
     }
 
     private async update(): Promise<void> {
-        const changes: IPendingChange[] = await this._repository.GetStatus();
-        let foundConflicts: IConflict[] = [];
+        const changes: IPendingChange[] | undefined = await this._repository.GetStatus();
+        let foundConflicts: IConflict[] | undefined = [];
 
         // Without any server context we can't run delete or resolve commands
         if (this._repository.HasContext) {
             // Get the list of conflicts
             //TODO: Optimize out this call unless it is needed. This call takes over 4 times longer than the status call and is unecessary most of the time.
             foundConflicts = await this._repository.FindConflicts();
-            foundConflicts.forEach((conflict) => {
+            foundConflicts?.forEach((conflict) => {
                 if (conflict.message) {
                     TfvcOutput.AppendLine(`[Resolve] ${conflict.message}`);
                 }
             });
         }
 
-        const conflict: IConflict = foundConflicts.find((c) => c.type === ConflictType.NAME_AND_CONTENT || c.type === ConflictType.RENAME);
+        const conflict: IConflict | undefined = foundConflicts?.find((c) => c.type === ConflictType.NAME_AND_CONTENT || c.type === ConflictType.RENAME);
         if (conflict) {
             if (conflict.type === ConflictType.RENAME) {
                 Telemetry.SendEvent(TfvcTelemetryEvents.RenameConflict);
@@ -160,9 +160,9 @@ export class Model implements Disposable {
         const excluded: Resource[] = [];
         const conflicts: Resource[] = [];
 
-        changes.forEach((raw) => {
-            const conflict: IConflict = foundConflicts.find((c) => this.conflictMatchesPendingChange(raw, c));
-            const resource: Resource = new Resource(raw, conflict);
+        changes?.forEach((raw) => {
+            const conflict: IConflict | undefined = foundConflicts?.find((c) => this.conflictMatchesPendingChange(raw, c));
+            const resource: Resource = new Resource(raw, conflict!);
 
             if (resource.HasStatus(Status.CONFLICT)) {
                 return conflicts.push(resource);

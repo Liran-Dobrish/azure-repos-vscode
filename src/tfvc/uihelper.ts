@@ -12,7 +12,7 @@ import { TfvcOutput } from "./tfvcoutput";
 import * as path from "path";
 
 export class UIHelper {
-    public static async ChoosePendingChange(changes: IPendingChange[]): Promise<IPendingChange> {
+    public static async ChoosePendingChange(changes: IPendingChange[]): Promise<IPendingChange | undefined> {
         if (changes && changes.length > 0) {
             // First, create an array of quick pick items from the changes
             const items: QuickPickItem[] = [];
@@ -21,10 +21,10 @@ export class UIHelper {
                     label: UIHelper.GetFileName(changes[i]),
                     description: changes[i].changeType,
                     detail: UIHelper.GetRelativePath(changes[i])
-                    });
+                });
             }
             // Then, show the quick pick window and get back the one they chose
-            const item: QuickPickItem = await window.showQuickPick(
+            const item: QuickPickItem | undefined = await window.showQuickPick(
                 items, { matchOnDescription: true, placeHolder: Strings.ChooseItemQuickPickPlaceHolder });
 
             // Finally, find the matching pending change and return it
@@ -50,7 +50,7 @@ export class UIHelper {
     /**
      * This method displays the results of the sync command in the output window and optionally in the QuickPick window as well.
      */
-    public static async ShowSyncResults(syncResults: ISyncResults, showPopup: boolean, onlyShowErrors): Promise<void> {
+    public static async ShowSyncResults(syncResults: ISyncResults, showPopup: boolean, onlyShowErrors: boolean): Promise<void> {
         const items: QuickPickItem[] = [];
         if (syncResults.itemResults.length === 0) {
             TfvcOutput.AppendLine(Strings.AllFilesUpToDate);
@@ -127,7 +127,7 @@ export class UIHelper {
         return "";
     }
 
-    public static GetRelativePath(change: IPendingChange): string {
+    public static GetRelativePath(change: IPendingChange): string | undefined {
         if (change && change.localItem && workspace) {
             return workspace.asRelativePath(change.localItem);
         }
@@ -138,7 +138,7 @@ export class UIHelper {
     public static async PromptForConfirmation(message: string, okButtonText?: string): Promise<boolean> {
         okButtonText = okButtonText ? okButtonText : "OK";
         //TODO: use Modal api once vscode.d.ts exposes it (currently proposed)
-        const pick: string = await window.showWarningMessage(message, /*{ modal: true },*/ okButtonText);
+        const pick: string | undefined = await window.showWarningMessage(message, /*{ modal: true },*/ okButtonText);
         return pick === okButtonText;
     }
 }

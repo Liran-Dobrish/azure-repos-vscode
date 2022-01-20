@@ -15,7 +15,7 @@ import { TfCommandLineRunner } from "../tfvc/tfcommandlinerunner";
 export class RepositoryContextFactory {
 
     //Returns an IRepositoryContext if the repository is either TFS or Team Services
-    public static async CreateRepositoryContext(path: string, settings: Settings) : Promise<IRepositoryContext> {
+    public static async CreateRepositoryContext(path: string, settings: Settings): Promise<IRepositoryContext | undefined> {
         let repoContext: IRepositoryContext;
         let initialized: boolean = false;
 

@@ -12,14 +12,14 @@ export class DecorationProvider {
     private static _iconsRootPath: string = path.join(path.dirname(__dirname), "..", "..", "resources", "icons");
 
     public static getDecorations(statuses: Status[], conflictType?: ConflictType): SourceControlResourceDecorations {
-        const status: Status = this.getDominantStatus(statuses);
-        const light = { iconPath: DecorationProvider.getIconPath(status, "light") };
-        const dark = { iconPath: DecorationProvider.getIconPath(status, "dark") };
+        const status: Status | undefined = this.getDominantStatus(statuses);
+        const light = { iconPath: DecorationProvider.getIconPath(status!, "light") };
+        const dark = { iconPath: DecorationProvider.getIconPath(status!, "dark") };
 
-        return { strikeThrough: DecorationProvider.useStrikeThrough(status, conflictType), light, dark };
+        return { strikeThrough: DecorationProvider.useStrikeThrough(status!, conflictType), light, dark };
     }
 
-    private static getDominantStatus(statuses: Status[]) {
+    private static getDominantStatus(statuses: Status[]): Status | undefined {
         if (!statuses || statuses.length === 0) {
             return undefined;
         }
@@ -63,9 +63,9 @@ export class DecorationProvider {
         }
     }
 
-    private static useStrikeThrough(status: Status, conflictType: ConflictType): boolean {
+    private static useStrikeThrough(status: Status, conflictType: ConflictType | undefined): boolean {
         return (status === Status.DELETE) ||
-               (status === Status.MERGE &&
+            (status === Status.MERGE &&
                 (conflictType === ConflictType.DELETE || conflictType === ConflictType.DELETE_TARGET));
     }
 }

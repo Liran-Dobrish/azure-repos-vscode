@@ -34,7 +34,7 @@ export class CommandHelper {
         }
     }
 
-    public static HasError(result: IExecutionResult, errorPattern: string): boolean {
+    public static HasError(result: IExecutionResult | undefined, errorPattern: string | undefined): boolean {
         if (result && result.stderr && errorPattern) {
             return new RegExp(errorPattern, "i").test(result.stderr);
         }
@@ -44,49 +44,53 @@ export class CommandHelper {
     public static ProcessErrors(result: IExecutionResult): void {
         if (result.exitCode) {
             let tfvcErrorCode: string = TfvcErrorCodes.UnknownError;
-            let message: string;
+            let message: string | undefined;
             let messageOptions: IButtonMessageItem[] = [];
 
-            if (/Authentication failed/.test(result.stderr)) {
+            if (result.stderr && /Authentication failed/.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.AuthenticationFailed;
-            } else if (/workspace could not be determined/i.test(result.stderr) ||
-                       /The workspace could not be determined from any argument paths or the current working directory/i.test(result.stderr) || // CLC error
-                       /Unable to determine the source control server/i.test(result.stderr)) { // EXE error
+            } else if (result.stderr && (/workspace could not be determined/i.test(result.stderr) ||
+                /The workspace could not be determined from any argument paths or the current working directory/i.test(result.stderr) || // CLC error
+                /Unable to determine the source control server/i.test(result.stderr))) { // EXE error
                 tfvcErrorCode = TfvcErrorCodes.NotATfvcRepository;
                 message = Strings.NoWorkspaceMappings;
-            } else if (/Repository not found/i.test(result.stderr)) {
+            } else if (result.stderr && /Repository not found/i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.RepositoryNotFound;
-            } else if (/project collection URL to use could not be determined/i.test(result.stderr)) {
+            } else if (result.stderr && /project collection URL to use could not be determined/i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.NotATfvcRepository;
                 message = Strings.NotATfvcRepository;
-            } else if (/Access denied connecting.*authenticating as OAuth/i.test(result.stderr)) {
+            } else if (result.stderr && /Access denied connecting.*authenticating as OAuth/i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.AuthenticationFailed;
                 message = Strings.TokenNotAllScopes;
-            } else if (/'java' is not recognized as an internal or external command/i.test(result.stderr)) {
+            } else if (result.stderr && /'java' is not recognized as an internal or external command/i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.NotFound;
                 message = Strings.TfInitializeFailureError;
-            } else if (/Error occurred during initialization of VM/i.test(result.stdout)) {
+            } else if (result.stdout && /Error occurred during initialization of VM/i.test(result.stdout)) {
                 //Example: "Error occurred during initialization of VM\nCould not reserve enough space for 2097152KB object heap\n"
                 //This one occurs with the error message in stdout!
                 tfvcErrorCode = TfvcErrorCodes.NotFound;
                 message = `${Strings.TfInitializeFailureError} (${Utils.FormatMessage(result.stdout)})`;
-            } else if (/There is no working folder mapping/i.test(result.stderr)) {
+            } else if (result.stderr && /There is no working folder mapping/i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.FileNotInMappings;
-            } else if (/could not be found in your workspace, or you do not have permission to access it./i.test(result.stderr)) {
+            } else if (result.stderr && /could not be found in your workspace, or you do not have permission to access it./i.test(result.stderr)) {
                 tfvcErrorCode = TfvcErrorCodes.FileNotInWorkspace;
-            } else if (/TF30063: You are not authorized to access/i.test(result.stderr)) {
+            } else if (result.stderr && /TF30063: You are not authorized to access/i.test(result.stderr)) {
                 //For now, we're assuming this is an indication of a Server workspace
                 tfvcErrorCode = TfvcErrorCodes.NotAuthorizedToAccess;
                 message = Strings.TfServerWorkspace;
-                messageOptions = [{ title : Strings.LearnMore,
-                                    url : Constants.ServerWorkspaceUrl }];
-            } else if (/TF400017: The local properties table for the local workspace/i.test(result.stderr)) {
+                messageOptions = [{
+                    title: Strings.LearnMore,
+                    url: Constants.ServerWorkspaceUrl
+                }];
+            } else if (result.stderr && /TF400017: The local properties table for the local workspace/i.test(result.stderr)) {
                 //For now, we're assuming this is an indication of a workspace the CLC doesn't know about (but exists locally)
                 tfvcErrorCode = TfvcErrorCodes.WorkspaceNotKnownToClc;
                 message = Strings.ClcCannotAccessWorkspace;
-                messageOptions = [{ title : Strings.MoreDetails,
-                                    url : Constants.WorkspaceNotDetectedByClcUrl,
-                                    telemetryId: TfvcTelemetryEvents.ClcCannotAccessWorkspace }];
+                messageOptions = [{
+                    title: Strings.MoreDetails,
+                    url: Constants.WorkspaceNotDetectedByClcUrl,
+                    telemetryId: TfvcTelemetryEvents.ClcCannotAccessWorkspace
+                }];
             }
 
             //Log any information we receive via either stderr or stdout
@@ -124,14 +128,14 @@ export class CommandHelper {
         return "";
     }
 
-    public static GetNewLineCharacter(stdout: string): string {
+    public static GetNewLineCharacter(stdout: string | undefined): string {
         if (stdout && /\r\n/.test(stdout)) {
             return "\r\n";
         }
         return "\n";
     }
 
-    public static SplitIntoLines(stdout: string, skipWarnings?: boolean, filterEmptyLines?: boolean): string[] {
+    public static SplitIntoLines(stdout?: string, skipWarnings?: boolean, filterEmptyLines?: boolean): string[] {
         if (!stdout) {
             return [];
         }
@@ -152,7 +156,7 @@ export class CommandHelper {
         return lines;
     }
 
-    public static async ParseXml(xml: string): Promise<any> {
+    public static async ParseXml(xml?: string): Promise<any> {
         if (!xml) {
             return;
         }
@@ -171,10 +175,10 @@ export class CommandHelper {
                         resolve(result);
                     }
                 });
-            });
+        });
     }
 
-    public static TrimToXml(xml: string): string {
+    public static TrimToXml(xml?: string): string {
         if (xml) {
             const start: number = xml.indexOf("<?xml");
             const end: number = xml.lastIndexOf(">");
@@ -182,7 +186,7 @@ export class CommandHelper {
                 return xml.slice(start, end + 1);
             }
         }
-        return xml;
+        return "";
     }
 
     private static normalizeName(name: string): string {

@@ -12,10 +12,12 @@ import { CredentialManager } from "../helpers/credentialmanager";
 import { UrlBuilder } from "../helpers/urlbuilder";
 
 export class BuildService {
-    private _buildApi: IBuildApi;
+    private _buildApi!: IBuildApi;
 
     constructor(context: TeamServerContext) {
-        this._buildApi = new WebApi(context.RepoInfo.CollectionUrl, CredentialManager.GetCredentialHandler()).getBuildApi();
+        new WebApi(context.RepoInfo!.CollectionUrl!, CredentialManager.GetCredentialHandler()).getBuildApi().then((api: IBuildApi) => {
+            this._buildApi = api;
+        });
     }
 
     //Get the latest build id and badge of a build definition based on current project, repo and branch
@@ -24,8 +26,8 @@ export class BuildService {
     }
 
     //Get extra details of a build based on the build id
-    public async GetBuildById(buildId: number): Promise<Build> {
-        return await this._buildApi.getBuild(buildId);
+    public async GetBuildById(teamProject: string, buildId: number): Promise<Build> {
+        return await this._buildApi.getBuild(teamProject, buildId);
     };
 
     //Returns the build definitions (regardless of type) for the team project
@@ -36,16 +38,16 @@ export class BuildService {
     //Returns the most recent 100 completed builds
     public async GetBuilds(teamProject: string): Promise<Build[]> {
         /* tslint:disable:no-null-keyword */
-        return await this._buildApi.getBuilds(teamProject, null, null, null, null, null, null, null, BuildStatus.Completed, null, null, null,
-                                              100, null, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
+        return await this._buildApi.getBuilds(teamProject, undefined, undefined, undefined, undefined, undefined, undefined, undefined, BuildStatus.Completed, undefined, undefined, undefined,
+            100, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
         /* tslint:enable:no-null-keyword */
     }
 
     //Returns the "latest" build for this definition
     public async GetBuildsByDefinitionId(teamProject: string, definitionId: number): Promise<Build[]> {
         /* tslint:disable:no-null-keyword */
-        return await this._buildApi.getBuilds(teamProject, [ definitionId ], null, null, null, null, null, null, null, null, null, null,
-                                              1, null, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
+        return await this._buildApi.getBuilds(teamProject, [definitionId], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
+            1, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
         /* tslint:enable:no-null-keyword */
     }
 

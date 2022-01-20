@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../../contexts/servercontext";
+import { TeamServerContext } from "../../contexts/servercontext";
 import { IArgumentProvider, IExecutionResult, ITfvcCommand } from "../interfaces";
 import { ArgumentBuilder } from "./argumentbuilder";
 import { CommandHelper } from "./commandhelper";
@@ -19,8 +19,8 @@ import { CommandHelper } from "./commandhelper";
 export class Checkin implements ITfvcCommand<string> {
     private _serverContext: TeamServerContext;
     private _files: string[];
-    private _comment: string;
-    private _workItemIds: number[];
+    private _comment: string | undefined;
+    private _workItemIds: number[] | undefined;
 
     public constructor(serverContext: TeamServerContext, files: string[], comment?: string, workItemIds?: number[]) {
         CommandHelper.RequireStringArrayArgument(files, "files");
@@ -48,11 +48,17 @@ export class Checkin implements ITfvcCommand<string> {
 
     private getComment(): string {
         // replace newlines with spaces
-        return this._comment.replace(/\r\n/g, " ").replace(/\n/g, " ");
+        if (this._comment) {
+            return this._comment.replace(/\r\n/g, " ").replace(/\n/g, " ");
+        }
+        return "";
     }
 
     private getAssociatedWorkItems(): string {
-        return this._workItemIds.join(",");
+        if (this._workItemIds) {
+            return this._workItemIds.join(",");
+        }
+        return "";
     }
 
     /**
@@ -78,11 +84,13 @@ export class Checkin implements ITfvcCommand<string> {
      * <p/>
      * No files checked in.
      */
-    public async ParseOutput(executionResult: IExecutionResult): Promise<string> {
+    public async ParseOutput(executionResult: IExecutionResult): Promise<string | undefined> {
         if (executionResult.exitCode === 100) {
             CommandHelper.ProcessErrors(executionResult);
         } else {
-            return CommandHelper.GetChangesetNumber(executionResult.stdout);
+            if (executionResult.stdout) {
+                return CommandHelper.GetChangesetNumber(executionResult.stdout);
+            }
         }
     }
 
@@ -102,7 +110,7 @@ export class Checkin implements ITfvcCommand<string> {
         return this.GetOptions();
     }
 
-    public async ParseExeOutput(executionResult: IExecutionResult): Promise<string> {
+    public async ParseExeOutput(executionResult: IExecutionResult): Promise<string | undefined> {
         return await this.ParseOutput(executionResult);
     }
 }

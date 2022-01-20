@@ -4,8 +4,10 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { GitPullRequest, GitPullRequestSearchCriteria, GitRepository,
-         PullRequestAsyncStatus, PullRequestStatus} from "azure-devops-node-api/interfaces/GitInterfaces";
+import {
+    GitPullRequest, GitPullRequestSearchCriteria, GitRepository,
+    PullRequestAsyncStatus, PullRequestStatus
+} from "azure-devops-node-api/interfaces/GitInterfaces";
 import { IGitApi } from "azure-devops-node-api/GitApi";
 import { WebApi } from "azure-devops-node-api/WebApi";
 import { TeamServerContext } from "../contexts/servercontext";
@@ -13,7 +15,7 @@ import { CredentialManager } from "../helpers/credentialmanager";
 import { UrlBuilder } from "../helpers/urlbuilder";
 
 export class GitVcService {
-    private _gitApi: IGitApi;
+    private _gitApi: IGitApi | undefined;
 
     private static REVIEWER_VOTE_NO_RESPONSE: number = 0;
     private static REVIEWER_VOTE_APPROVED_WITH_SUGGESTIONS: number = 5;
@@ -22,20 +24,24 @@ export class GitVcService {
     private static REVIEWER_VOTE_REJECTED: number = -10;
 
     constructor(context: TeamServerContext) {
-        this._gitApi = new WebApi(context.RepoInfo.CollectionUrl, CredentialManager.GetCredentialHandler()).getGitApi();
+        new WebApi(context.RepoInfo!.CollectionUrl!, CredentialManager.GetCredentialHandler()).getGitApi().then((api: IGitApi) => {
+            this._gitApi = api;
+        });
     }
 
     //Returns a Promise containing an array of GitPullRequest objectss for the creator and repository
     //If creatorId is undefined, all pull requests will be returned
     public async GetPullRequests(repositoryId: string, creatorId?: string, reviewerId?: string, status?: PullRequestStatus): Promise<GitPullRequest[]> {
-        const criteria: GitPullRequestSearchCriteria = { creatorId: creatorId, includeLinks: false, repositoryId: repositoryId, reviewerId: reviewerId,
-                                                       sourceRefName: undefined, status: status, targetRefName: undefined };
-        return await this._gitApi.getPullRequests(repositoryId, criteria);
+        const criteria: GitPullRequestSearchCriteria = {
+            creatorId: creatorId, includeLinks: false, repositoryId: repositoryId, reviewerId: reviewerId,
+            sourceRefName: undefined, status: status, targetRefName: undefined
+        };
+        return await this._gitApi!.getPullRequests(repositoryId, criteria);
     }
 
     //Returns a Promise containing an array of GitRepository objects for the project
     public async GetRepositories(project: string): Promise<GitRepository[]> {
-        return await this._gitApi.getRepositories(project, false);
+        return await this._gitApi!.getRepositories(project, false);
     }
 
     //Construct the url to the file blame information
@@ -86,18 +92,18 @@ export class GitVcService {
     //Returns the 'score' of the pull request so the client knows if the PR failed,
     //didn't receive any reponses, succeeded or is waiting for the author.
     public static GetPullRequestScore(pullRequest: GitPullRequest): PullRequestScore {
-        const mergeStatus: PullRequestAsyncStatus = pullRequest.mergeStatus;
+        const mergeStatus: PullRequestAsyncStatus = pullRequest.mergeStatus!;
         if (mergeStatus === PullRequestAsyncStatus.Conflicts
             || mergeStatus === PullRequestAsyncStatus.Failure
             || mergeStatus === PullRequestAsyncStatus.RejectedByPolicy) {
-                return PullRequestScore.Failed;
+            return PullRequestScore.Failed;
         }
 
         let lowestVote: number = 0;
         let highestVote: number = 0;
         if (pullRequest.reviewers !== undefined && pullRequest.reviewers.length > 0) {
             pullRequest.reviewers.forEach((reviewer) => {
-                const vote: number = reviewer.vote;
+                const vote: number = reviewer.vote!;
                 if (vote < lowestVote) {
                     lowestVote = vote;
                 }
@@ -135,3 +141,5 @@ export enum PullRequestScore {
     Succeeded = 2,
     Waiting = 3
 }
+
+

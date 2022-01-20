@@ -10,14 +10,14 @@ import { Logger } from "../helpers/logger";
 import { ISettings } from "../helpers/settings";
 
 export class ExternalContext implements IRepositoryContext {
-    private _folder: string;
-    private _remoteUrl: string;
+    private _folder: string | undefined;
+    private _remoteUrl: string = "";
     private _isSsh: boolean = false;
     private _isTeamServicesUrl: boolean = false;
     private _isTeamFoundationServer: boolean = false;
-    private _teamProjectName: string;
+    private _teamProjectName: string = "";
 
-    constructor(rootPath: string) {
+    constructor(rootPath: string | undefined) {
         //The passed in path is the workspace.rootPath (which could be a sub-folder)
         this._folder = rootPath;
     }
@@ -47,15 +47,15 @@ export class ExternalContext implements IRepositoryContext {
     }
 
     // Git implementation
-    public get CurrentBranch(): string {
+    public get CurrentBranch(): string | undefined {
         return undefined;
     }
-    public get CurrentRef(): string {
+    public get CurrentRef(): string | undefined {
         return undefined;
     }
 
     // IRepositoryContext implementation
-    public get RepoFolder(): string {
+    public get RepoFolder(): string| undefined {
         return this._folder;
     }
     public get IsSsh(): boolean {
@@ -70,7 +70,7 @@ export class ExternalContext implements IRepositoryContext {
     public get RemoteUrl(): string {
         return this._remoteUrl;
     }
-    public get RepositoryParentFolder(): string {
+    public get RepositoryParentFolder(): string | undefined {
         return undefined;
     }
     public get Type(): RepositoryType {

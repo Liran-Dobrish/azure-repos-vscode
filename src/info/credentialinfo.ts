@@ -8,7 +8,7 @@ import { IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBase
 import { ExtensionRequestHandler } from "./extensionrequesthandler";
 
 export class CredentialInfo {
-    private _credentialHandler: ExtensionRequestHandler;
+    private _credentialHandler?: ExtensionRequestHandler;
 
     constructor(accessToken: string);
     constructor(username: string, password?: string);
@@ -25,28 +25,31 @@ export class CredentialInfo {
         }
     }
 
-    public get CredentialHandler() : IRequestHandler {
-        return this._credentialHandler;
+    public get CredentialHandler(): IRequestHandler | undefined {
+        if (this._credentialHandler) {
+            return this._credentialHandler;
+        }
+        return undefined;
     }
 
-    public set CredentialHandler(handler : IRequestHandler) {
+    public set CredentialHandler(handler: IRequestHandler | undefined) {
         this._credentialHandler = <ExtensionRequestHandler>handler;
     }
 
-    public get Domain(): string {
-        return this._credentialHandler.Domain;
+    public get Domain(): string | undefined {
+        return this._credentialHandler?.Domain;
     }
 
-    public get Username(): string {
-        return this._credentialHandler.Username;
+    public get Username(): string | undefined {
+        return this._credentialHandler?.Username;
     }
 
-    public get Password(): string {
-        return this._credentialHandler.Password;
+    public get Password(): string | undefined {
+        return this._credentialHandler?.Password;
     }
 
-    public get Workstation(): string {
-        return this._credentialHandler.Workstation;
+    public get Workstation(): string | undefined {
+        return this._credentialHandler?.Workstation;
     }
 
 }

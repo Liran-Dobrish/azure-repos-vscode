@@ -12,7 +12,7 @@ import { RepoUtils } from "../helpers/repoutils";
 import { Strings } from "../helpers/strings";
 import { IRepositoryContext, RepositoryType } from "../contexts/repositorycontext";
 import { TeamServicesApi } from "./teamservicesclient";
-import { TfsCatalogSoapClient } from "./tfscatalogsoapclient";
+//import { TfsCatalogSoapClient } from "./tfscatalogsoapclient";
 import { RepositoryInfo } from "../info/repositoryinfo";
 import { TfvcContext } from "../contexts/tfvccontext";
 import { Telemetry } from "../services/telemetry";
@@ -46,7 +46,7 @@ export class RepositoryInfoClient {
         } else if (this._repoContext.Type === RepositoryType.TFVC || this._repoContext.Type === RepositoryType.EXTERNAL) {
             Logger.LogDebug(`Getting repository information for a TFVC repository at ${this._repoContext.RemoteUrl}`);
             //For TFVC, the teamProjectName is retrieved by tf.cmd and set on the context
-            const teamProjectName: string = this._repoContext.TeamProjectName;
+            const teamProjectName: string = this._repoContext.TeamProjectName!;
             this.verifyRepoInfo(this._repoContext.RemoteUrl, `RemoteUrl was undefined for a ${RepositoryType[this._repoContext.Type]} repo`);
             repositoryInfo = new RepositoryInfo(this._repoContext.RemoteUrl);
 
@@ -59,7 +59,7 @@ export class RepositoryInfoClient {
                 // the collection by the account name. So, we just need to grab the account name and use that to
                 // recreate the url.
                 // If validation fails, we return false.
-                collectionName = repositoryInfo.Account;
+                collectionName = repositoryInfo.Account!;
                 if (RepoUtils.IsTeamFoundationServicesAzureRepo(this._repoContext.RemoteUrl)) {
                     serverUrl = `https://${repositoryInfo.Host}/${repositoryInfo.Account}/`;
                 } else {
@@ -110,29 +110,31 @@ export class RepositoryInfoClient {
                 Logger.LogDebug(`Using REST to get the project collection information`);
                 collection = await coreApiClient.GetProjectCollection(serverUrl, collectionName);
             } else {
-                Logger.LogDebug(`Using SOAP to get the project collection information`);
-                // When called on-prem without admin privileges: Error: Failed Request: Forbidden(403) - Access Denied: Jeff Young (TFS) needs the following permission(s) to perform this action: Edit instance-level information
-                const tfsClient: TfsCatalogSoapClient = new TfsCatalogSoapClient(serverUrl, [this._handler]);
-                collection = await tfsClient.GetProjectCollection(collectionName);
-                if (!collection) {
-                    const error: string = `Using SOAP, could not find a project collection object for ${collectionName} at ${serverUrl}`;
-                    Logger.LogDebug(error);
-                    throw new Error(error);
-                }
+                Logger.LogDebug(`disabled support for Soap`);
+                
+                // Logger.LogDebug(`Using SOAP to get the project collection information`);
+                // // When called on-prem without admin privileges: Error: Failed Request: Forbidden(403) - Access Denied: Jeff Young (TFS) needs the following permission(s) to perform this action: Edit instance-level information
+                // const tfsClient: TfsCatalogSoapClient = new TfsCatalogSoapClient(serverUrl, [this._handler]);
+                // collection = await tfsClient.GetProjectCollection(collectionName);
+                // if (!collection) {
+                //     const error: string = `Using SOAP, could not find a project collection object for ${collectionName} at ${serverUrl}`;
+                //     Logger.LogDebug(error);
+                //     throw new Error(error);
+                // }
             }
-            Logger.LogDebug(`Found a project collection for url: '${serverUrl}' and collection name: '${collection.name}'.`);
+            Logger.LogDebug(`Found a project collection for url: '${serverUrl}' and collection name: '${collection!.name}'.`);
 
-            Logger.LogDebug(`Getting team project...  Url: '${serverUrl}', collection name: '${collection.name}', and project: '${teamProjectName}'`);
+            Logger.LogDebug(`Getting team project...  Url: '${serverUrl}', collection name: '${collection!.name}', and project: '${teamProjectName}'`);
             //For a Team Services collection, ignore the collectionName
-            const resolvedRemoteUrl: string = url.resolve(serverUrl, isTeamServices ? "" : collection.name);
+            const resolvedRemoteUrl: string = url.resolve(serverUrl, isTeamServices! ? "" : collection!.name!);
 
             //Delay the check for a teamProjectName (don't fail here).  If we don't have one, that's OK for TFVC
             //functionality.  We need to disable Team Services functionality if we can't find a team project later.
             const project: TeamProject = await this.getProjectFromServer(coreApiClient, resolvedRemoteUrl, teamProjectName);
-            Logger.LogDebug(`Found a team project for url: '${serverUrl}', collection name: '${collection.name}', and project id: '${project.id}'`);
+            Logger.LogDebug(`Found a team project for url: '${serverUrl}', collection name: '${collection!.name}', and project id: '${project.id}'`);
 
             //Now, create the JSON blob to send to new RepositoryInfo(repoInfo);
-            repoInfo = this.getTfvcRepoInfoBlob(serverUrl, collection.id, collection.name, collection.url, project.id, project.name, project.description, project.url);
+            repoInfo = this.getTfvcRepoInfoBlob(serverUrl, collection!.id!, collection!.name!, collection!.url!, project.id!, project.name!, project.description!, project.url!);
             Logger.LogDebug(`Repository information blob:`);
             Logger.LogObject(repoInfo);
             this.verifyRepoInfo(repoInfo, `RepoInfo was undefined for a ${RepositoryType[this._repoContext.Type]} repo`);
@@ -140,7 +142,7 @@ export class RepositoryInfoClient {
             Logger.LogDebug(`Finished getting repository information for the repository at ${this._repoContext.RemoteUrl}`);
             return repositoryInfo;
         }
-        return repositoryInfo;
+        return repositoryInfo!;
     }
 
     //Using to try and track down users in the scenario where repoInfo is undefined
@@ -151,7 +153,7 @@ export class RepositoryInfoClient {
     }
 
     private splitTfvcCollectionUrl(collectionUrl: string): string[] {
-        const result: string[] = [ , ];
+        const result: string[] = [];
         if (!collectionUrl) {
             return result;
         }
@@ -189,7 +191,7 @@ export class RepositoryInfoClient {
 
     //RepositoryInfo uses repository.remoteUrl to set up accountUrl
     private getTfvcRepoInfoBlob(serverUrl: string, collectionId: string, collectionName: string, collectionUrl: string,
-                                projectId: string, projectName: string, projectDesc: string, projectUrl: string): any {
+        projectId: string, projectName: string, projectDesc: string, projectUrl: string): any {
         return {
             serverUrl: serverUrl,
             collection: {
@@ -223,7 +225,7 @@ export class RepositoryInfoClient {
             const repositoryClient: TeamServicesApi = new TeamServicesApi(serverUrl, [this._handler]);
             await repositoryClient.validateTfvcCollectionUrl();
             return true;
-        } catch (err) {
+        } catch (err: any) {
             if (err.statusCode === 404) {
                 return false;
             } else {

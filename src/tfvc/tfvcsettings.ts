@@ -11,9 +11,9 @@ import { BaseSettings } from "../helpers/settings";
 //that if we take a transitive reference to VSCode, the unit tests for the commands we use this
 //class from will no longer run.
 export class TfvcSettings extends BaseSettings {
-    private _location: string;
-    private _proxy: string;
-    private _restrictWorkspace: boolean;
+    private _location: string | undefined;
+    private _proxy: string | undefined;
+    private _restrictWorkspace: boolean | undefined;
 
     constructor() {
         super();
@@ -31,15 +31,15 @@ export class TfvcSettings extends BaseSettings {
         this._restrictWorkspace = this.readSetting<boolean>(SettingNames.RestrictWorkspace, false);
     }
 
-    public get Location(): string {
+    public get Location(): string | undefined {
         return this._location;
     }
 
-    public get Proxy(): string {
+    public get Proxy(): string | undefined {
         return this._proxy;
     }
 
-    public get RestrictWorkspace(): boolean {
+    public get RestrictWorkspace(): boolean | undefined {
         return this._restrictWorkspace;
     }
 }

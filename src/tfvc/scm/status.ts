@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-export function GetStatuses(statusText: string): Status[] {
+export function GetStatuses(statusText: string | undefined): Status[] {
     const result: Status[] = [];
     if (!statusText) {
         return result;

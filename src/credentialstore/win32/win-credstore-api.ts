@@ -26,9 +26,9 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         }
     }
 
-    public GetCredential(service: string) : Q.Promise<Credential> {
+    public GetCredential(service: string): Q.Promise<Credential> {
         const deferred: Q.Deferred<Credential> = Q.defer<Credential>();
-        let credential: Credential;
+        let credential: Credential | undefined;
 
         //TODO: Why not just have listCredentials send back the ones I want based on (optional) service?
         this.listCredentials().then((credentials) => {
@@ -49,12 +49,12 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public SetCredential(service: string, username: string, password: any) : Q.Promise<void> {
+    public SetCredential(service: string, username: string, password: any): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
         const targetName: string = this.createTargetName(service, username);
 
         // Here, `password` is either the password or pat
-        wincredstore.set(targetName, password, function(err) {
+        wincredstore.set(targetName, password, function (err: any) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -64,11 +64,11 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public RemoveCredential(service: string) : Q.Promise<void> {
+    public RemoveCredential(service: string): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
         const targetName: string = this.createTargetName(service, "*");
 
-        wincredstore.remove(targetName, function(err) {
+        wincredstore.remove(targetName, function (err: any) {
             if (err) {
                 if (err.code !== undefined && err.code === 1168) {
                     //code 1168: not found
@@ -85,9 +85,9 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
     }
 
     // Adding for test purposes (to ensure a particular credential doesn't exist)
-    public getCredentialByName(service: string, username: string) : Q.Promise<Credential> {
+    public getCredentialByName(service: string, username: string): Q.Promise<Credential> {
         const deferred: Q.Deferred<Credential> = Q.defer<Credential>();
-        let credential: Credential;
+        let credential: Credential | undefined;
 
         this.listCredentials().then((credentials) => {
             //Spin through the returned credentials to ensure I got the one I want based on passed in 'service'
@@ -107,11 +107,11 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public removeCredentialByName(service: string, username: string) : Q.Promise<void> {
+    public removeCredentialByName(service: string, username: string): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
         const targetName: string = this.createTargetName(service, username);
 
-        wincredstore.remove(targetName, function(err) {
+        wincredstore.remove(targetName, function (err: any) {
             if (err) {
                 if (err.code !== undefined && err.code === 1168) {
                     //code 1168: not found
@@ -127,7 +127,7 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    private createCredential(cred: any) : Credential {
+    private createCredential(cred: any): Credential {
         const password: string = new Buffer(cred.credential, "hex").toString("utf8");
         // http://servername:port|\\domain\username
         const segments: Array<string> = cred.targetName.split(WindowsCredentialStoreApi.separator);
@@ -136,22 +136,22 @@ export class WindowsCredentialStoreApi implements ICredentialStore {
         return new Credential(service, username, password);
     }
 
-    private createTargetName(service: string, username: string) : string {
+    private createTargetName(service: string, username: string): string {
         return service + WindowsCredentialStoreApi.separator + username;
     }
 
-    private listCredentials() : Q.Promise<Array<any>> {
+    private listCredentials(): Q.Promise<Array<any>> {
         const deferred: Q.Deferred<Array<any>> = Q.defer<Array<any>>();
         const credentials: Array<any> = [];
 
         const stream = wincredstore.list();
-        stream.on("data", (cred) => {
+        stream.on("data", (cred: any) => {
             credentials.push(cred);
         });
         stream.on("end", () => {
             deferred.resolve(credentials);
         });
-        stream.on("error", (error) => {
+        stream.on("error", (error: any) => {
             console.log(error);
             deferred.reject(error);
         });

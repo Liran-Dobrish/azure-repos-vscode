@@ -15,25 +15,25 @@ import { TeamServerContext } from "../../src/contexts/servercontext";
 import { BuildService } from "../../src/services/build";
 import { WellKnownRepositoryTypes } from "../../src/helpers/constants";
 
-describe("BuildService-Integration", function() {
+describe("BuildService-Integration", function () {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
     const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
 
-    before(function() {
+    before(function () {
         UserAgentProvider.VSCodeVersion = "0.0.0";
         return credentialManager.StoreCredentials(ctx, TestSettings.AccountUser, TestSettings.Password);
     });
-    beforeEach(function() {
+    beforeEach(function () {
         return credentialManager.GetCredentials(ctx);
     });
     // afterEach(function() { });
-    after(function() {
+    after(function () {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    it("should verify BuildService.GetBuildDefinitions", async function() {
+    it("should verify BuildService.GetBuildDefinitions", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -48,7 +48,7 @@ describe("BuildService-Integration", function() {
         expect(definitions.length).to.be.at.least(1);
     });
 
-    it("should verify BuildService.GetBuildById", async function() {
+    it("should verify BuildService.GetBuildById", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -57,13 +57,13 @@ describe("BuildService-Integration", function() {
         ctx.UserInfo = undefined;
 
         const svc: BuildService = new BuildService(ctx);
-        const build: Build = await svc.GetBuildById(TestSettings.BuildId);
+        const build: Build = await svc.GetBuildById(ctx.RepoInfo.TeamProject, TestSettings.BuildId);
         assert.isNotNull(build, "build was null when it shouldn't have been");
         //console.log(definitions.length);
         expect(build.buildNumber).to.equal(TestSettings.BuildId.toString());
     });
 
-    it("should verify BuildService.GetBuilds", async function() {
+    it("should verify BuildService.GetBuilds", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -78,7 +78,7 @@ describe("BuildService-Integration", function() {
         expect(builds.length).to.be.at.least(1);
     });
 
-    it("should verify BuildService.GetBuildsByDefinitionId", async function() {
+    it("should verify BuildService.GetBuildsByDefinitionId", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -93,7 +93,7 @@ describe("BuildService-Integration", function() {
         expect(builds.length).to.equal(1);
     });
 
-    it("should verify BuildService.GetBuildBadge", async function() {
+    it("should verify BuildService.GetBuildBadge", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);

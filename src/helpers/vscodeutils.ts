@@ -11,18 +11,18 @@ import { Utils } from "./utils";
 import { Telemetry } from "../services/telemetry";
 
 export class BaseQuickPickItem implements QuickPickItem {
-    label: string;
-    description: string;
-    id: string;
+    label: string = "";
+    description: string | undefined = "";
+    id: string | undefined = "";
 }
 
 export class WorkItemQueryQuickPickItem extends BaseQuickPickItem {
-    wiql: string;
+    wiql: string | undefined;
 }
 
 //Any changes to ButtonMessageItem must be reflected in IButtonMessageItem
 export class ButtonMessageItem implements MessageItem, IButtonMessageItem {
-    title: string;
+    title: string = "";
     url?: string;
     command?: string;
     telemetryId?: string;
@@ -30,7 +30,7 @@ export class ButtonMessageItem implements MessageItem, IButtonMessageItem {
 
 export class VsCodeUtils {
     //Returns the trimmed value if there's an activeTextEditor and a selection
-    public static GetActiveSelection(): string {
+    public static GetActiveSelection(): string | undefined {
         const editor = window.activeTextEditor;
         if (!editor) {
             return undefined;
@@ -48,27 +48,27 @@ export class VsCodeUtils {
         return value;
     }
 
-    public static async ShowErrorMessage(message: string, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem> {
+    public static async ShowErrorMessage(message: string, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem | undefined> {
         return this.showMessage(message, MessageTypes.Error, ...urlMessageItem);
     }
 
-    public static async ShowInfoMessage(message: string, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem> {
+    public static async ShowInfoMessage(message: string, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem | undefined> {
         return this.showMessage(message, MessageTypes.Info, ...urlMessageItem);
     }
 
-    public static async ShowWarningMessage(message: string): Promise<IButtonMessageItem> {
+    public static async ShowWarningMessage(message: string): Promise<IButtonMessageItem | undefined> {
         return this.showMessage(message, MessageTypes.Warn);
     }
 
     //We have a single method to display either simple messages (with no options) or messages
     //that have multiple buttons that can run commands, open URLs, send telemetry, etc.
-    private static async showMessage(message: string, type: MessageTypes, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem> {
+    private static async showMessage(message: string, type: MessageTypes, ...urlMessageItem: IButtonMessageItem[]): Promise<IButtonMessageItem | undefined> {
         //The following "cast" allows us to pass our own type around (and not reference "vscode" via an import)
         const messageItems: ButtonMessageItem[] = <ButtonMessageItem[]>urlMessageItem;
         const messageToDisplay: string = `(${Constants.ExtensionName}) ${Utils.FormatMessage(message)}`;
 
         //Use the typescript spread operator to pass the rest parameter to showErrorMessage
-        let chosenItem: IButtonMessageItem;
+        let chosenItem: IButtonMessageItem | undefined;
         switch (type) {
             case MessageTypes.Error:
                 chosenItem = await window.showErrorMessage(messageToDisplay, ...messageItems);
@@ -94,6 +94,8 @@ export class VsCodeUtils {
                 commands.executeCommand<void>(chosenItem.command);
             }
         }
-        return chosenItem;
+        else {
+            return undefined;
+        }
     }
 }

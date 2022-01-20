@@ -31,7 +31,7 @@ export class CredentialManager {
 
         this.getCredentials(context).then((credInfo: CredentialInfo) => {
             if (credInfo !== undefined) {
-                CredentialManager._credentialHandler = credInfo.CredentialHandler;
+                CredentialManager._credentialHandler = credInfo.CredentialHandler!;
                 deferred.resolve(credInfo);
             } else {
                 deferred.resolve(undefined);
@@ -69,9 +69,9 @@ export class CredentialManager {
 
         this._credentialStore.GetCredential(CredentialManager.getKeyFromContext(context)).then((cred) => {
             if (cred !== undefined) {
-                if (context.RepoInfo.IsTeamServices) {
-                    deferred.resolve(new CredentialInfo(cred.Password));
-                } else if (context.RepoInfo.IsTeamFoundationServer) {
+                if (context.RepoInfo!.IsTeamServices) {
+                    deferred.resolve(new CredentialInfo(cred.Password!));
+                } else if (context.RepoInfo!.IsTeamFoundationServer) {
                     let domain: string;
                     let user: string = cred.Username;
                     const pair: string[] = user.split("\\");
@@ -79,7 +79,7 @@ export class CredentialManager {
                         domain = pair[0];
                         user = pair[pair.length - 1];
                     }
-                    deferred.resolve(new CredentialInfo(user, cred.Password, domain, /*workstation*/ undefined));
+                    deferred.resolve(new CredentialInfo(user, cred.Password, domain!, /*workstation*/ undefined));
                 }
             } else {
                 deferred.resolve(undefined);
@@ -91,9 +91,9 @@ export class CredentialManager {
     }
 
     private static getKeyFromContext(context:TeamServerContext): string {
-        if (RepoUtils.IsTeamFoundationServicesAzureRepo(context.RepoInfo.AccountUrl)) {
-            return context.RepoInfo.Host + "/" + context.RepoInfo.Account;
+        if (RepoUtils.IsTeamFoundationServicesAzureRepo(context.RepoInfo!.AccountUrl!)) {
+            return context.RepoInfo!.Host + "/" + context.RepoInfo!.Account;
         }
-        return context.RepoInfo.Host;
+        return context.RepoInfo!.Host;
     }
 }

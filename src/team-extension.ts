@@ -24,17 +24,17 @@ import * as os from "os";
 import * as util from "util";
 import * as vscode from "vscode";
 
-export class TeamExtension  {
+export class TeamExtension {
     private _manager: ExtensionManager;
-    private _buildStatusBarItem: StatusBarItem;
-    private _pullRequestStatusBarItem: StatusBarItem;
-    private _pinnedQueryStatusBarItem: StatusBarItem;
-    private _buildClient: BuildClient;
-    private _gitClient: GitClient;
-    private _witClient: WitClient;
-    private _pinnedQuerySettings: PinnedQuerySettings;
-    private _pollingTimer: NodeJS.Timer;
-    private _initialTimer: NodeJS.Timer;
+    private _buildStatusBarItem: StatusBarItem | undefined;
+    private _pullRequestStatusBarItem: StatusBarItem | undefined;
+    private _pinnedQueryStatusBarItem: StatusBarItem | undefined;
+    private _buildClient: BuildClient | undefined;
+    private _gitClient: GitClient | undefined;
+    private _witClient: WitClient | undefined;
+    private _pinnedQuerySettings: PinnedQuerySettings | undefined;
+    private _pollingTimer: NodeJS.Timer | undefined;
+    private _initialTimer: NodeJS.Timer | undefined;
     private _signedOut: boolean = false;
     private _signingIn: boolean = false;
 
@@ -45,7 +45,7 @@ export class TeamExtension  {
     //Gets any available build status information and adds it to the status bar
     public DisplayCurrentBranchBuildStatus(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            this._buildClient.DisplayCurrentBuildStatus(this._manager.RepoContext, false, this._manager.Settings.BuildDefinitionId);
+            this._buildClient?.DisplayCurrentBuildStatus(this._manager.RepoContext!, false, this._manager.Settings!.BuildDefinitionId);
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -71,16 +71,16 @@ export class TeamExtension  {
     //Prompts user for either manual or device-flow mechanism for acquiring a personal access token.
     //If manual, we provide the same experience as we always have
     //If device-flow (automatic), we provide the new 'device flow' experience
-    private async requestPersonalAccessToken(): Promise<string> {
+    private async requestPersonalAccessToken(): Promise<string | undefined> {
         const choices: BaseQuickPickItem[] = [];
         choices.push({ label: Strings.DeviceFlowManualPrompt, description: undefined, id: DeviceFlowConstants.ManualOption });
         choices.push({ label: Strings.DeviceFlowPrompt, description: undefined, id: DeviceFlowConstants.DeviceFlowOption });
 
-        const choice: BaseQuickPickItem = await window.showQuickPick(choices, { matchOnDescription: false, placeHolder: Strings.DeviceFlowPlaceholder });
+        const choice: BaseQuickPickItem | undefined = await window.showQuickPick(choices, { matchOnDescription: false, placeHolder: Strings.DeviceFlowPlaceholder });
         if (choice) {
             if (choice.id === DeviceFlowConstants.ManualOption) {
                 Logger.LogDebug(`Manual personal access token option chosen.`);
-                const token: string = await window.showInputBox({ value: "", prompt: `${Strings.ProvideAccessToken} (${this._manager.ServerContext.RepoInfo.Account})`, placeHolder: "", password: true });
+                const token: string | undefined = await window.showInputBox({ value: "", prompt: `${Strings.ProvideAccessToken} (${this._manager.ServerContext?.RepoInfo?.Account})`, placeHolder: "", password: true });
                 if (token) {
                     Telemetry.SendEvent(TelemetryEvents.ManualPat);
                 }
@@ -93,12 +93,12 @@ export class TeamExtension  {
                     userAgent: `${UserAgentProvider.UserAgent}`
                 };
                 const tokenOptions: IDeviceFlowTokenOptions = {
-                    tokenDescription: `Azure Repos VSCode extension: ${this._manager.ServerContext.RepoInfo.AccountUrl} on ${os.hostname()}`
+                    tokenDescription: `Azure Repos VSCode extension: ${this._manager.ServerContext?.RepoInfo?.AccountUrl} on ${os.hostname()}`
                 };
-                const dfa: DeviceFlowAuthenticator = new DeviceFlowAuthenticator(this._manager.ServerContext.RepoInfo.AccountUrl, authOptions, tokenOptions);
+                const dfa: DeviceFlowAuthenticator = new DeviceFlowAuthenticator(this._manager.ServerContext?.RepoInfo?.AccountUrl!, authOptions, tokenOptions);
                 const details: DeviceFlowDetails = await dfa.GetDeviceFlowDetails();
                 //To sign in, use a web browser to open the page https://aka.ms/devicelogin and enter the code F3VXCTH2L to authenticate.
-                const value: string = await window.showInputBox({ value: details.UserCode, prompt: `${Strings.DeviceFlowCopyCode} (${details.VerificationUrl})`, placeHolder: undefined, password: false });
+                const value: string | undefined = await window.showInputBox({ value: details.UserCode, prompt: `${Strings.DeviceFlowCopyCode} (${details.VerificationUrl})`, placeHolder: undefined, password: false });
                 if (value) {
                     //At this point, user has no way to cancel until our timeout expires. Before this point, they could
                     //cancel out of the showInputBox. After that, they will need to wait for the automatic cancel to occur.
@@ -148,19 +148,19 @@ export class TeamExtension  {
             this._signedOut = false;
             Logger.LogDebug(`Starting sign in process`);
             if (this._manager.ServerContext.RepoInfo.IsTeamFoundationServer === true) {
-                const defaultUsername : string = this.getDefaultUsername();
-                const username: string = await window.showInputBox({ value: defaultUsername || "", prompt: Strings.ProvideUsername + " (" + this._manager.ServerContext.RepoInfo.Account + ")", placeHolder: "", password: false });
+                const defaultUsername: string | undefined = this.getDefaultUsername();
+                const username: string | undefined = await window.showInputBox({ value: defaultUsername || "", prompt: Strings.ProvideUsername + " (" + this._manager.ServerContext.RepoInfo.Account + ")", placeHolder: "", password: false });
                 if (username !== undefined && username.length > 0) {
-                    const password: string = await window.showInputBox({ value: "", prompt: Strings.ProvidePassword + " (" + username + ")", placeHolder: "", password: true });
+                    const password: string | undefined = await window.showInputBox({ value: "", prompt: Strings.ProvidePassword + " (" + username + ")", placeHolder: "", password: true });
                     if (password !== undefined) {
                         Logger.LogInfo("Signin: Username and Password provided as authentication.");
-                        this._manager.CredentialManager.StoreCredentials(this._manager.ServerContext, username, password).then(() => {
+                        this._manager.CredentialManager?.StoreCredentials(this._manager.ServerContext, username, password).then(() => {
                             // We don't test the credentials to make sure they're good here.  Do so on the next command that's run.
                             Logger.LogDebug(`Reinitializing after successfully storing credentials for Team Foundation Server.`);
                             this._manager.Reinitialize();
                         }).catch((err) => {
                             // TODO: Should the message direct the user to open an issue?  send feedback?
-                            const msg: string = Strings.UnableToStoreCredentials + this._manager.ServerContext.RepoInfo.Host;
+                            const msg: string = Strings.UnableToStoreCredentials + this._manager.ServerContext?.RepoInfo?.Host;
                             this._manager.ReportError(err, msg, true);
                         });
                     }
@@ -168,19 +168,19 @@ export class TeamExtension  {
             } else if (this._manager.ServerContext.RepoInfo.IsTeamServices === true && !this._signingIn) {
                 this._signingIn = true;
                 try {
-                    const token: string = await this.requestPersonalAccessToken();
+                    const token: string | undefined = await this.requestPersonalAccessToken();
                     if (token !== undefined) {
                         Logger.LogInfo(`Signin: Personal Access Token provided as authentication.`);
-                        this._manager.CredentialManager.StoreCredentials(this._manager.ServerContext, Constants.OAuth, token.trim()).then(() => {
+                        this._manager.CredentialManager?.StoreCredentials(this._manager.ServerContext, Constants.OAuth, token.trim()).then(() => {
                             Logger.LogDebug(`Reinitializing after successfully storing credentials for Azure DevOps Services.`);
                             this._manager.Reinitialize();
                         }).catch((err) => {
                             // TODO: Should the message direct the user to open an issue?  send feedback?
-                            const msg: string = `${Strings.UnableToStoreCredentials} ${this._manager.ServerContext.RepoInfo.Host}`;
+                            const msg: string = `${Strings.UnableToStoreCredentials} ${this._manager.ServerContext?.RepoInfo?.Host}`;
                             this._manager.ReportError(err, msg, true);
                         });
                     }
-                } catch (err) {
+                } catch (err: any) {
                     let msg: string = util.format(Strings.ErrorRequestingToken, this._manager.ServerContext.RepoInfo.AccountUrl);
                     if (err.message) {
                         msg = `${msg} (${err.message})`;
@@ -198,12 +198,16 @@ export class TeamExtension  {
             //If _manager has an error to display, display it and forgo the other. Otherwise, show the default error message.
             const displayed: boolean = this._manager.DisplayErrorMessage();
             if (!displayed) {
-                const messageItem : ButtonMessageItem = { title : Strings.LearnMore,
-                                    url : Constants.ReadmeLearnMoreUrl,
-                                    telemetryId: TelemetryEvents.ReadmeLearnMoreClick };
-                const tfvcInfoItem : ButtonMessageItem = { title : Strings.LearnMoreAboutTfvc,
-                                    url : Constants.TfvcLearnMoreUrl,
-                                    telemetryId: TfvcTelemetryEvents.LearnMoreClick };
+                const messageItem: ButtonMessageItem = {
+                    title: Strings.LearnMore,
+                    url: Constants.ReadmeLearnMoreUrl,
+                    telemetryId: TelemetryEvents.ReadmeLearnMoreClick
+                };
+                const tfvcInfoItem: ButtonMessageItem = {
+                    title: Strings.LearnMoreAboutTfvc,
+                    url: Constants.TfvcLearnMoreUrl,
+                    telemetryId: TfvcTelemetryEvents.LearnMoreClick
+                };
                 VsCodeUtils.ShowErrorMessage(Strings.NoRepoInformation, messageItem, tfvcInfoItem);
             }
         }
@@ -213,10 +217,10 @@ export class TeamExtension  {
         // For Logout, we just need to verify _serverContext and don't want to set this._errorMessage
         if (this._manager.ServerContext !== undefined && this._manager.ServerContext.RepoInfo !== undefined && this._manager.ServerContext.RepoInfo.IsTeamFoundation === true) {
             Logger.LogDebug(`Starting sign out process`);
-            this._manager.CredentialManager.RemoveCredentials(this._manager.ServerContext).then(() => {
-                Logger.LogInfo(`Signout: Removed credentials for host '${this._manager.ServerContext.RepoInfo.Host}'`);
+            this._manager.CredentialManager?.RemoveCredentials(this._manager.ServerContext).then(() => {
+                Logger.LogInfo(`Signout: Removed credentials for host '${this._manager.ServerContext?.RepoInfo?.Host}'`);
             }).catch((err) => {
-                const msg: string = Strings.UnableToRemoveCredentials + this._manager.ServerContext.RepoInfo.Host;
+                const msg: string = Strings.UnableToRemoveCredentials + this._manager.ServerContext?.RepoInfo?.Host;
                 this._manager.ReportError(err, msg, true);
             }).finally(() => {
                 this._signedOut = true; //keep track of our status so we can display helpful info later
@@ -232,7 +236,7 @@ export class TeamExtension  {
     public OpenBlamePage(): void {
         if (this._manager.EnsureInitialized(RepositoryType.GIT)) {
             if (this._gitClient) {
-                this._gitClient.OpenBlamePage(this._manager.RepoContext);
+                this._gitClient.OpenBlamePage(this._manager.RepoContext!);
             }
         } else {
             this._manager.DisplayErrorMessage();
@@ -242,7 +246,7 @@ export class TeamExtension  {
     //Opens the build summary page for a particular build
     public OpenBuildSummaryPage(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            this._buildClient.OpenBuildSummaryPage();
+            this._buildClient?.OpenBuildSummaryPage();
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -251,10 +255,10 @@ export class TeamExtension  {
     //Opens the file history page for the currently active file
     public OpenFileHistory(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            if (this._manager.RepoContext.Type === RepositoryType.GIT && this._gitClient) {
+            if (this._manager.RepoContext?.Type === RepositoryType.GIT && this._gitClient) {
                 this._gitClient.OpenFileHistory(this._manager.RepoContext);
-            } else if (this._manager.RepoContext.Type === RepositoryType.TFVC) {
-                this._manager.Tfvc.ViewHistory();
+            } else if (this._manager.RepoContext?.Type === RepositoryType.TFVC) {
+                this._manager.Tfvc?.ViewHistory();
             } else {
                 this._manager.DisplayErrorMessage(Strings.NoRepoInformation);
             }
@@ -268,7 +272,9 @@ export class TeamExtension  {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
             //Bug is in all three templates
             const taskTitle = VsCodeUtils.GetActiveSelection();
-            this._witClient.CreateNewItem(WitTypes.Bug, taskTitle);
+            if (taskTitle && this._witClient) {
+                this._witClient.CreateNewItem(WitTypes.Bug, taskTitle);
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -278,7 +284,7 @@ export class TeamExtension  {
     public OpenNewPullRequest(): void {
         if (this._manager.EnsureInitialized(RepositoryType.GIT)) {
             if (this._gitClient) {
-                this._gitClient.OpenNewPullRequest(this._manager.RepoContext.RemoteUrl, this._manager.RepoContext.CurrentBranch);
+                this._gitClient.OpenNewPullRequest(this._manager.RepoContext!.RemoteUrl, this._manager.RepoContext!.CurrentBranch!);
             }
         } else {
             this._manager.DisplayErrorMessage();
@@ -291,7 +297,9 @@ export class TeamExtension  {
             //Issue is only in Agile and CMMI templates (not Scrum)
             //Task is in all three templates (Agile, CMMI, Scrum)
             const taskTitle = VsCodeUtils.GetActiveSelection();
-            this._witClient.CreateNewItem(WitTypes.Task, taskTitle);
+            if (taskTitle && this._witClient) {
+                this._witClient.CreateNewItem(WitTypes.Task, taskTitle);
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -301,7 +309,9 @@ export class TeamExtension  {
     public OpenNewWorkItem(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
             const taskTitle = VsCodeUtils.GetActiveSelection();
-            this._witClient.CreateNewWorkItem(taskTitle);
+            if (taskTitle && this._witClient) {
+                this._witClient.CreateNewWorkItem(taskTitle);
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -311,8 +321,8 @@ export class TeamExtension  {
     public OpenTeamProjectWebSite(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
             Telemetry.SendEvent(TelemetryEvents.OpenTeamSite);
-            Logger.LogInfo("OpenTeamProjectWebSite: " + this._manager.ServerContext.RepoInfo.TeamProjectUrl);
-            Utils.OpenUrl(this._manager.ServerContext.RepoInfo.TeamProjectUrl);
+            Logger.LogInfo("OpenTeamProjectWebSite: " + this._manager.ServerContext!.RepoInfo!.TeamProjectUrl);
+            Utils.OpenUrl(this._manager.ServerContext!.RepoInfo!.TeamProjectUrl!);
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -330,7 +340,9 @@ export class TeamExtension  {
     //Returns the list of work items assigned directly to the current user
     public ViewMyWorkItems(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            this._witClient.ShowMyWorkItems();
+            if (this._witClient) {
+                this._witClient.ShowMyWorkItems();
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -339,7 +351,9 @@ export class TeamExtension  {
     //Returns the list of work items from the pinned query
     public ViewPinnedQueryWorkItems(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            this._witClient.ShowPinnedQueryWorkItems();
+            if (this._witClient) {
+                this._witClient.ShowPinnedQueryWorkItems();
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -350,7 +364,9 @@ export class TeamExtension  {
     //If a work item is chosen, it is opened in the web browser.
     public ViewWorkItems(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
-            this._witClient.ShowMyWorkItemQueries();
+            if (this._witClient) {
+                this._witClient.ShowMyWorkItemQueries();
+            }
         } else {
             this._manager.DisplayErrorMessage();
         }
@@ -382,9 +398,9 @@ export class TeamExtension  {
         });
     }
 
-    private getDefaultUsername() : string {
+    private getDefaultUsername(): string | undefined {
         if (os.platform() === "win32") {
-            let defaultUsername: string;
+            let defaultUsername: string | undefined;
             const domain: string = process.env.USERDOMAIN || "";
             const username: string = process.env.USERNAME || "";
             if (domain !== undefined) {
@@ -403,7 +419,7 @@ export class TeamExtension  {
     //Set up the initial status bars
     public InitializeStatusBars() {
         //Only initialize the status bar item if this is a Git repository
-        if (this._manager.RepoContext.Type === RepositoryType.GIT) {
+        if (this._manager.RepoContext?.Type === RepositoryType.GIT) {
             if (!this._pullRequestStatusBarItem) {
                 this._pullRequestStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 99);
                 this._pullRequestStatusBarItem.command = CommandNames.GetPullRequests;
@@ -430,18 +446,18 @@ export class TeamExtension  {
         }
     }
 
-    public InitializeClients(repoType: RepositoryType) : void {
+    public InitializeClients(repoType: RepositoryType): void {
         //Ensure that the repo type is good to go before we initialize the clients for it. If we
         //can't get a team project for TFVC, we shouldn't initialize the clients.
         if (this._manager.EnsureInitialized(repoType)) {
             //We can initialize for any repo type (just skip _gitClient if not Git)
-            this._pinnedQuerySettings = new PinnedQuerySettings(this._manager.ServerContext.RepoInfo.Account);
-            this._buildClient = new BuildClient(this._manager.ServerContext, this._buildStatusBarItem);
+            this._pinnedQuerySettings = new PinnedQuerySettings(this._manager.ServerContext!.RepoInfo!.Account!);
+            this._buildClient = new BuildClient(this._manager.ServerContext!, this._buildStatusBarItem!);
             //Don't initialize the Git client if we aren't a Git repository
             if (repoType === RepositoryType.GIT) {
-                this._gitClient = new GitClient(this._manager.ServerContext, this._pullRequestStatusBarItem);
+                this._gitClient = new GitClient(this._manager.ServerContext!, this._pullRequestStatusBarItem!);
             }
-            this._witClient = new WitClient(this._manager.ServerContext, this._pinnedQuerySettings.PinnedQuery, this._pinnedQueryStatusBarItem);
+            this._witClient = new WitClient(this._manager.ServerContext!, this._pinnedQuerySettings.PinnedQuery, this._pinnedQueryStatusBarItem!);
             this.startPolling();
         }
     }
@@ -449,13 +465,16 @@ export class TeamExtension  {
     //Returns a list of strings representing the work items that the user chose
     // strings are in the form "#id - description"
     private async chooseWorkItems(): Promise<string[]> {
-        return await this._witClient.ChooseWorkItems();
+        if (this._witClient) {
+            return await this._witClient.ChooseWorkItems();
+        }
+        return [];
     }
 
     private pollBuildStatus(): void {
-        if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
+        if (this._manager.RepoContext && this._manager.EnsureInitialized(RepositoryType.ANY)) {
             Logger.LogInfo("Polling for latest current build status...");
-            this._buildClient.DisplayCurrentBuildStatus(this._manager.RepoContext, true, this._manager.Settings.BuildDefinitionId);
+            this._buildClient?.DisplayCurrentBuildStatus(this._manager.RepoContext, true, this._manager.Settings?.BuildDefinitionId);
         }
     }
 
@@ -465,9 +484,11 @@ export class TeamExtension  {
         //ALL to EnsureInitialized but check it before actually polling.
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
             //Only poll for pull requests when repository is Git
-            if (this._manager.RepoContext.Type === RepositoryType.GIT) {
+            if (this._manager.RepoContext?.Type === RepositoryType.GIT) {
                 Logger.LogInfo("Polling for pull requests...");
-                this._gitClient.PollMyPullRequests();
+                if (this, this._gitClient) {
+                    this._gitClient.PollMyPullRequests();
+                }
             }
         }
     }
@@ -475,7 +496,9 @@ export class TeamExtension  {
     private pollPinnedQuery(): void {
         if (this._manager.EnsureInitialized(RepositoryType.ANY)) {
             Logger.LogInfo("Polling for the pinned work itemquery");
-            this._witClient.PollPinnedQuery();
+            if (this._witClient) {
+                this._witClient.PollPinnedQuery();
+            }
         }
     }
 
@@ -490,7 +513,7 @@ export class TeamExtension  {
     private startPolling(): void {
         if (!this._pollingTimer) {
             this._initialTimer = setTimeout(() => this.refreshPollingItems(), 1000 * 4);
-            this._pollingTimer = setInterval(() => this.refreshPollingItems(), 1000 * 60 * this._manager.Settings.PollingInterval);
+            this._pollingTimer = setInterval(() => this.refreshPollingItems(), 1000 * 60 * this._manager.Settings!.PollingInterval!);
         }
     }
 
@@ -516,7 +539,7 @@ export class TeamExtension  {
         }
     }
 
-    public NotifyBranchChanged(/*TODO: currentBranch: string*/) : void {
+    public NotifyBranchChanged(/*TODO: currentBranch: string*/): void {
         this.refreshPollingItems();
     }
 

@@ -23,7 +23,7 @@ describe("CredentialInfo", function() {
 
     it("should ensure PAT returns a BasicCredentialHandler", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("pat-token");
-        const basic: ExtensionRequestHandler = <ExtensionRequestHandler>(credentialInfo.CredentialHandler);
+        const basic: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         assert.isDefined(basic);
         assert.equal(basic.Password, "pat-token");
     });
@@ -32,7 +32,7 @@ describe("CredentialInfo", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
-        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler>(credentialInfo.CredentialHandler);
+        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         assert.isDefined(ntlm);
         assert.equal(ntlm.Username, "username");
         assert.equal(ntlm.Password, "password");
@@ -42,7 +42,7 @@ describe("CredentialInfo", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password", "domain");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
-        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler>(credentialInfo.CredentialHandler);
+        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         assert.isDefined(ntlm);
         assert.equal(ntlm.Username, "username");
         assert.equal(ntlm.Password, "password");
@@ -52,7 +52,7 @@ describe("CredentialInfo", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password", "domain", "workstation");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
-        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler>(credentialInfo.CredentialHandler);
+        const ntlm: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         assert.isDefined(ntlm);
         assert.equal(ntlm.Username, "username");
         assert.equal(ntlm.Password, "password");
@@ -60,9 +60,10 @@ describe("CredentialInfo", function() {
         assert.equal(ntlm.Workstation, "workstation");
     });
 
+    // Todo: Fix...
     it("should ensure properties work as intended", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("pat-token");
-        const basic: ExtensionRequestHandler = <ExtensionRequestHandler>(credentialInfo.CredentialHandler);
+        const basic: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         credentialInfo.CredentialHandler = undefined;
         assert.isUndefined(credentialInfo.CredentialHandler);
         credentialInfo.CredentialHandler = basic;

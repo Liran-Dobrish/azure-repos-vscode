@@ -21,9 +21,9 @@ export class FeedbackClient {
             choices.push({ label: Strings.SendASmile, description: undefined, id: TelemetryEvents.SendASmile });
             choices.push({ label: Strings.SendAFrown, description: undefined, id: TelemetryEvents.SendAFrown });
 
-            const choice: BaseQuickPickItem = await window.showQuickPick(choices, { matchOnDescription: false, placeHolder: Strings.SendFeedback });
+            const choice: BaseQuickPickItem | undefined = await window.showQuickPick(choices, { matchOnDescription: false, placeHolder: Strings.SendFeedback });
             if (choice) {
-                const value: string = await window.showInputBox({ value: undefined, prompt: Strings.SendFeedbackPrompt, placeHolder: undefined, password: false });
+                const value: string | undefined = await window.showInputBox({ value: undefined, prompt: Strings.SendFeedbackPrompt, placeHolder: undefined, password: false });
                 if (value === undefined) {
                     const disposable = window.setStatusBarMessage(Strings.NoFeedbackSent);
                     setTimeout(() => disposable.dispose(), 1000 * 5);
@@ -35,12 +35,12 @@ export class FeedbackClient {
                 if (trimmedValue.length > 1000) {
                     trimmedValue = trimmedValue.substring(0, 1000);
                 }
-                Telemetry.SendFeedback(choice.id, { "VSCode.Feedback.Comment" : trimmedValue } );
+                Telemetry.SendFeedback(choice.id!, { "VSCode.Feedback.Comment": trimmedValue });
 
                 const disposable: Disposable = window.setStatusBarMessage(Strings.ThanksForFeedback);
                 setTimeout(() => disposable.dispose(), 1000 * 5);
             }
-        } catch (err) {
+        } catch (err: any) {
             const message: string = Utils.GetMessageForStatusCode(0, err.message, "Failed getting SendFeedback selection");
             Logger.LogError(message);
             Telemetry.SendException(err);

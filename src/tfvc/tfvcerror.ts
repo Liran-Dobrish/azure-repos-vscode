@@ -8,22 +8,23 @@ import { Strings } from "../helpers/strings";
 import { IButtonMessageItem } from "../helpers/vscodeutils.interfaces";
 import { ITfvcErrorData } from "./interfaces";
 
-export class TfvcError {
-    error: Error;
-    message: string;
+export class TfvcError extends Error {
+    name: string = "TfvcError";
+    error: Error = new Error(undefined);
+    message: string = "";
     messageOptions: IButtonMessageItem[] = [];
-    stdout: string;
-    stderr: string;
-    exitCode: number;
-    tfvcErrorCode: string;
-    tfvcCommand: string;
+    stdout: string | undefined;
+    stderr: string | undefined;
+    exitCode: number | undefined;
+    tfvcErrorCode: string | undefined;
+    tfvcCommand: string | undefined;
 
     public static CreateArgumentMissingError(argumentName: string): TfvcError {
         return new TfvcError({
-                // This is a developer error - no need to localize
-                message: `Argument is required: ${argumentName}`,
-                tfvcErrorCode: TfvcErrorCodes.MissingArgument
-            });
+            // This is a developer error - no need to localize
+            message: `Argument is required: ${argumentName}`,
+            tfvcErrorCode: TfvcErrorCodes.MissingArgument
+        });
     }
 
     /**
@@ -38,40 +39,43 @@ export class TfvcError {
 
     public static CreateUnknownError(err: Error) {
         return new TfvcError({
-                error: err,
-                message: err.message,
-                tfvcErrorCode: TfvcErrorCodes.UnknownError
-            });
+            error: err,
+            message: err.message,
+            tfvcErrorCode: TfvcErrorCodes.UnknownError
+        });
     }
 
-    public constructor(data: ITfvcErrorData) {
+    public constructor(data?: ITfvcErrorData) {
+        super("TfvcError");
         if (!data) {
             throw TfvcError.CreateArgumentMissingError("data");
         }
-
         if (data.error) {
             this.error = data.error;
             this.message = data.error.message;
-        } else {
-            this.error = undefined;
         }
+        // else {
+        //     this.error = undefined;
+        // }
 
-        this.message = this.message || data.message || Strings.TfExecFailedError;
+
+        this.message = data.message || Strings.TfExecFailedError;
         this.messageOptions = data.messageOptions || [];
         this.stdout = data.stdout;
         this.stderr = data.stderr;
         this.exitCode = data.exitCode;
         this.tfvcErrorCode = data.tfvcErrorCode;
         this.tfvcCommand = data.tfvcCommand;
+        this.name = "data";
     }
 
     public toString(): string {
         let result = this.message + " Details: " +
-                    `exitCode: ${this.exitCode}, ` +
-                    `errorCode: ${this.tfvcErrorCode}, ` +
-                    `command: ${this.tfvcCommand}, ` +
-                    `stdout: ${this.stdout}, ` +
-                    `stderr: ${this.stderr}`;
+            `exitCode: ${this.exitCode}, ` +
+            `errorCode: ${this.tfvcErrorCode}, ` +
+            `command: ${this.tfvcCommand}, ` +
+            `stdout: ${this.stdout}, ` +
+            `stderr: ${this.stderr}`;
         if (this.error) {
             result += " Stack: " + (<any>this.error).stack;
         }

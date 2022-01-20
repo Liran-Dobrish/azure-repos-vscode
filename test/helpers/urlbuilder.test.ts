@@ -15,7 +15,7 @@ describe("UrlBuilder", function() {
     });
 
     it("should ensure undefined baseUrl returns undefined", function() {
-        const url: string = undefined;
+        const url: any = undefined;
 
         const result: string = UrlBuilder.Join(url);
         assert.isUndefined(result);
@@ -38,14 +38,14 @@ describe("UrlBuilder", function() {
     it("should ensure baseUrl with trailing slash and undefined args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
 
-        const result: string = UrlBuilder.Join(url, undefined);
+        const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
     it("should ensure baseUrl without trailing slash and undefined args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
-        const result: string = UrlBuilder.Join(url, undefined);
+        const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
@@ -106,7 +106,7 @@ describe("UrlBuilder", function() {
 
     /* AddQueryParams */
     it("should ensure AddQueryParams supports undefined baseUrl", function() {
-        const url: string = undefined;
+        const url: any = undefined;
 
         const result: string = UrlBuilder.AddQueryParams(url);
         assert.isUndefined(result);
@@ -154,8 +154,8 @@ describe("UrlBuilder", function() {
 
     /* AddHashes */
     it("should ensure AddHashes supports undefined baseUrl and undefined arg", function() {
-        let url: string = undefined;
-        const arg: string = undefined;
+        let url: any = undefined;
+        const arg: any = undefined;
 
         let result: string = UrlBuilder.AddHashes(url, arg);
         assert.isUndefined(result);

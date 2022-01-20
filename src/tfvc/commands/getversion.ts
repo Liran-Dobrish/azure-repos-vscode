@@ -51,12 +51,12 @@ export class GetVersion implements ITfvcCommand<string> {
 
         //Find just the version number and return it. Ex. Microsoft (R) TF - Team Foundation Version Control Tool, Version 14.102.25619.0
         //Spanish tf.exe example: "Microsoft (R) TF - Herramienta Control de versiones de Team Foundation, versi�n 14.102.25619.0"
-            //value = "Microsoft (R) TF - Herramienta Control de versiones de Team Foundation, versi�n 14.102.25619.0"
+        //value = "Microsoft (R) TF - Herramienta Control de versiones de Team Foundation, versi�n 14.102.25619.0"
         //French  tf.exe example: "Microsoft (R) TF�- Outil Team Foundation Version Control, version�14.102.25619.0"
-            //value = ""
+        //value = ""
         //German  tf.exe example: "Microsoft (R) TF - Team Foundation-Versionskontrolltool, Version 14.102.25619.0"
-            //value = "14.102.25619.0"
-        const matches: string[] = executionResult.stdout.match(expression);
+        //value = "14.102.25619.0"
+        const matches: RegExpMatchArray | null | undefined = executionResult.stdout?.match(expression);
         if (matches) {
             //Sample tf.exe matches:
             // Version 15.112.2641.0
@@ -67,9 +67,11 @@ export class GetVersion implements ITfvcCommand<string> {
             return matches[matches.length - 1];
         } else {
             //If we can't find a version, that's pretty important. Therefore, we throw in this instance.
-            const messageOptions: IButtonMessageItem[] = [{ title : Strings.MoreDetails,
-                                url : Constants.NonEnuTfExeConfiguredUrl,
-                                telemetryId: TfvcTelemetryEvents.ExeNonEnuConfiguredMoreDetails }];
+            const messageOptions: IButtonMessageItem[] = [{
+                title: Strings.MoreDetails,
+                url: Constants.NonEnuTfExeConfiguredUrl,
+                telemetryId: TfvcTelemetryEvents.ExeNonEnuConfiguredMoreDetails
+            }];
             throw new TfvcError({
                 message: Strings.NotAnEnuTfCommandLine,
                 messageOptions: messageOptions,

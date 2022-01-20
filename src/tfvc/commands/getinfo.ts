@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../../contexts/servercontext";
+import { TeamServerContext } from "../../contexts/servercontext";
 import { Strings } from "../../helpers/strings";
 import { IArgumentProvider, IExecutionResult, IItemInfo, ITfvcCommand } from "../interfaces";
 import { TfvcError, TfvcErrorCodes } from "../tfvcerror";
@@ -65,7 +65,7 @@ export class GetInfo implements ITfvcCommand<IItemInfo[]> {
 
         const lines: string[] = CommandHelper.SplitIntoLines(executionResult.stdout, true, true);
         let curMode: string = ""; // "" is local mode, "server" is server mode
-        let curItem: IItemInfo;
+        let curItem: IItemInfo | undefined;
         for (let i: number = 0; i < lines.length; i++) {
             const line: string = lines[i];
             // Check the beginning of a new item
@@ -86,8 +86,8 @@ export class GetInfo implements ITfvcCommand<IItemInfo[]> {
             } else {
                 // Add the property to the current item
                 const colonPos: number = line.indexOf(":");
-                if (colonPos > 0) {
-                    const propertyName: string = this.getPropertyName(curMode + line.slice(0, colonPos).trim().toLowerCase());
+                if (curItem && colonPos > 0) {
+                    const propertyName: string | undefined = this.getPropertyName(curMode + line.slice(0, colonPos).trim().toLowerCase());
                     if (propertyName) {
                         const propertyValue = colonPos + 1 < line.length ? line.slice(colonPos + 1).trim() : "";
                         curItem[propertyName] = propertyValue;
@@ -124,7 +124,7 @@ export class GetInfo implements ITfvcCommand<IItemInfo[]> {
         return await this.ParseOutput(executionResult);
     }
 
-    private getPropertyName(name: string): string {
+    private getPropertyName(name: string): string | undefined {
         switch (name) {
             case "server path": return "serverItem";
             case "local path": return "localItem";

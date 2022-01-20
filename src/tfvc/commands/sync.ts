@@ -4,7 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../../contexts/servercontext";
+//import { InputDescriptor } from "azure-devops-node-api/interfaces/common/FormInputInterfaces";
+import { TeamServerContext } from "../../contexts/servercontext";
 import { IArgumentProvider, IExecutionResult, ITfvcCommand, ISyncResults, ISyncItemResult, SyncType } from "../interfaces";
 import { ArgumentBuilder } from "./argumentbuilder";
 import { CommandHelper } from "./commandhelper";
@@ -23,8 +24,8 @@ export class Sync implements ITfvcCommand<ISyncResults> {
     private _recursive: boolean;
 
     public constructor(serverContext: TeamServerContext, itemPaths: string[], recursive: boolean) {
-        this._serverContext = serverContext;
         CommandHelper.RequireStringArrayArgument(itemPaths, "itemPaths");
+        this._serverContext = serverContext;
         this._itemPaths = itemPaths;
         this._recursive = recursive;
     }
@@ -72,7 +73,7 @@ export class Sync implements ITfvcCommand<ISyncResults> {
         }
 
         // Check for up to date message (slightly different in EXE and CLC)
-        if (/All files( are)? up to date/i.test(executionResult.stdout)) {
+        if (/All files( are)? up to date/i.test(executionResult.stdout!)) {
             // There was nothing to download so return an empty result
             return {
                 hasConflicts: false,
@@ -81,8 +82,8 @@ export class Sync implements ITfvcCommand<ISyncResults> {
             };
         } else {
             // Get the item results and any warnings or errors
-            const itemResults: ISyncItemResult[] = this.getItemResults(executionResult.stdout);
-            const errorMessages: ISyncItemResult[] = this.getErrorMessages(executionResult.stderr);
+            const itemResults: ISyncItemResult[] = this.getItemResults(executionResult.stdout!);
+            const errorMessages: ISyncItemResult[] = this.getErrorMessages(executionResult.stderr!);
             return {
                 hasConflicts: errorMessages.filter((err) => err.syncType === SyncType.Conflict).length > 0,
                 hasErrors: errorMessages.filter((err) => err.syncType !== SyncType.Conflict).length > 0,
@@ -120,7 +121,7 @@ export class Sync implements ITfvcCommand<ISyncResults> {
             if (CommandHelper.IsFilePath(line)) {
                 folderPath = line;
             } else if (line) {
-                const sr: ISyncItemResult = this.getSyncResultFromLine(folderPath, line);
+                const sr: ISyncItemResult | undefined = this.getSyncResultFromLine(folderPath, line);
                 if (sr) {
                     itemResults.push(sr);
                 }
@@ -129,12 +130,12 @@ export class Sync implements ITfvcCommand<ISyncResults> {
         return itemResults;
     }
 
-    private getSyncResultFromLine(folderPath: string, line: string): ISyncItemResult {
+    private getSyncResultFromLine(folderPath: string, line: string): ISyncItemResult | undefined {
         if (!line) {
             return undefined;
         }
 
-        let newResult: ISyncItemResult = undefined;
+        let newResult: ISyncItemResult | undefined = undefined;
         if (line.startsWith("Getting ")) {
             newResult = {
                 syncType: SyncType.New,
@@ -201,7 +202,7 @@ export class Sync implements ITfvcCommand<ISyncResults> {
         const lines: string[] = CommandHelper.SplitIntoLines(stderr, false, true);
         for (let i: number = 0; i < lines.length; i++) {
             // stderr doesn't get any file path lines, so the files will all be just the filenames
-            errorMessages.push(this.getSyncResultFromLine("", lines[i]));
+            errorMessages.push(this.getSyncResultFromLine("", lines[i])!);
         }
         return errorMessages;
     }

@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../../contexts/servercontext";
+import { TeamServerContext } from "../../contexts/servercontext";
 import { IArgumentProvider, IExecutionResult, ITfvcCommand, IPendingChange } from "../interfaces";
 import { ArgumentBuilder } from "./argumentbuilder";
 import { CommandHelper } from "./commandhelper";
@@ -19,7 +19,7 @@ import * as fs from "fs";
  */
 export class Status implements ITfvcCommand<IPendingChange[]> {
     private _serverContext: TeamServerContext;
-    private _localPaths: string[];
+    private _localPaths: string[] | undefined;
     private _ignoreFolders: boolean;
 
     public constructor(serverContext: TeamServerContext, ignoreFolders: boolean, localPaths?: string[]) {
@@ -141,7 +141,7 @@ export class Status implements ITfvcCommand<IPendingChange[]> {
 
         const lines: string[] = CommandHelper.SplitIntoLines(executionResult.stdout, true, false); //leave empty lines
         let detectedChanges: boolean = false;
-        let curChange: IPendingChange;
+        let curChange: IPendingChange | undefined;
         for (let i: number = 0; i < lines.length; i++) {
             const line: string = lines[i];
             if (line.indexOf(" detected change(s)") > 0) {
@@ -169,16 +169,18 @@ export class Status implements ITfvcCommand<IPendingChange[]> {
                 //$/jeyou/README.md  //isCandidate
                 const parts: string[] = line.split(";C");
 
-                curChange = { changeType: undefined, computer: undefined, date: undefined, localItem: undefined,
-                            sourceItem: undefined, lock: undefined, owner: undefined,
-                            serverItem: (parts && parts.length >= 1 ? parts[0] : undefined),
-                            version: (parts && parts.length === 2 ? parts[1] : "0"),
-                            workspace: undefined, isCandidate: detectedChanges };
+                curChange = {
+                    changeType: undefined, computer: undefined, date: undefined, localItem: undefined,
+                    sourceItem: undefined, lock: undefined, owner: undefined,
+                    serverItem: (parts && parts.length >= 1 ? parts[0] : undefined),
+                    version: (parts && parts.length === 2 ? parts[1] : "0"),
+                    workspace: undefined, isCandidate: detectedChanges
+                };
             } else {
                 // Add the property to the current item
                 const colonPos: number = line.indexOf(":");
-                if (colonPos > 0) {
-                    const propertyName = this.getPropertyName(line.slice(0, colonPos).trim().toLowerCase());
+                if (curChange && colonPos > 0) {
+                    const propertyName: any = this.getPropertyName(line.slice(0, colonPos).trim().toLowerCase());
                     if (propertyName) {
                         let propertyValue: string = colonPos + 1 < line.length ? line.slice(colonPos + 1).trim() : "";
                         if (propertyName.toLowerCase() === "localitem") {
@@ -196,7 +198,7 @@ export class Status implements ITfvcCommand<IPendingChange[]> {
         return changes;
     }
 
-    private getPropertyName(name: string): string {
+    private getPropertyName(name: string): string | undefined {
         switch (name) {
             case "local item": return "localItem";
             case "source item": return "sourceItem";
@@ -211,7 +213,7 @@ export class Status implements ITfvcCommand<IPendingChange[]> {
 
     private add(changes: IPendingChange[], newChange: IPendingChange, ignoreFolders: boolean) {
         // Deleted files won't exist, but we still include them in the results
-        if (ignoreFolders && fs.existsSync(newChange.localItem)) {
+        if (ignoreFolders && newChange.localItem && fs.existsSync(newChange.localItem)) {
             // check to see if the local item is a file or folder
             const f: string = newChange.localItem;
             const stats: any = fs.lstatSync(f);

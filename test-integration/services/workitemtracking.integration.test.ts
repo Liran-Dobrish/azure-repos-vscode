@@ -15,27 +15,27 @@ import { UserAgentProvider } from "../../src/helpers/useragentprovider";
 import { TeamServerContext } from "../../src/contexts/servercontext";
 import { SimpleWorkItem, WorkItemTrackingService } from "../../src/services/workitemtracking";
 
-describe("WorkItemTrackingService-Integration", function() {
+describe("WorkItemTrackingService-Integration", function () {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
     const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
 
-    before(function() {
+    before(function () {
         UserAgentProvider.VSCodeVersion = "0.0.0";
         return credentialManager.StoreCredentials(ctx, TestSettings.AccountUser, TestSettings.Password);
     });
-    beforeEach(function() {
+    beforeEach(function () {
         return credentialManager.GetCredentials(ctx);
     });
     // afterEach(function() { });
-    after(function() {
+    after(function () {
         return credentialManager.RemoveCredentials(ctx);
     });
 
     //Even though CreateWorkItem isn't exposed in the extension, run it so we can get to 200, then 20,000
     //work items in the team project.  At that point, we can test other scenarios around WIT.
-    it("should verify WorkItemTrackingService.CreateWorkItem", async function() {
+    it("should verify WorkItemTrackingService.CreateWorkItem", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -43,15 +43,15 @@ describe("WorkItemTrackingService-Integration", function() {
         ctx.RepoInfo = Mocks.RepositoryInfo();
         ctx.UserInfo = undefined;
 
-        const itemType : string = "Bug";
+        const itemType: string = "Bug";
         const today: Date = new Date();
         const title: string = "Work item created by integration test (" + today.toLocaleString() + ")";
         const svc: WorkItemTrackingService = new WorkItemTrackingService(ctx);
-        const item: WorkItem = await svc.CreateWorkItem(ctx, itemType, title);
+        const item: WorkItem | undefined = await svc.CreateWorkItem(ctx, itemType, title);
         assert.isNotNull(item, "item was null when it shouldn't have been");
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItems", async function() {
+    it("should verify WorkItemTrackingService.GetWorkItems", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -65,7 +65,7 @@ describe("WorkItemTrackingService-Integration", function() {
         //console.log(items);
     });
 
-    it("should verify WorkItemTrackingService.GetQueryResultCount", async function() {
+    it("should verify WorkItemTrackingService.GetQueryResultCount", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -74,16 +74,16 @@ describe("WorkItemTrackingService-Integration", function() {
         ctx.UserInfo = undefined;
 
         const svc: WorkItemTrackingService = new WorkItemTrackingService(ctx);
-        const query: QueryHierarchyItem = await svc.GetWorkItemQuery(TestSettings.TeamProject, TestSettings.WorkItemQueryPath);
+        const query: QueryHierarchyItem | undefined = await svc.GetWorkItemQuery(TestSettings.TeamProject, TestSettings.WorkItemQueryPath);
         assert.isNotNull(query);
         //console.log(query);
-        expect(query.id).to.equal(TestSettings.WorkItemQueryId);
-        const count: number = await svc.GetQueryResultCount(TestSettings.TeamProject, query.wiql);
+        expect(query?.id).to.equal(TestSettings.WorkItemQueryId);
+        const count: number = await svc.GetQueryResultCount(TestSettings.TeamProject, query?.wiql);
         //console.log("count = " + count);
         expect(count).to.be.at.least(2);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemHierarchyItems", async function() {
+    it("should verify WorkItemTrackingService.GetWorkItemHierarchyItems", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -92,13 +92,13 @@ describe("WorkItemTrackingService-Integration", function() {
         ctx.UserInfo = undefined;
 
         const svc: WorkItemTrackingService = new WorkItemTrackingService(ctx);
-        const items: QueryHierarchyItem[] = await svc.GetWorkItemHierarchyItems(TestSettings.TeamProject);
+        const items: QueryHierarchyItem[] | undefined = await svc.GetWorkItemHierarchyItems(TestSettings.TeamProject);
         assert.isNotNull(items);
         //console.log(items.length);
-        expect(items.length).to.equal(2);
+        expect(items?.length).to.equal(2);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery", async function() {
+    it("should verify WorkItemTrackingService.GetWorkItemQuery", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -107,15 +107,15 @@ describe("WorkItemTrackingService-Integration", function() {
         ctx.UserInfo = undefined;
 
         const svc: WorkItemTrackingService = new WorkItemTrackingService(ctx);
-        const query: QueryHierarchyItem = await svc.GetWorkItemQuery(TestSettings.TeamProject, TestSettings.WorkItemQueryPath);
+        const query: QueryHierarchyItem | undefined = await svc.GetWorkItemQuery(TestSettings.TeamProject, TestSettings.WorkItemQueryPath);
         assert.isNotNull(query);
         //console.log(query);
-        expect(query.id).to.equal(TestSettings.WorkItemQueryId);
-        const items: SimpleWorkItem[] = await svc.GetWorkItems(TestSettings.TeamProject, query.wiql);
+        expect(query?.id).to.equal(TestSettings.WorkItemQueryId);
+        const items: SimpleWorkItem[] = await svc.GetWorkItems(TestSettings.TeamProject, query?.wiql);
         assert.isTrue(items.length > 0);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemTypes", async function() {
+    it("should verify WorkItemTrackingService.GetWorkItemTypes", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -130,7 +130,7 @@ describe("WorkItemTrackingService-Integration", function() {
         expect(items.length).to.equal(7);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemById", async function() {
+    it("should verify WorkItemTrackingService.GetWorkItemById", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -145,7 +145,7 @@ describe("WorkItemTrackingService-Integration", function() {
         expect(item.id).to.equal(TestSettings.WorkItemId.toString());
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery with a Link query", function(done) {
+    it("should verify WorkItemTrackingService.GetWorkItemQuery with a Link query", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -158,7 +158,7 @@ describe("WorkItemTrackingService-Integration", function() {
             function (query) {
                 assert.isNotNull(query);
                 //console.log(query);
-                svc.GetWorkItems(TestSettings.TeamProject, query.wiql).then((items) => {
+                svc.GetWorkItems(TestSettings.TeamProject, query?.wiql).then((items) => {
                     assert.isTrue(items.length > 0, "Expected at least 1 result but didn't get any.");
                     //assert.isTrue(items.length === 200, "Expected the maximum of 200 work items but didn't get that amount.");  // current maximum work items returned
                     done();
@@ -172,7 +172,7 @@ describe("WorkItemTrackingService-Integration", function() {
         );
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery with maximum 200 results", function(done) {
+    it("should verify WorkItemTrackingService.GetWorkItemQuery with maximum 200 results", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -185,7 +185,7 @@ describe("WorkItemTrackingService-Integration", function() {
             function (query) {
                 assert.isNotNull(query);
                 //console.log(query);
-                svc.GetWorkItems(TestSettings.TeamProject, query.wiql).then((items) => {
+                svc.GetWorkItems(TestSettings.TeamProject, query?.wiql).then((items) => {
                     assert.isTrue(items.length > 0, "Expected at least 1 result but didn't get any.");
                     // current maximum work items returned
                     assert.isTrue(items.length === 200, "Expected the maximum of 200 work items but didn't get that amount.");
@@ -200,7 +200,7 @@ describe("WorkItemTrackingService-Integration", function() {
         );
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery which returns zero results", function(done) {
+    it("should verify WorkItemTrackingService.GetWorkItemQuery which returns zero results", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -213,7 +213,7 @@ describe("WorkItemTrackingService-Integration", function() {
             function (query) {
                 assert.isNotNull(query);
                 //console.log(query);
-                svc.GetWorkItems(TestSettings.TeamProject, query.wiql).then((items) => {
+                svc.GetWorkItems(TestSettings.TeamProject, query?.wiql).then((items) => {
                     assert.isTrue(items.length === 0, "Expected zero results but actually got some.");
                     //assert.isTrue(items.length === 200, "Expected the maximum of 200 work items but didn't get that amount.");  // current maximum work items returned
                     done();

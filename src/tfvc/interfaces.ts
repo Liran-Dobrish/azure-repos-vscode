@@ -10,13 +10,14 @@ import { ConflictType } from "./scm/status";
 export interface ITfCommandLine {
     path: string;
     minVersion: string;
-    proxy: string;
+    proxy?: string;
     isExe: boolean;
 }
 
 export interface IItemInfo {
-    serverItem: string;
-    localItem: string;
+    [key: string]: any;
+    serverItem: string | undefined;
+    localItem: string | undefined;
     localVersion?: string;
     serverVersion?: string;
     change?: string;
@@ -52,17 +53,18 @@ export interface IWorkspaceMapping {
 }
 
 export interface IPendingChange {
-    changeType: string;
-    computer: string;
-    date: string;
-    localItem: string;
-    sourceItem: string;
-    lock: string;
-    owner: string;
-    serverItem: string;
-    version: string;
-    workspace: string;
-    isCandidate: boolean;
+    [key: string]: any;
+    changeType: string | undefined;
+    computer: string | undefined;
+    date: string | undefined;
+    localItem: string | undefined;
+    sourceItem: string | undefined;
+    lock: string | undefined;
+    owner: string | undefined;
+    serverItem: string | undefined;
+    version: string | undefined;
+    workspace: string | undefined;
+    isCandidate: boolean | undefined;
 }
 
 export enum SyncType {
@@ -103,8 +105,8 @@ export enum AutoResolveType {
 
 export interface IExecutionResult {
     exitCode: number;
-    stdout: string;
-    stderr: string;
+    stdout: string | undefined;
+    stderr: string | undefined;
 }
 
 export interface ITfvcErrorData {
@@ -119,7 +121,7 @@ export interface ITfvcErrorData {
 }
 
 export interface IArgumentProvider {
-    AddProxySwitch(proxy: string);
+    AddProxySwitch(proxy: string): void;
     GetCommand(): string;
     GetArguments(): string[];
     GetCommandLine(): string;
@@ -131,6 +133,6 @@ export interface ITfvcCommand<T> {
     GetExeArguments(): IArgumentProvider;
     GetOptions(): any;
     GetExeOptions(): any;
-    ParseOutput(executionResult: IExecutionResult): Promise<T>;
-    ParseExeOutput(executionResult: IExecutionResult): Promise<T>;
+    ParseOutput(executionResult: IExecutionResult): Promise<T | undefined>;
+    ParseExeOutput(executionResult: IExecutionResult): Promise<T | undefined>;
 }

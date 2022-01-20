@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { IHttpResponse, IRequestHandler } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
+import { IHttpClient, IHttpClientResponse, IRequestHandler, IRequestInfo } from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces";
 import { getBasicHandler } from "azure-devops-node-api/WebApi";
 import { getNtlmHandler } from "azure-devops-node-api/WebApi";
 import { Constants } from "../helpers/constants";
@@ -12,10 +12,10 @@ import { UserAgentProvider } from "../helpers/useragentprovider";
 
 // This class creates an IRequestHandler so we can send our own custom user-agent string
 export class ExtensionRequestHandler implements IRequestHandler {
-    private _domain: string;
+    private _domain?: string;
     private _username: string;
     private _password: string;
-    private _workstation: string;
+    private _workstation?: string;
     private _credentialHandler: IRequestHandler;
 
     constructor(accessToken: string);
@@ -38,7 +38,10 @@ export class ExtensionRequestHandler implements IRequestHandler {
     }
 
     public get Domain(): string {
-        return this._domain;
+        if (this._domain) {
+            return this._domain;
+        }
+        return "";
     }
 
     public get Username(): string {
@@ -50,7 +53,10 @@ export class ExtensionRequestHandler implements IRequestHandler {
     }
 
     public get Workstation(): string {
-        return this._workstation;
+        if (this._workstation) {
+            return this._workstation;
+        }
+        return "";
     }
 
     // Below are the IRequestHandler implementation/overrides
@@ -62,11 +68,11 @@ export class ExtensionRequestHandler implements IRequestHandler {
         options.headers["User-Agent"] = userAgent;
     }
 
-    public canHandleAuthentication(res: IHttpResponse) : boolean {
+    public canHandleAuthentication(res: IHttpClientResponse): boolean {
         return this._credentialHandler.canHandleAuthentication(res);
     }
 
-    public handleAuthentication(httpClient: any, protocol: any, options: any, objs: any, finalCallback: any): void {
-        return this._credentialHandler.handleAuthentication(httpClient, protocol, options, objs, finalCallback);
+    public handleAuthentication(httpClient: IHttpClient, requestInfo: IRequestInfo, objs: any): Promise<IHttpClientResponse> {
+        return this._credentialHandler.handleAuthentication(httpClient, requestInfo, objs);
     }
 }

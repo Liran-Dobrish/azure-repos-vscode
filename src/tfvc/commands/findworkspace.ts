@@ -34,8 +34,8 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
         //If desired, restrict the workspace to the localPath (VS Code's current workspace)
         if (this._restrictWorkspace) {
             //With TEE, I got an error when passing "login", "fake,fake" and the path at the same time.
-                // A client error occurred: Error refreshing cached workspace WorkspaceInfo (*snip*) from server:
-                // Access denied connecting to TFS server http://java-tfs2015:8081/ (authenticating as fake)
+            // A client error occurred: Error refreshing cached workspace WorkspaceInfo (*snip*) from server:
+            // Access denied connecting to TFS server http://java-tfs2015:8081/ (authenticating as fake)
             //TF.exe is fine without the fake login when a localPath is provided
             return builder.Add(this._localPath);
         }
@@ -55,7 +55,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
      * Collection: http://java-tfs2015:8081/tfs/
      * $/tfsTest_01: D:\tmp\test
      */
-    public async ParseOutput(executionResult: IExecutionResult): Promise<IWorkspace> {
+    public async ParseOutput(executionResult: IExecutionResult): Promise<IWorkspace | undefined> {
         // Throw if any errors are found in stderr or if exitcode is not 0
         CommandHelper.ProcessErrors(executionResult);
 
@@ -70,7 +70,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
         let collectionUrl: string = "";
         let equalsLineFound: boolean = false;
         const mappings: IWorkspaceMapping[] = [];
-        let teamProject: string = undefined;
+        let teamProject: string | undefined = undefined;
 
         for (let i: number = 0; i <= lines.length; i++) {
             const line: string = lines[i];
@@ -92,7 +92,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
                 collectionUrl = this.getValue(line);
             } else {
                 // This should be a mapping
-                const mapping: IWorkspaceMapping = this.getMapping(line);
+                const mapping: IWorkspaceMapping | undefined = this.getMapping(line);
                 if (mapping) {
                     mappings.push(mapping);
                     //If we're restricting workspaces, tf.exe will return the proper (single) folder. While TEE will
@@ -105,10 +105,10 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
             }
         }
         if (mappings.length === 0) {
-            throw new TfvcError( {
+            throw new TfvcError({
                 message: Strings.NoWorkspaceMappings,
                 tfvcErrorCode: TfvcErrorCodes.NotATfvcRepository
-             });
+            });
         }
         //If we're restricting the workspace, find the proper teamProject name
         if (this._restrictWorkspace) {
@@ -126,21 +126,23 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
         //So if we determine there are mappings but can't get the workspace name, we assume it's a non-ENU
         //tf executable. One example of this is German.
         if (mappings.length > 0 && !workspaceName) {
-            const messageOptions: IButtonMessageItem[] = [{ title : Strings.MoreDetails,
-                                url : Constants.NonEnuTfExeConfiguredUrl,
-                                telemetryId: TfvcTelemetryEvents.ExeNonEnuConfiguredMoreDetails }];
-            throw new TfvcError( {
+            const messageOptions: IButtonMessageItem[] = [{
+                title: Strings.MoreDetails,
+                url: Constants.NonEnuTfExeConfiguredUrl,
+                telemetryId: TfvcTelemetryEvents.ExeNonEnuConfiguredMoreDetails
+            }];
+            throw new TfvcError({
                 message: Strings.NotAnEnuTfCommandLine,
                 messageOptions: messageOptions,
                 tfvcErrorCode: TfvcErrorCodes.NotAnEnuTfCommandLine
-             });
+            });
         }
 
         //Decode collectionURL and teamProject here (for cases like 'Collection: http://java-tfs2015:8081/tfs/spaces%20in%20the%20name')
         const workspace: IWorkspace = {
             name: workspaceName,
             server: decodeURI(collectionUrl),
-            defaultTeamProject: decodeURI(teamProject),
+            defaultTeamProject: decodeURI(teamProject!),
             mappings: mappings
         };
 
@@ -164,8 +166,8 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
      * Collection: http://server:8081/tfs/
      * $/tfsTest_01: D:\tmp\test
      */
-    public async ParseExeOutput(executionResult: IExecutionResult): Promise<IWorkspace> {
-        const workspace: IWorkspace = await this.ParseOutput(executionResult);
+    public async ParseExeOutput(executionResult: IExecutionResult): Promise<IWorkspace | undefined> {
+        const workspace: IWorkspace | undefined = await this.ParseOutput(executionResult);
         if (workspace && workspace.name) {
             // The workspace name includes the user name, so let's fix that
             const lastOpenParenIndex: number = workspace.name.lastIndexOf(" (");
@@ -196,7 +198,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
      * "$/TFVC_11/folder1: D:\tmp\notdefault\folder1"
      * "(cloaked) $/TFVC_11/folder1:"
      */
-    private getMapping(line: string): IWorkspaceMapping {
+    private getMapping(line: string): IWorkspaceMapping | undefined {
         if (line) {
             const cloaked: boolean = line.trim().toLowerCase().startsWith("(cloaked)");
             let end: number = line.indexOf(":");
@@ -207,7 +209,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
             }
             const start: number = cloaked ? line.indexOf(")") + 1 : 0;
             const serverPath: string = line.slice(start, end).trim();
-            let localPath: string;
+            let localPath: string = "";
             //cloaked entries don't have local paths
             if (end >= 0 && end + 1 < line.length) {
                 localPath = line.slice(end + 1).trim();

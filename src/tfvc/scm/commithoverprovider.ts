@@ -23,7 +23,7 @@ export class CommitHoverProvider implements HoverProvider {
     private decorationType: TextEditorDecorationType;
     private diagnostics: Diagnostic[] = [];
     private disposables: Disposable[] = [];
-    private editor: TextEditor;
+    private editor: TextEditor | undefined;
     private visibleTextEditorsDisposable: Disposable;
 
     constructor() {
@@ -61,7 +61,7 @@ export class CommitHoverProvider implements HoverProvider {
         workspace.applyEdit(edit);
     }
 
-    private onVisibleTextEditors(editors: TextEditor[]): void {
+    private onVisibleTextEditors(editors: readonly TextEditor[]): any {
         const [editor] = editors.filter((e) => isSCMInput(e.document.uri));
 
         if (!editor) {
@@ -81,7 +81,7 @@ export class CommitHoverProvider implements HoverProvider {
     private update(): void {
         this.diagnostics = [];
         //TODO provide any diagnostic info based on the message here (see git commitcontroller)
-        this.editor.setDecorations(this.decorationType, this.diagnostics.map((d) => d.range));
+        this.editor?.setDecorations(this.decorationType, this.diagnostics.map((d) => d.range));
     }
 
     /* Implement HoverProvider */

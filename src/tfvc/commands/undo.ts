@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../../contexts/servercontext";
+import { TeamServerContext } from "../../contexts/servercontext";
 import { IArgumentProvider, IExecutionResult, ITfvcCommand } from "../interfaces";
 import { ArgumentBuilder } from "./argumentbuilder";
 import { CommandHelper } from "./commandhelper";
@@ -19,6 +19,7 @@ export class Undo implements ITfvcCommand<string[]> {
     private _itemPaths: string[];
 
     public constructor(serverContext: TeamServerContext, itemPaths: string[]) {
+        CommandHelper.RequireArgument(serverContext, "serverContext");
         CommandHelper.RequireStringArrayArgument(itemPaths, "itemPaths");
         this._serverContext = serverContext;
         this._itemPaths = itemPaths;
@@ -99,5 +100,6 @@ export class Undo implements ITfvcCommand<string[]> {
         if (idx > 0) {
             return line.substring(idx + prefix.length);
         }
+        return ""
     }
 }

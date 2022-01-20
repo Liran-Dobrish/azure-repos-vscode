@@ -10,8 +10,8 @@ import * as vscode from "vscode";
 
 import * as fs from "fs";
 import * as path from "path";
-import * as open from "open";
-import * as opener from "opener";
+import open from "open";
+import opener from "opener";
 
 export class Utils {
 
@@ -24,7 +24,7 @@ export class Utils {
     }
 
     //gitDir provided for unit testing purposes
-    public static FindGitFolder(startingPath: string, gitDir?: string): string {
+    public static FindGitFolder(startingPath: string, gitDir?: string): string | undefined {
         if (!fs.existsSync(startingPath)) { return undefined; }
 
         let gitPath: string;
@@ -35,7 +35,7 @@ export class Utils {
             gitPath = path.join(currentPath, gitDir || ".git");
 
             if (fs.existsSync(gitPath)) {
-              return gitPath;
+                return gitPath;
             }
 
             lastPath = currentPath;
@@ -46,7 +46,7 @@ export class Utils {
     }
 
     //Returns the icon string to use for a particular BuildResult
-    public static GetBuildResultIcon(result: BuildResult) : string {
+    public static GetBuildResultIcon(result: BuildResult | undefined): string {
         switch (result) {
             case BuildResult.Succeeded:
                 return "check";
@@ -64,8 +64,8 @@ export class Utils {
     }
 
     //Returns a particular message for a particular reason.  Otherwise, returns the optional prefix + message
-    public static GetMessageForStatusCode(reason: any, message?: string, prefix?: string) : string {
-        let msg: string = undefined;
+    public static GetMessageForStatusCode(reason: any, message?: string, prefix?: string): string {
+        let msg: string | undefined = undefined;
         if (prefix === undefined) {
             msg = "";
         } else {
@@ -94,9 +94,9 @@ export class Utils {
                     msg = msg + Strings.ProxyUnreachable;
                     break;
                 }
-                return message;
+                return (message ? message : "");
             default:
-                return message;
+                return (message ? message : "");
         }
 
         return msg;
@@ -153,7 +153,7 @@ export class Utils {
     }
 
     //Use open for Windows and Mac, opener for Linux
-    public static OpenUrl(url: string) : void {
+    public static OpenUrl(url: string): void {
         // Use the built in VS Code openExternal function if present.
         if ((<any>vscode.env).openExternal) {
             (<any>vscode.env).openExternal(vscode.Uri.parse(url));

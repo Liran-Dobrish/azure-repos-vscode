@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import { TeamServerContext} from "../contexts/servercontext";
+import { TeamServerContext } from "../contexts/servercontext";
 import { Logger } from "../helpers/logger";
 import { ITfvcCommand, IExecutionResult } from "./interfaces";
 import { TfCommandLineRunner } from "./tfcommandlinerunner";
@@ -31,7 +31,7 @@ import * as _ from "underscore";
  * by the repositoryRootFolder.
  */
 export class TfvcRepository {
-    private _serverContext: TeamServerContext;
+    private _serverContext: TeamServerContext | undefined;
     private _tfCommandLine: ITfCommandLine;
     private _repositoryRootFolder: string;
     private _env: any;
@@ -39,7 +39,7 @@ export class TfvcRepository {
     private _settings: TfvcSettings;
     private _isExe: boolean = false;
 
-    public constructor(serverContext: TeamServerContext, tfCommandLine: ITfCommandLine, repositoryRootFolder: string, env: any = {}, isExe: boolean) {
+    public constructor(serverContext: TeamServerContext | undefined, tfCommandLine: ITfCommandLine, repositoryRootFolder: string, env: any = {}, isExe: boolean) {
         Logger.LogDebug(`TFVC Repository created with repositoryRootFolder='${repositoryRootFolder}'`);
         this._serverContext = serverContext;
         this._tfCommandLine = tfCommandLine;
@@ -59,7 +59,7 @@ export class TfvcRepository {
     }
 
     public get HasContext(): boolean {
-        return this._serverContext !== undefined && this._serverContext.CredentialInfo !== undefined && this._serverContext.RepoInfo.CollectionUrl !== undefined;
+        return this._serverContext !== undefined && this._serverContext.CredentialInfo !== undefined && this._serverContext.RepoInfo?.CollectionUrl !== undefined;
     }
 
     public get IsExe(): boolean {
@@ -70,111 +70,137 @@ export class TfvcRepository {
         return this._repositoryRootFolder;
     }
 
-    public get RestrictWorkspace(): boolean {
+    public get RestrictWorkspace(): boolean | undefined {
         return this._settings.RestrictWorkspace;
     }
 
-    public async Add(itemPaths: string[]): Promise<string[]> {
-        Logger.LogDebug(`TFVC Repository.Add`);
-        return this.RunCommand<string[]>(
-            new Add(this._serverContext, itemPaths));
-    }
-
-    public async Checkin(files: string[], comment: string, workItemIds: number[]): Promise<string> {
-        Logger.LogDebug(`TFVC Repository.Checkin`);
-        return this.RunCommand<string>(
-            new Checkin(this._serverContext, files, comment, workItemIds));
-    }
-
-    public async Delete(itemPaths: string[]): Promise<string[]> {
-        Logger.LogDebug(`TFVC Repository.Delete`);
-        return this.RunCommand<string[]>(
-            new Delete(this._serverContext, itemPaths));
-    }
-
-    public async FindConflicts(itemPath?: string): Promise<IConflict[]> {
-        Logger.LogDebug(`TFVC Repository.FindConflicts`);
-        return this.RunCommand<IConflict[]>(
-            new FindConflicts(this._serverContext, itemPath ? itemPath : this._repositoryRootFolder));
-    }
-
-    public async FindWorkspace(localPath: string): Promise<IWorkspace> {
-        Logger.LogDebug(`TFVC Repository.FindWorkspace with localPath='${localPath}'`);
-        return this.RunCommand<IWorkspace>(
-            new FindWorkspace(localPath, this._settings.RestrictWorkspace));
-    }
-
-    public async GetInfo(itemPaths: string[]): Promise<IItemInfo[]> {
-        Logger.LogDebug(`TFVC Repository.GetInfo`);
-        return this.RunCommand<IItemInfo[]>(
-            new GetInfo(this._serverContext, itemPaths));
-    }
-
-    public async GetFileContent(itemPath: string, versionSpec?: string): Promise<string> {
-        Logger.LogDebug(`TFVC Repository.GetFileContent`);
-        return this.RunCommand<string>(
-            new GetFileContent(this._serverContext, itemPath, versionSpec, true));
-    }
-
-    public async GetStatus(ignoreFiles?: boolean): Promise<IPendingChange[]> {
-        Logger.LogDebug(`TFVC Repository.GetStatus`);
-        let statusCommand: Status = new Status(this._serverContext, ignoreFiles === undefined ? true : ignoreFiles);
-        //If we're restricting the workspace, pass in the repository root folder to Status
-        if (this._settings.RestrictWorkspace) {
-            statusCommand = new Status(this._serverContext, ignoreFiles === undefined ? true : ignoreFiles, [this._repositoryRootFolder]);
+    public async Add(itemPaths: string[]): Promise<string[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Add`);
+            return this.RunCommand<string[]>(
+                new Add(this._serverContext, itemPaths));
         }
-        return this.RunCommand<IPendingChange[]>(statusCommand);
     }
 
-    public async Rename(sourcePath: string, destinationPath: string): Promise<string> {
-        Logger.LogDebug(`TFVC Repository.Rename`);
-        return this.RunCommand<string>(
-            new Rename(this._serverContext, sourcePath, destinationPath));
+    public async Checkin(files: string[], comment: string, workItemIds: number[]): Promise<string | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Checkin`);
+            return this.RunCommand<string>(
+                new Checkin(this._serverContext, files, comment, workItemIds));
+        }
     }
 
-    public async ResolveConflicts(itemPaths: string[], autoResolveType: AutoResolveType): Promise<IConflict[]> {
-        Logger.LogDebug(`TFVC Repository.ResolveConflicts`);
-        return this.RunCommand<IConflict[]>(
-            new ResolveConflicts(this._serverContext, itemPaths, autoResolveType));
+    public async Delete(itemPaths: string[]): Promise<string[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Delete`);
+            return this.RunCommand<string[]>(
+                new Delete(this._serverContext, itemPaths));
+        }
     }
 
-    public async Sync(itemPaths: string[], recursive: boolean): Promise<ISyncResults> {
-        Logger.LogDebug(`TFVC Repository.Sync`);
-        return this.RunCommand<ISyncResults>(
-            new Sync(this._serverContext, itemPaths, recursive));
+    public async FindConflicts(itemPath?: string): Promise<IConflict[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.FindConflicts`);
+            return this.RunCommand<IConflict[]>(
+                new FindConflicts(this._serverContext, itemPath ? itemPath : this._repositoryRootFolder));
+        }
     }
 
-    public async Undo(itemPaths: string[]): Promise<string[]> {
-        Logger.LogDebug(`TFVC Repository.Undo`);
-        return this.RunCommand<string[]>(
-            new Undo(this._serverContext, itemPaths));
+    public async FindWorkspace(localPath: string): Promise<IWorkspace | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.FindWorkspace with localPath='${localPath}'`);
+            return this.RunCommand<IWorkspace>(
+                new FindWorkspace(localPath, this._settings.RestrictWorkspace));
+        }
     }
 
-    public async CheckVersion(): Promise<string> {
+    public async GetInfo(itemPaths: string[]): Promise<IItemInfo[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.GetInfo`);
+            return this.RunCommand<IItemInfo[]>(
+                new GetInfo(this._serverContext, itemPaths));
+        }
+    }
+
+    public async GetFileContent(itemPath: string, versionSpec?: string): Promise<string | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.GetFileContent`);
+            return this.RunCommand<string>(
+                new GetFileContent(this._serverContext, itemPath, versionSpec, true));
+        }
+    }
+
+    public async GetStatus(ignoreFiles?: boolean): Promise<IPendingChange[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.GetStatus`);
+            let statusCommand: Status = new Status(this._serverContext, ignoreFiles === undefined ? true : ignoreFiles);
+            //If we're restricting the workspace, pass in the repository root folder to Status
+            if (this._settings.RestrictWorkspace) {
+                statusCommand = new Status(this._serverContext, ignoreFiles === undefined ? true : ignoreFiles, [this._repositoryRootFolder]);
+            }
+            return this.RunCommand<IPendingChange[]>(statusCommand);
+        }
+    }
+
+    public async Rename(sourcePath: string, destinationPath: string): Promise<string | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Rename`);
+            return this.RunCommand<string>(
+                new Rename(this._serverContext, sourcePath, destinationPath));
+        }
+    }
+
+    public async ResolveConflicts(itemPaths: string[], autoResolveType: AutoResolveType): Promise<IConflict[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.ResolveConflicts`);
+            return this.RunCommand<IConflict[]>(
+                new ResolveConflicts(this._serverContext, itemPaths, autoResolveType));
+        }
+    }
+
+    public async Sync(itemPaths: string[], recursive: boolean): Promise<ISyncResults | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Sync`);
+            return this.RunCommand<ISyncResults>(
+                new Sync(this._serverContext, itemPaths, recursive));
+        }
+    }
+
+    public async Undo(itemPaths: string[]): Promise<string[] | undefined> {
+        if (this._serverContext) {
+            Logger.LogDebug(`TFVC Repository.Undo`);
+            return this.RunCommand<string[]>(
+                new Undo(this._serverContext, itemPaths));
+        }
+    }
+
+    public async CheckVersion(): Promise<string | undefined> {
         if (!this._versionAlreadyChecked) {
             Logger.LogDebug(`TFVC Repository.CheckVersion`);
             // Set the versionAlreadyChecked flag first in case one of the other lines throws
             this._versionAlreadyChecked = true;
-            const version: string = await this.RunCommand<string>(new GetVersion());
-            TfCommandLineRunner.CheckVersion(this._tfCommandLine, version);
+            const version: string | undefined = await this.RunCommand<string>(new GetVersion());
+            if (version) {
+                TfCommandLineRunner.CheckVersion(this._tfCommandLine, version);
+            }
             return version;
         }
 
         return undefined;
     }
 
-    public async RunCommand<T>(cmd: ITfvcCommand<T>): Promise<T> {
+    public async RunCommand<T>(cmd: ITfvcCommand<T>): Promise<T | undefined> {
         if (this._tfCommandLine.isExe) {
             //This is the tf.exe path
             const result: IExecutionResult = await this.exec(cmd.GetExeArguments(), cmd.GetExeOptions());
             // We will call ParseExeOutput to give the command a chance to handle any specific errors itself.
-            const output: T = await cmd.ParseExeOutput(result);
+            const output: T | undefined = await cmd.ParseExeOutput(result);
             return output;
         } else {
             //This is the CLC path
             const result: IExecutionResult = await this.exec(cmd.GetArguments(), cmd.GetOptions());
             // We will call ParseOutput to give the command a chance to handle any specific errors itself.
-            const output: T = await cmd.ParseOutput(result);
+            const output: T | undefined = await cmd.ParseOutput(result);
             return output;
         }
     }

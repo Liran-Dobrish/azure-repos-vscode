@@ -73,10 +73,10 @@ export class RepoUtils {
                 return true;
             }
             const purl: url.Url = url.parse(respositoryUrl);
-            if (purl.hostname.toLowerCase().indexOf("azure.com") >= 0) {
+            if (purl.hostname!.toLowerCase().indexOf("azure.com") >= 0) {
                 return true;
             }
-        } catch (err) {
+        } catch (err: any) {
             Logger.LogDebug("Could not parse repository url: " + respositoryUrl);
         }
         return false;
@@ -86,14 +86,14 @@ export class RepoUtils {
         return RepoUtils.sshV3.test(respositoryUrl.toLowerCase());
     }
 
-    public static ConvertSshV3ToUrl(respositoryUrl: string): string {
+    public static ConvertSshV3ToUrl(respositoryUrl: string): string | undefined {
         const scheme = "https://";
         const match = RepoUtils.sshV3.exec(respositoryUrl.toLowerCase());
-        if (match.length === 5) {
+        if (match != null && match.length === 5) {
             if (match[1] === "visualstudio.com") {
                 return scheme + match[2] + "." + match[1] + "/" + match[3] + "/_git/" + match[4];
             }
-            return scheme + match[1] + "/" + match[2] +  "/" + match[3] + "/_git/" + match[4];
+            return scheme + match[1] + "/" + match[2] + "/" + match[3] + "/_git/" + match[4];
         }
         Logger.LogDebug("Could not parse as v3 repository url: " + respositoryUrl);
         return undefined;

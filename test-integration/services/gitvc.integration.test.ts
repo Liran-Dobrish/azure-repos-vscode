@@ -14,25 +14,25 @@ import { UserAgentProvider } from "../../src/helpers/useragentprovider";
 import { TeamServerContext } from "../../src/contexts/servercontext";
 import { GitVcService, PullRequestScore } from "../../src/services/gitvc";
 
-describe("GitVcService-Integration", function() {
+describe("GitVcService-Integration", function () {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
     const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
 
-    before(function() {
+    before(function () {
         UserAgentProvider.VSCodeVersion = "0.0.0";
         return credentialManager.StoreCredentials(ctx, TestSettings.AccountUser, TestSettings.Password);
     });
-    beforeEach(function() {
+    beforeEach(function () {
         return credentialManager.GetCredentials(ctx);
     });
     // afterEach(function() { });
-    after(function() {
+    after(function () {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    it("should verify GitVcService.GetRepositories", async function() {
+    it("should verify GitVcService.GetRepositories", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -47,7 +47,7 @@ describe("GitVcService-Integration", function() {
         expect(repos.length).to.equal(2);
     });
 
-    it("should verify GitVcService.GetPullRequests", async function() {
+    it("should verify GitVcService.GetPullRequests", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -62,7 +62,7 @@ describe("GitVcService-Integration", function() {
         expect(requests.length).to.equal(4);
     });
 
-    it("should verify GitVcService.GetPullRequestScore", async function() {
+    it("should verify GitVcService.GetPullRequestScore", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -72,9 +72,9 @@ describe("GitVcService-Integration", function() {
 
         const svc: GitVcService = new GitVcService(ctx);
         const requests: GitPullRequest[] = await svc.GetPullRequests(ctx.RepoInfo.RepositoryId);
-        const totals = [];
+        const totals: { id: number | undefined, score: PullRequestScore }[] = [];
         requests.forEach((request) => {
-            totals.push({ "id" : request.pullRequestId, "score" : GitVcService.GetPullRequestScore(request) });
+            totals.push({ "id": request.pullRequestId, "score": GitVcService.GetPullRequestScore(request) });
         });
         assert.equal(totals.length, 4);
         for (let index = 0; index < totals.length; index++) {

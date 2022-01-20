@@ -19,7 +19,7 @@ var osxkeychain = require("./osx-keychain");
     User can provide a custom prefix for the credential.
  */
 export class OsxKeychainApi implements ICredentialStore {
-    private _prefix: string;
+    private _prefix: string | undefined;
 
     constructor(credentialPrefix: string) {
         if (credentialPrefix !== undefined) {
@@ -28,7 +28,7 @@ export class OsxKeychainApi implements ICredentialStore {
         }
     }
 
-    public GetCredential(service: string) : Q.Promise<Credential> {
+    public GetCredential(service: string): Q.Promise<Credential> {
         const deferred: Q.Deferred<Credential> = Q.defer<Credential>();
         let credential: Credential;
 
@@ -45,7 +45,7 @@ export class OsxKeychainApi implements ICredentialStore {
             }
             if (credential !== undefined) {
                 //Go get the password
-                osxkeychain.get(credential.Username, credential.Service, function(err, cred) {
+                osxkeychain.get(credential.Username, credential.Service, function (err: any, cred: string) {
                     if (err) {
                         deferred.reject(err);
                     }
@@ -63,11 +63,11 @@ export class OsxKeychainApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public SetCredential(service: string, username: string, password: string) : Q.Promise<void> {
+    public SetCredential(service: string, username: string, password: string): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
 
         // I'm not supporting a description so pass "" for that parameter
-        osxkeychain.set(username, service, "" /*description*/, password, function(err) {
+        osxkeychain.set(username, service, "" /*description*/, password, function (err: any) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -77,19 +77,19 @@ export class OsxKeychainApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public RemoveCredential(service: string) : Q.Promise<void> {
+    public RemoveCredential(service: string): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
 
         this.removeCredentials(service).then(() => {
             deferred.resolve(undefined);
         })
-        .fail((reason) => {
-            deferred.reject(reason);
-        });
+            .fail((reason) => {
+                deferred.reject(reason);
+            });
         return deferred.promise;
     }
 
-    public getCredentialByName(service: string, username: string) : Q.Promise<Credential> {
+    public getCredentialByName(service: string, username: string): Q.Promise<Credential> {
         const deferred: Q.Deferred<Credential> = Q.defer<Credential>();
         let credential: Credential;
 
@@ -106,7 +106,7 @@ export class OsxKeychainApi implements ICredentialStore {
             }
             if (credential !== undefined) {
                 //Go get the password
-                osxkeychain.get(credential.Username, credential.Service, function(err, cred) {
+                osxkeychain.get(credential.Username, credential.Service, function (err: any, cred: string) {
                     if (err) {
                         deferred.reject(err);
                     }
@@ -124,7 +124,7 @@ export class OsxKeychainApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    public removeCredentialByName(service: string, username: string) : Q.Promise<void> {
+    public removeCredentialByName(service: string, username: string): Q.Promise<void> {
         const deferred: Q.Deferred<void> = Q.defer<void>();
 
         // if username === "*", we need to remove all credentials for this service.
@@ -132,11 +132,11 @@ export class OsxKeychainApi implements ICredentialStore {
             this.removeCredentials(service).then(() => {
                 deferred.resolve(undefined);
             })
-            .fail((reason) => {
-                deferred.reject(reason);
-            });
+                .fail((reason) => {
+                    deferred.reject(reason);
+                });
         } else {
-            osxkeychain.remove(username, service, "" /*description*/, function(err) {
+            osxkeychain.remove(username, service, "" /*description*/, function (err: any) {
                 if (err) {
                     if (err.code !== undefined && err.code === 44) {
                         // If credential is not found, don't fail.
@@ -173,15 +173,15 @@ export class OsxKeychainApi implements ICredentialStore {
         return deferred.promise;
     }
 
-    private listCredentials(service? : string) : Q.Promise<Array<Credential>> {
+    private listCredentials(service?: string): Q.Promise<Array<Credential>> {
         const deferred: Q.Deferred<Array<Credential>> = Q.defer<Array<Credential>>();
         const credentials: Array<Credential> = [];
 
         const stream = osxkeychain.list();
-        stream.on("data", (cred) => {
+        stream.on("data", (cred: any) => {
             // Don't return all credentials, just ones that start
             // with our prefix and optional service
-            if (cred.svce !== undefined) {
+            if (this._prefix && cred.svce !== undefined) {
                 if (cred.svce.indexOf(this._prefix) === 0) {
                     const svc: string = cred.svce.substring(this._prefix.length);
                     const username: string = cred.acct;
@@ -198,7 +198,7 @@ export class OsxKeychainApi implements ICredentialStore {
         stream.on("end", () => {
             deferred.resolve(credentials);
         });
-        stream.on("error", (error) => {
+        stream.on("error", (error: any) => {
             console.log(error);
             deferred.reject(error);
         });

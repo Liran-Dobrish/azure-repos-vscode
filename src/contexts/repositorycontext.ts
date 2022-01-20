@@ -23,13 +23,13 @@ export interface IRepositoryContext {
     IsTeamFoundation: boolean;
     IsTeamServices: boolean;
     RemoteUrl: string;
-    RepoFolder: string;
-    RepositoryParentFolder: string;
+    RepoFolder: string | undefined;
+    RepositoryParentFolder: string | undefined;
 
     //Git-specific values
-    CurrentBranch: string;
-    CurrentRef: string;
+    CurrentBranch: string | undefined;
+    CurrentRef: string | undefined;
 
     //TFVC-specific values
-    TeamProjectName: string;
+    TeamProjectName: string | undefined;
 }

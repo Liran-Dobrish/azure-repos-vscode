@@ -21,25 +21,25 @@ export class FileTokenStorage {
         this._filename = filename;
     }
 
-    public AddEntries(newEntries: Array<any>, existingEntries: Array<any>) : Q.Promise<void> {
+    public AddEntries(newEntries: Array<any>, existingEntries: Array<any>): Q.Promise<void> {
         const entries: Array<any> = existingEntries.concat(newEntries);
         return this.saveEntries(entries);
     }
 
-    public Clear() : Q.Promise<void> {
+    public Clear(): Q.Promise<void> {
         return this.saveEntries([]);
     }
 
-    public LoadEntries() : Q.Promise<any> {
+    public LoadEntries(): Q.Promise<any> {
         const deferred: Q.Deferred<any> = Q.defer();
         let entries: Array<any> = [];
         let err: any;
 
         try {
-            const content: string = fs.readFileSync(this._filename, {encoding: "utf8", flag: "r"});
+            const content: string = fs.readFileSync(this._filename, { encoding: "utf8", flag: "r" });
             entries = JSON.parse(content);
             deferred.resolve(entries);
-        } catch (ex) {
+        } catch (ex: any) {
             if (ex.code !== "ENOENT") {
                 err = ex;
                 deferred.reject(err);
@@ -52,14 +52,14 @@ export class FileTokenStorage {
         return deferred.promise;
     }
 
-    public RemoveEntries(entriesToKeep: Array<any> /*, entriesToRemove?: Array<any>*/) : Q.Promise<void> {
+    public RemoveEntries(entriesToKeep: Array<any> /*, entriesToRemove?: Array<any>*/): Q.Promise<void> {
         return this.saveEntries(entriesToKeep);
     }
 
-    private saveEntries(entries: Array<any>) : Q.Promise<void> {
+    private saveEntries(entries: Array<any>): Q.Promise<void> {
         const defer: Q.Deferred<void> = Q.defer<void>();
 
-        const writeOptions = {
+        const writeOptions: fs.WriteFileOptions = {
             encoding: "utf8",
             mode: 384, // Permission 0600 - owner read/write, nobody else has access
             flag: "w"
@@ -70,7 +70,7 @@ export class FileTokenStorage {
         if (!fs.existsSync(folder)) {
             fs.mkdirSync(folder);
         }
-        fs.writeFile(this._filename, JSON.stringify(entries), writeOptions, (err) => {
+        fs.writeFile(this._filename, JSON.stringify(entries), writeOptions, (err: any) => {
             if (err) {
                 defer.reject(err);
             } else {

@@ -8,44 +8,45 @@ import { Logger } from "../helpers/logger";
 import { RepoUtils } from "../helpers/repoutils";
 import { UrlBuilder } from "../helpers/urlbuilder";
 import * as url from "url";
+import { ParsedUrlQuery } from "querystring";
 
 //When a RepositoryInfo object is created, we have already verified whether or not it
 //is either a Team Services or Team Foundation Server repository.  With the introduction
 //of TFVC support, we cannot determine if it is TFVC based on url alone.  Therfore,
 //we have to assume that are creating a RepositoryInfo for an existing TF repo.
 export class RepositoryInfo {
-    private _host: string;
-    private _hostName: string;
-    private _path: string;
-    private _pathName: string;
-    private _port: string;
-    private _protocol: string;
-    private _query: string;
+    private _host!: string;
+    private _hostName!: string;
+    private _path!: string;
+    private _pathName!: string;
+    private _port!: string;
+    private _protocol!: string;
+    private _query!: string | null | ParsedUrlQuery;
 
-    private _account: string;
-    private _collection: string;
-    private _collectionId: string;
-    private _teamProject: string;
-    private _repositoryName: string;
-    private _repositoryUrl: string;
-    private _serverUrl: string;
+    private _account!: string;
+    private _collection: string | undefined;
+    private _collectionId!: string;
+    private _teamProject!: string;
+    private _repositoryName!: string;
+    private _repositoryUrl!: string;
+    private _serverUrl!: string;
 
     // Indicates whether the repository is Team Services
     private _isTeamServicesUrl: boolean = false;
     // Indicates whether the repository is an on-premises server
     private _isTeamFoundationServer: boolean = false;
 
-    private _repositoryId: string;
+    private _repositoryId!: string;
 
     constructor(repositoryUrl: string);
     constructor(repositoryInfo: any);
 
-    constructor (repositoryInfo: any) {
+    constructor(repositoryInfo: any) {
         if (!repositoryInfo) {
             throw new Error(`repositoryInfo is undefined`);
         }
 
-        let repositoryUrl: string = undefined;
+        let repositoryUrl: string = "";
 
         if (typeof repositoryInfo === "object") {
             repositoryUrl = repositoryInfo.repository.remoteUrl;
@@ -57,31 +58,33 @@ export class RepositoryInfo {
 
         const purl: url.Url = url.parse(repositoryUrl);
         if (purl) {
-            this._host = purl.host;
-            this._hostName = purl.hostname;
-            this._path = purl.path;
-            this._pathName = purl.pathname;
-            this._port = purl.port;
-            this._protocol = purl.protocol;
+            this._host = purl.host!;
+            this._hostName = purl.hostname!;
+            this._path = purl.path!;
+            this._pathName = purl.pathname!;
+            this._port = purl.port!;
+            this._protocol = purl.protocol!;
             this._query = purl.query;
 
             this._repositoryUrl = repositoryUrl;
             if (RepoUtils.IsTeamFoundationServicesRepo(repositoryUrl)) {
                 if (RepoUtils.IsTeamFoundationServicesAzureRepo(this._repositoryUrl)) {
-                    const splitPath = this._path.split("/");
-                    if (splitPath.length >= 1) {
+                    const splitPath = this._path?.split("/");
+                    if (splitPath && splitPath.length >= 1) {
                         this._account = splitPath[1];
                     } else {
                         throw new Error(`Could not parse account from ${this._path}`);
                     }
                 } else {
-                    const splitHost = this._host.split(".");
-                    this._account = splitHost[0];
+                    const splitHost = this._host?.split(".");
+                    if (splitHost) {
+                        this._account = splitHost[0];
+                    }
                 }
                 this._isTeamServicesUrl = true;
                 Logger.LogDebug("_isTeamServicesUrl: true");
             } else if (RepoUtils.IsTeamFoundationServerRepo(repositoryUrl)) {
-                this._account = purl.host;
+                this._account = purl.host!;
                 this._isTeamFoundationServer = true;
             }
             if (typeof repositoryInfo === "object") {
@@ -109,10 +112,10 @@ export class RepositoryInfo {
         }
     }
 
-    public get Account(): string {
+    public get Account(): string | null {
         return this._account;
     }
-    public get AccountUrl(): string {
+    public get AccountUrl(): string | undefined {
         if (this._isTeamServicesUrl) {
             if (RepoUtils.IsTeamFoundationServicesAzureRepo(this._repositoryUrl)) {
                 return this._protocol + "//" + this._host + "/" + this._account;
@@ -125,18 +128,18 @@ export class RepositoryInfo {
     public get CollectionId(): string {
         return this._collectionId;
     }
-    public get CollectionName(): string {
+    public get CollectionName(): string | undefined {
         return this._collection;
     }
-    public get CollectionUrl(): string {
+    public get CollectionUrl(): string | undefined {
         if (this._collection === undefined) {
             return undefined;
         }
         // While leaving the actual data alone, check for 'collection in the domain'
         // If an Azure repo the "DefaultCollection" should never be part of the URL.
         if (this._account.toLowerCase() !== this._collection.toLowerCase()
-        && !RepoUtils.IsTeamFoundationServicesAzureRepo(this.RepositoryUrl)) {
-            return UrlBuilder.Join(this.AccountUrl, this._collection);
+            && !RepoUtils.IsTeamFoundationServicesAzureRepo(this.RepositoryUrl)) {
+            return UrlBuilder.Join(this.AccountUrl!, this._collection);
         } else {
             return this.AccountUrl;
         }
@@ -165,11 +168,11 @@ export class RepositoryInfo {
     public get RepositoryUrl(): string {
         return this._repositoryUrl;
     }
-    public get TeamProjectUrl(): string {
+    public get TeamProjectUrl(): string | undefined {
         if (this._teamProject === undefined) {
             return undefined;
         }
-        return UrlBuilder.Join(this.CollectionUrl, this._teamProject);
+        return UrlBuilder.Join(this.CollectionUrl!, this._teamProject);
     }
     public get TeamProject(): string {
         return this._teamProject;

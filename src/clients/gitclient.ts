@@ -5,14 +5,14 @@
 "use strict";
 
 import { StatusBarItem, window } from "vscode";
-import { GitPullRequest, PullRequestStatus} from "azure-devops-node-api/interfaces/GitInterfaces";
+import { GitPullRequest, PullRequestStatus } from "azure-devops-node-api/interfaces/GitInterfaces";
 import { BaseQuickPickItem, VsCodeUtils } from "../helpers/vscodeutils";
 import { CommandNames, TelemetryEvents } from "../helpers/constants";
 import { Logger } from "../helpers/logger";
 import { Strings } from "../helpers/strings";
 import { Utils } from "../helpers/utils";
 import { IRepositoryContext, RepositoryType } from "../contexts/repositorycontext";
-import { TeamServerContext} from "../contexts/servercontext";
+import { TeamServerContext } from "../contexts/servercontext";
 import { GitVcService, PullRequestScore } from "../services/gitvc";
 import { Telemetry } from "../services/telemetry";
 import { BaseClient } from "./baseclient";
@@ -30,19 +30,19 @@ export class GitClient extends BaseClient {
         Telemetry.SendEvent(TelemetryEvents.ViewPullRequests);
 
         try {
-            const request: BaseQuickPickItem = await window.showQuickPick(this.getMyPullRequests(), { matchOnDescription: true, placeHolder: Strings.ChoosePullRequest });
+            const request: BaseQuickPickItem | undefined = await window.showQuickPick(this.getMyPullRequests(), { matchOnDescription: true, placeHolder: Strings.ChoosePullRequest });
             if (request) {
                 Telemetry.SendEvent(TelemetryEvents.ViewPullRequest);
-                let discUrl: string = undefined;
+                let discUrl: string | undefined = undefined;
                 if (request.id !== undefined) {
-                    discUrl = GitVcService.GetPullRequestDiscussionUrl(this._serverContext.RepoInfo.RepositoryUrl, request.id);
+                    discUrl = GitVcService.GetPullRequestDiscussionUrl(this._serverContext.RepoInfo!.RepositoryUrl, request.id);
                 } else {
-                    discUrl = GitVcService.GetPullRequestsUrl(this._serverContext.RepoInfo.RepositoryUrl);
+                    discUrl = GitVcService.GetPullRequestsUrl(this._serverContext.RepoInfo!.RepositoryUrl);
                 }
                 Logger.LogInfo("Pull Request Url: " + discUrl);
                 Utils.OpenUrl(discUrl);
             }
-        } catch (err) {
+        } catch (err: any) {
             this.handleError(err, GitClient.GetOfflinePullRequestStatusText(), false, "Error selecting pull request from QuickPick");
         }
     }
@@ -50,17 +50,17 @@ export class GitClient extends BaseClient {
     //Opens the blame page for the currently active file
     public OpenBlamePage(context: IRepositoryContext): void {
         this.ensureGitContext(context);
-        let url: string = undefined;
+        let url: string | undefined = undefined;
 
         const editor = window.activeTextEditor;
         if (editor) {
             Telemetry.SendEvent(TelemetryEvents.OpenBlamePage);
 
             //Get the relative file path we can use to create the url
-            let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder, editor.document.fileName);
+            let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder!, editor.document.fileName);
             relativePath = relativePath.split("\\").join("/");  //Replace all
 
-            url = GitVcService.GetFileBlameUrl(context.RemoteUrl, relativePath, context.CurrentBranch);
+            url = GitVcService.GetFileBlameUrl(context.RemoteUrl, relativePath, context.CurrentBranch!);
             //Note: if file hasn't been pushed yet, blame link we generate won't point to anything valid (basically a 404)
             Logger.LogInfo("OpenBlame: " + url);
             Utils.OpenUrl(url);
@@ -74,22 +74,22 @@ export class GitClient extends BaseClient {
     //Opens the file history page for the currently active file
     public OpenFileHistory(context: IRepositoryContext): void {
         this.ensureGitContext(context);
-        let historyUrl: string = undefined;
+        let historyUrl: string | undefined = undefined;
 
         const editor = window.activeTextEditor;
         if (!editor) {
             Telemetry.SendEvent(TelemetryEvents.OpenRepositoryHistory);
 
-            historyUrl = GitVcService.GetRepositoryHistoryUrl(context.RemoteUrl, context.CurrentBranch);
+            historyUrl = GitVcService.GetRepositoryHistoryUrl(context.RemoteUrl, context.CurrentBranch!);
             Logger.LogInfo("OpenRepoHistory: " + historyUrl);
         } else {
             Telemetry.SendEvent(TelemetryEvents.OpenFileHistory);
 
             //Get the relative file path we can use to create the history url
-            let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder, editor.document.fileName);
+            let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder!, editor.document.fileName);
             relativePath = relativePath.split("\\").join("/");  //Replace all
 
-            historyUrl = GitVcService.GetFileHistoryUrl(context.RemoteUrl, relativePath, context.CurrentBranch);
+            historyUrl = GitVcService.GetFileHistoryUrl(context.RemoteUrl, relativePath, context.CurrentBranch!);
             //Note: if file hasn't been pushed yet, history link we generate won't point to anything valid (basically a 404)
             Logger.LogInfo("OpenFileHistory: " + historyUrl);
         }
@@ -111,7 +111,7 @@ export class GitClient extends BaseClient {
             this._statusBarItem.tooltip = Strings.BrowseYourPullRequests;
             //Remove the default Strings.BrowseYourPullRequests item from the calculation
             this._statusBarItem.text = GitClient.GetPullRequestStatusText((requests.length - 1).toString());
-        } catch (err) {
+        } catch (err: any) {
             this.handleError(err, GitClient.GetOfflinePullRequestStatusText(), true, "Attempting to poll my pull requests");
         }
     }
@@ -122,25 +122,25 @@ export class GitClient extends BaseClient {
 
         Logger.LogInfo("Getting pull requests that I requested...");
         const svc: GitVcService = new GitVcService(this._serverContext);
-        const myPullRequests: GitPullRequest[] = await svc.GetPullRequests(this._serverContext.RepoInfo.RepositoryId, this._serverContext.UserInfo.Id, undefined, PullRequestStatus.Active);
+        const myPullRequests: GitPullRequest[] = await svc.GetPullRequests(this._serverContext.RepoInfo!.RepositoryId, this._serverContext.UserInfo!.Id, undefined, PullRequestStatus.Active);
         const icon: string = "search";
         const label: string = `$(${icon}) `;
         requestItems.push({ label: label + Strings.BrowseYourPullRequests, description: undefined, id: undefined });
 
         myPullRequests.forEach((pr) => {
             const score: PullRequestScore = GitVcService.GetPullRequestScore(pr);
-            requestItems.push(this.getPullRequestLabel(pr.createdBy.displayName, pr.title, pr.description, pr.pullRequestId.toString(), score));
-            requestIds.push(pr.pullRequestId);
+            requestItems.push(this.getPullRequestLabel(pr.createdBy!.displayName!, pr.title!, pr.description!, pr.pullRequestId!.toString(), score));
+            requestIds.push(pr!.pullRequestId!);
         });
         Logger.LogInfo("Retrieved " + myPullRequests.length + " pull requests that I requested");
 
         Logger.LogInfo("Getting pull requests for which I'm a reviewer...");
         //Go get the active pull requests that I'm a reviewer for
-        const myReviewPullRequests: GitPullRequest[] = await svc.GetPullRequests(this._serverContext.RepoInfo.RepositoryId, undefined, this._serverContext.UserInfo.Id, PullRequestStatus.Active);
+        const myReviewPullRequests: GitPullRequest[] = await svc.GetPullRequests(this._serverContext.RepoInfo!.RepositoryId, undefined, this._serverContext.UserInfo!.Id, PullRequestStatus.Active);
         myReviewPullRequests.forEach((pr) => {
             const score: PullRequestScore = GitVcService.GetPullRequestScore(pr);
-            if (requestIds.indexOf(pr.pullRequestId) < 0) {
-                requestItems.push(this.getPullRequestLabel(pr.createdBy.displayName, pr.title, pr.description, pr.pullRequestId.toString(), score));
+            if (requestIds.indexOf(pr!.pullRequestId!) < 0) {
+                requestItems.push(this.getPullRequestLabel(pr.createdBy!.displayName!, pr.title!, pr.description!, pr.pullRequestId!.toString(), score));
             }
         });
         Logger.LogInfo("Retrieved " + myReviewPullRequests.length + " pull requests that I'm the reviewer");
@@ -169,12 +169,12 @@ export class GitClient extends BaseClient {
         return { label: scoreLabel + " (" + displayName + ") " + title, description: description, id: id };
     }
 
-    public static GetOfflinePullRequestStatusText() : string {
+    public static GetOfflinePullRequestStatusText(): string {
         return `$(git-pull-request) ???`;
     }
 
     //Sets the text on the pull request status bar
-    public static GetPullRequestStatusText(total?: string) : string {
+    public static GetPullRequestStatusText(total?: string): string {
         if (!total) {
             return `$(git-pull-request) $(dash)`;
         }

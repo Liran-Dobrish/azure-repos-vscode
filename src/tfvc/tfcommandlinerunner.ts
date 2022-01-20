@@ -21,6 +21,7 @@ import { TfvcOutput } from "./tfvcoutput";
 import * as _ from "underscore";
 import * as fs from "fs";
 import * as path from "path";
+import internal from "stream";
 
 /**
  * This is a static class that facilitates running the TFVC command line.
@@ -30,7 +31,7 @@ export class TfCommandLineRunner {
     /**
      * Call this method to get the repository object that allows you to perform TFVC commands.
      */
-    public static CreateRepository(serverContext: TeamServerContext, repositoryRootFolder: string, env: any = {}): TfvcRepository {
+    public static CreateRepository(serverContext: TeamServerContext | undefined, repositoryRootFolder: string, env: any = {}): TfvcRepository {
         const tfvc: ITfCommandLine = TfCommandLineRunner.GetCommandLine();
         return new TfvcRepository(serverContext, tfvc, repositoryRootFolder, env, tfvc.isExe);
     }
@@ -39,10 +40,10 @@ export class TfCommandLineRunner {
         Logger.LogDebug(`TFVC Creating Tfvc object with localPath='${localPath}'`);
         // Get Proxy from settings
         const settings: TfvcSettings = new TfvcSettings();
-        const proxy: string = settings.Proxy;
+        const proxy: string | undefined = settings.Proxy;
         Logger.LogDebug(`Using TFS proxy: ${proxy}`);
 
-        let tfvcPath: string = localPath;
+        let tfvcPath: string | undefined = localPath;
         if (!tfvcPath) {
             // get the location from settings
             tfvcPath = settings.Location;
@@ -112,9 +113,11 @@ export class TfCommandLineRunner {
             let options: IButtonMessageItem[] = [];
             if (tfvc.isExe) {
                 //Provide more information on how to update tf.exe to the minimum version required
-                options =  [{ title : Strings.VS2015Update3CSR,
-                            url : Constants.VS2015U3CSRUrl,
-                            telemetryId: TelemetryEvents.VS2015U3CSR }];
+                options = [{
+                    title: Strings.VS2015Update3CSR,
+                    url: Constants.VS2015U3CSRUrl,
+                    telemetryId: TelemetryEvents.VS2015U3CSR
+                }];
             }
             throw new TfvcError({
                 message: `${Strings.TfVersionWarning}${minVersion.ToString()}`,
@@ -155,7 +158,7 @@ export class TfCommandLineRunner {
      *********************************************************************************************/
     private static _location: string;
     private static _options: any;
-    private static _runningInstance: cp.ChildProcess;
+    private static _runningInstance: cp.ChildProcess | undefined;
 
     /**
      * The Run method will attempt to use the cached TF process, if possible, to run the command and then
@@ -226,16 +229,16 @@ export class TfCommandLineRunner {
     private static async runCommand(argsForStandardInput: string, child: cp.ChildProcess, isExe: boolean): Promise<IExecutionResult> {
         const disposables: IDisposable[] = [];
 
-        child.stdin.end(argsForStandardInput, "utf8");
+        child.stdin?.end(argsForStandardInput, "utf8");
 
-        const once = (ee: NodeJS.EventEmitter, name: string, fn: Function) => {
-            ee.once(name, fn);
-            disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+        const once = (ee: internal.Readable | null | cp.ChildProcess, name: string, fn: (...args: any[]) => void) => {
+            ee?.once(name, fn);
+            disposables.push(toDisposable(() => ee?.removeListener(name, fn)));
         };
 
-        const on = (ee: NodeJS.EventEmitter, name: string, fn: Function) => {
-            ee.on(name, fn);
-            disposables.push(toDisposable(() => ee.removeListener(name, fn)));
+        const on = (ee: internal.Readable | null, name: string, fn: (...args: any[]) => void) => {
+            ee?.on(name, fn);
+            disposables.push(toDisposable(() => ee?.removeListener(name, fn)));
         };
 
         const [exitCode, stdout, stderr] = await Promise.all<any>([
@@ -245,7 +248,7 @@ export class TfCommandLineRunner {
             }),
             new Promise<string>((c) => {
                 const buffers: string[] = [];
-                on(child.stdout, "data", (b) => {
+                on(child.stdout, "data", (...b: any) => {
                     buffers.push(b);
                 });
                 once(child.stdout, "close", () => {
@@ -264,7 +267,7 @@ export class TfCommandLineRunner {
             }),
             new Promise<string>((c) => {
                 const buffers: string[] = [];
-                on(child.stderr, "data", (b) => buffers.push(b));
+                on(child.stderr, "data", (b: any) => buffers.push(b));
                 once(child.stderr, "close", () => c(buffers.join("")));
             })
         ]);

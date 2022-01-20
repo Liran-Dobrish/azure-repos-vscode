@@ -43,7 +43,7 @@ describe("CredentialManager-Integration", function() {
             credInfo = await credentialManager.GetCredentials(ctx);
             //Ensure the creds we added get removed
             assert.isUndefined(credInfo);
-        } catch (err) {
+        } catch (err : any) {
             console.log(err);
         }
     });
@@ -64,7 +64,7 @@ describe("CredentialManager-Integration", function() {
             credInfo = await credentialManager.GetCredentials(ctx);
             //Ensure the creds we added get removed
             assert.isUndefined(credInfo);
-        } catch (err) {
+        } catch (err : any) {
             console.log(err);
         }
     });
@@ -90,7 +90,7 @@ describe("CredentialManager-Integration", function() {
             credInfo = await credentialManager.GetCredentials(ctxAccount1);
             //Ensure the creds we added get removed
             assert.isUndefined(credInfo);
-        } catch (err) {
+        } catch (err : any) {
             console.log(err);
         }
     });
@@ -117,7 +117,7 @@ describe("CredentialManager-Integration", function() {
             credInfo = await credentialManager.GetCredentials(ctxAccount1);
             //Ensure the creds we added get removed
             assert.isUndefined(credInfo);
-        } catch (err) {
+        } catch (err : any) {
             console.log(err);
         }
     });

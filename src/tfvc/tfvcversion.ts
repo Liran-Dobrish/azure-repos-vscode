@@ -15,7 +15,7 @@ export class TfvcVersion {
     private _revision: number;
     private _build: string;
 
-    public static FromString(version: string): TfvcVersion {
+    public static FromString(version: string | undefined): TfvcVersion {        
         const parts: string[] = version ? version.split(TfvcVersion.separator) : [];
         const major: number = parts.length >= 1 ? Number(parts[0]) : 0;
         const minor: number = parts.length >= 2 ? Number(parts[1]) : 0;

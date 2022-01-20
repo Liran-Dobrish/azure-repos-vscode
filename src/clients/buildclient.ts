@@ -17,7 +17,7 @@ import { IRepositoryContext, RepositoryType } from "../contexts/repositorycontex
 import { BaseClient } from "./baseclient";
 
 export class BuildClient extends BaseClient {
-    private _buildSummaryUrl: string;
+    private _buildSummaryUrl: string | undefined;
 
     constructor(context: TeamServerContext, statusBarItem: StatusBarItem) {
         super(context, statusBarItem);
@@ -28,15 +28,15 @@ export class BuildClient extends BaseClient {
         try {
             const svc: BuildService = new BuildService(this._serverContext);
             Logger.LogInfo("Getting current build from badge...");
-            let buildBadge: BuildBadge;
+            let buildBadge: BuildBadge | undefined;
             if (context.Type === RepositoryType.GIT) {
-                buildBadge = await svc.GetBuildBadge(this._serverContext.RepoInfo.TeamProject, WellKnownRepositoryTypes.TfsGit, this._serverContext.RepoInfo.RepositoryId, context.CurrentRef);
+                buildBadge = await svc.GetBuildBadge(this._serverContext.RepoInfo!.TeamProject, WellKnownRepositoryTypes.TfsGit, this._serverContext.RepoInfo!.RepositoryId, context.CurrentRef!);
             } else if (context.Type === RepositoryType.TFVC || context.Type === RepositoryType.EXTERNAL && !definitionId) {
                 //If either TFVC or External and no definition Id, show default builds page
-                buildBadge = await this.getTfvcBuildBadge(svc, this._serverContext.RepoInfo.TeamProject);
+                buildBadge = await this.getTfvcBuildBadge(svc, this._serverContext.RepoInfo!.TeamProject);
             } else if (definitionId) {
                 //TODO: Allow definitionId to override Git and TFVC defaults (above)?
-                const builds: Build[] = await svc.GetBuildsByDefinitionId(this._serverContext.RepoInfo.TeamProject, definitionId);
+                const builds: Build[] = await svc.GetBuildsByDefinitionId(this._serverContext.RepoInfo!.TeamProject, definitionId);
                 if (builds.length > 0) {
                     buildBadge = { buildId: builds[0].id, imageUrl: undefined };
                 } else {
@@ -45,27 +45,27 @@ export class BuildClient extends BaseClient {
             }
             if (buildBadge && buildBadge.buildId !== undefined) {
                 Logger.LogInfo("Found build id " + buildBadge.buildId.toString() + ". Getting build details...");
-                const build: Build = await svc.GetBuildById(buildBadge.buildId);
-                this._buildSummaryUrl = BuildService.GetBuildSummaryUrl(this._serverContext.RepoInfo.TeamProjectUrl, build.id.toString());
-                Logger.LogInfo("Build summary info: " + build.id.toString() + " " + BuildStatus[build.status] +
-                    " " + BuildResult[build.result] + " " + this._buildSummaryUrl);
+                const build: Build = await svc.GetBuildById(this._serverContext.RepoInfo!.TeamProject, buildBadge.buildId);
+                this._buildSummaryUrl = BuildService.GetBuildSummaryUrl(this._serverContext.RepoInfo!.TeamProjectUrl!, build.id!.toString());
+                Logger.LogInfo("Build summary info: " + build.id?.toString() + " " + BuildStatus[build.status!] +
+                    " " + BuildResult[build.result!] + " " + this._buildSummaryUrl);
 
                 if (this._statusBarItem !== undefined) {
                     const icon: string = Utils.GetBuildResultIcon(build.result);
                     this._statusBarItem.command = CommandNames.OpenBuildSummaryPage;
                     this._statusBarItem.text = `$(package) ` + `$(${icon})`;
-                    this._statusBarItem.tooltip = "(" + BuildResult[build.result] + ") " + Strings.NavigateToBuildSummary + " " + build.buildNumber;
+                    this._statusBarItem.tooltip = "(" + BuildResult[build.result!] + ") " + Strings.NavigateToBuildSummary + " " + build.buildNumber;
                 }
             } else {
-                Logger.LogInfo("No builds were found for team " + this._serverContext.RepoInfo.TeamProject.toString() +
-                    ", repo id " + this._serverContext.RepoInfo.RepositoryId.toString() + ", + branch " + (!context.CurrentBranch ? "UNKNOWN" : context.CurrentBranch.toString()));
+                Logger.LogInfo("No builds were found for team " + this._serverContext.RepoInfo?.TeamProject.toString() +
+                    ", repo id " + this._serverContext.RepoInfo!.RepositoryId.toString() + ", + branch " + (!context.CurrentBranch ? "UNKNOWN" : context.CurrentBranch.toString()));
                 if (this._statusBarItem !== undefined) {
                     this._statusBarItem.command = CommandNames.OpenBuildSummaryPage;
                     this._statusBarItem.text = `$(package) ` + `$(dash)`;
                     this._statusBarItem.tooltip = context.Type === RepositoryType.GIT ? Strings.NoBuildsFound : Strings.NoTfvcBuildsFound;
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             this.handleError(err, BuildClient.GetOfflineBuildStatusText(), polling, "Failed to get current build status");
         }
     }
@@ -80,7 +80,7 @@ export class BuildClient extends BaseClient {
             return emptyBuild;
         }
 
-        let matchingBuild: Build;
+        let matchingBuild: Build | undefined;
         for (let idx: number = 0; idx < builds.length; idx++) {
             const b: Build = builds[idx];
             // Ignore canceled builds
@@ -88,7 +88,7 @@ export class BuildClient extends BaseClient {
                 continue;
             }
             if (b.repository &&
-                b.repository.type.toLowerCase() === "tfsversioncontrol") {
+                b.repository.type?.toLowerCase() === "tfsversioncontrol") {
                 matchingBuild = b;
                 break;
             }
@@ -102,10 +102,10 @@ export class BuildClient extends BaseClient {
 
     public OpenBuildSummaryPage(): void {
         Telemetry.SendEvent(TelemetryEvents.OpenBuildSummaryPage);
-        let url: string = this._buildSummaryUrl;
+        let url: string | undefined = this._buildSummaryUrl;
         if (url === undefined) {
             Logger.LogInfo("No build summary available, using build definitions url.");
-            url = BuildService.GetBuildDefinitionsUrl(this._serverContext.RepoInfo.TeamProjectUrl);
+            url = BuildService.GetBuildDefinitionsUrl(this._serverContext.RepoInfo!.TeamProjectUrl!);
         }
         Logger.LogInfo("OpenBuildSummaryPage: " + url);
         Utils.OpenUrl(url);

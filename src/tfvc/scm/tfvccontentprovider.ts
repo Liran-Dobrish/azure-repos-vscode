@@ -22,6 +22,8 @@ export class TfvcContentProvider {
     constructor(repository: TfvcRepository, rootPath: string, onTfvcChange: Event<Uri>) {
         this._tfvcRepository = repository;
         this._rootPath = rootPath;
+        console.log(this._rootPath);
+
         this._disposables.push(
             onTfvcChange(this.fireChangeEvents, this),
             workspace.registerTextDocumentContentProvider(TfvcSCMProvider.scmScheme, this)
@@ -36,7 +38,7 @@ export class TfvcContentProvider {
         //}
     }
 
-    async provideTextDocumentContent(uri: Uri): Promise<string> {
+    async provideTextDocumentContent(uri: Uri): Promise<string | undefined> {
         let path: string = uri.fsPath;
         const versionSpec: string = uri.query;
 
@@ -54,9 +56,9 @@ export class TfvcContentProvider {
 
         try {
             Telemetry.SendEvent(this._tfvcRepository.IsExe ? TfvcTelemetryEvents.GetFileContentExe : TfvcTelemetryEvents.GetFileContentClc);
-            const contents: string = await this._tfvcRepository.GetFileContent(path, versionSpec);
-            return contents;
-        } catch (err) {
+            const contents: string | undefined = await this._tfvcRepository.GetFileContent(path, versionSpec);
+            return contents ? contents : "";
+        } catch (err: any) {
             return "";
         }
     }

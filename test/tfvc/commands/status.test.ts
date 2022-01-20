@@ -43,11 +43,11 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify constructor", function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        new Status(undefined, true, localPaths);
+        new Status(new TeamServerContext(""), true, localPaths);
     });
 
     it("should verify constructor - no paths", function() {
-        new Status(undefined, true);
+        new Status(new TeamServerContext(""), true);
     });
 
     it("should verify constructor with context", function() {
@@ -61,52 +61,52 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify GetOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
     it("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
     it("should verify arguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive " + localPaths[0]);
     });
 
     it("should verify Exe arguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive " + localPaths[0]);
     });
 
     it("should verify arguments - no paths", function() {
-        const cmd: Status = new Status(undefined, true);
+        const cmd: Status = new Status(new TeamServerContext(""), true);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive");
     });
 
     it("should verify Exe arguments - no paths", function() {
-        const cmd: Status = new Status(undefined, true);
+        const cmd: Status = new Status(new TeamServerContext(""), true);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive");
     });
 
     it("should verify arguments - multiple paths", function() {
         const localPaths: string[] = ["/path/to/workspace", "/path/to/workspace2"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive " + localPaths[0] + " " + localPaths[1]);
     });
 
     it("should verify Exe arguments - multiple paths", function() {
         const localPaths: string[] = ["/path/to/workspace", "/path/to/workspace2"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive " + localPaths[0] + " " + localPaths[1]);
     });
@@ -127,7 +127,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: undefined,
@@ -140,7 +140,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: undefined,
@@ -153,7 +153,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse output - valid json", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const stdout: string = `<?xml version="1.0" encoding="utf-8"?>
      <status>
      <pending-changes>
@@ -199,7 +199,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - pending changes only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: "$/jeyou/README.md;C19\n" +
@@ -232,7 +232,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - pending and detected changes - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: "$/jeyou/README.md;C19\n" +
@@ -287,7 +287,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - detected changes only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: "-----------------\n" +
@@ -322,7 +322,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - multiple pending and multiple detected changes - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: "$/jeyou/README.md;C19\n" +
@@ -373,7 +373,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - pending rename only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 0,
             stdout: "$/jeyou/READU.md;C19\n" +
@@ -407,7 +407,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse output - error exit code", async function() {
         const localPaths: string[] = ["folder1/file1.txt", "folder2/file2.txt"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 42,
             stdout: "Something bad this way comes.",
@@ -416,7 +416,7 @@ describe("Tfvc-StatusCommand", function() {
 
         try {
             await cmd.ParseOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.exitCode, 42);
             assert.isTrue(err.message.startsWith(Strings.TfExecFailedError));
         }
@@ -424,7 +424,7 @@ describe("Tfvc-StatusCommand", function() {
 
     it("should verify parse Exe output - error exit code", async function() {
         const localPaths: string[] = ["folder1/file1.txt", "folder2/file2.txt"];
-        const cmd: Status = new Status(undefined, true, localPaths);
+        const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
             exitCode: 42,
             stdout: "Something bad this way comes.",
@@ -433,7 +433,7 @@ describe("Tfvc-StatusCommand", function() {
 
         try {
             await cmd.ParseExeOutput(executionResult);
-        } catch (err) {
+        } catch (err : any) {
             assert.equal(err.exitCode, 42);
             assert.isTrue(err.message.startsWith(Strings.TfExecFailedError));
         }

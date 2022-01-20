@@ -33,19 +33,20 @@ import { TfvcRepository } from "./tfvc/tfvcrepository";
 
 import * as path from "path";
 import * as util from "util";
+import { ConnectionData } from "azure-devops-node-api/interfaces/LocationsInterfaces";
 
 export class ExtensionManager implements Disposable {
-    private _teamServicesStatusBarItem: StatusBarItem;
-    private _feedbackStatusBarItem: StatusBarItem;
-    private _errorMessage: string;
-    private _feedbackClient: FeedbackClient;
-    private _serverContext: TeamServerContext;
-    private _repoContext: IRepositoryContext;
-    private _settings: Settings;
-    private _credentialManager : CredentialManager;
-    private _teamExtension: TeamExtension;
-    private _tfvcExtension: TfvcExtension;
-    private _scmProvider: TfvcSCMProvider;
+    private _teamServicesStatusBarItem: StatusBarItem | undefined;
+    private _feedbackStatusBarItem: StatusBarItem | undefined;
+    private _errorMessage: string | undefined;
+    private _feedbackClient: FeedbackClient | undefined;
+    private _serverContext: TeamServerContext | undefined;
+    private _repoContext: IRepositoryContext | undefined;
+    private _settings: Settings | undefined;
+    private _credentialManager: CredentialManager | undefined;
+    private _teamExtension: TeamExtension | undefined;
+    private _tfvcExtension: TfvcExtension | undefined;
+    private _scmProvider: TfvcSCMProvider | undefined;
 
     public async Initialize(): Promise<void> {
         await this.setupFileSystemWatcherOnConfig();
@@ -61,31 +62,31 @@ export class ExtensionManager implements Disposable {
         }
     }
 
-    public get RepoContext(): IRepositoryContext {
+    public get RepoContext(): IRepositoryContext | undefined {
         return this._repoContext;
     }
 
-    public get ServerContext(): TeamServerContext {
+    public get ServerContext(): TeamServerContext | undefined {
         return this._serverContext;
     }
 
-    public get CredentialManager(): CredentialManager {
+    public get CredentialManager(): CredentialManager | undefined {
         return this._credentialManager;
     }
 
-    public get FeedbackClient(): FeedbackClient {
+    public get FeedbackClient(): FeedbackClient | undefined {
         return this._feedbackClient;
     }
 
-    public get Settings(): Settings {
+    public get Settings(): Settings | undefined {
         return this._settings;
     }
 
-    public get Team(): TeamExtension {
+    public get Team(): TeamExtension | undefined {
         return this._teamExtension;
     }
 
-    public get Tfvc(): TfvcExtension {
+    public get Tfvc(): TfvcExtension | undefined {
         return this._tfvcExtension;
     }
 
@@ -103,10 +104,10 @@ export class ExtensionManager implements Disposable {
     //Ensure we have a TFS or Team Services-based repository. Otherwise, return false.
     private ensureMinimalInitialization(): boolean {
         if (!this._repoContext
-                || !this._serverContext
-                || !this._serverContext.RepoInfo.IsTeamFoundation) {
+            || !this._serverContext
+            || !this._serverContext.RepoInfo!.IsTeamFoundation) {
             //If the user previously signed out (in this session of VS Code), show a message to that effect
-            if (this._teamExtension.IsSignedOut) {
+            if (this._teamExtension!.IsSignedOut) {
                 this.setErrorStatus(Strings.UserMustSignIn, CommandNames.Signin);
             } else {
                 this.setErrorStatus(Strings.NoRepoInformation);
@@ -130,7 +131,7 @@ export class ExtensionManager implements Disposable {
         //If we aren't the expected type and we also aren't ANY, determine which error to show.
         //If we aren't ANY, then this If will handle Git and TFVC. So if we get past the first
         //if, we're returning false either for Git or for TFVC (there's no other option)
-        if (expectedType !== this._repoContext.Type && expectedType !== RepositoryType.ANY) {
+        if (expectedType !== this._repoContext!.Type && expectedType !== RepositoryType.ANY) {
             //If we already have an error message set, we're in an error state and use that message
             if (this._errorMessage) {
                 return false;
@@ -147,8 +148,8 @@ export class ExtensionManager implements Disposable {
         }
         //For TFVC, without a TeamProjectName, we can't initialize the Team Services functionality
         if ((expectedType === RepositoryType.TFVC || expectedType === RepositoryType.ANY)
-            && this._repoContext.Type === RepositoryType.TFVC
-            && !this._repoContext.TeamProjectName) {
+            && this._repoContext!.Type === RepositoryType.TFVC
+            && !this._repoContext!.TeamProjectName) {
             this.setErrorStatus(Strings.NoTeamProjectFound);
             return false;
         }
@@ -161,7 +162,7 @@ export class ExtensionManager implements Disposable {
 
     //Return value indicates whether a message was displayed
     public DisplayErrorMessage(message?: string): boolean {
-        const msg: string = message ? message : this._errorMessage;
+        const msg: string = message ? message : this._errorMessage!;
         if (msg) {
             VsCodeUtils.ShowErrorMessage(msg);
             return true;
@@ -199,7 +200,7 @@ export class ExtensionManager implements Disposable {
 
     //Ensures a folder is open before attempting to run any command already shown in
     //the Command Palette (and defined in package.json).
-    public RunCommand(funcToTry: (args) => void, ...args: string[]): void {
+    public RunCommand(funcToTry: (args: any) => void, ...args: string[]): void {
         if (!workspace || !workspace.rootPath) {
             this.DisplayErrorMessage(Strings.FolderNotOpened);
             return;
@@ -211,24 +212,28 @@ export class ExtensionManager implements Disposable {
         let error: string = Strings.NoTeamServerCredentialsRunSignin;
         let displayError: string = Strings.NoTeamServerCredentialsRunSignin;
         const messageItems: IButtonMessageItem[] = [];
-        if (this._serverContext.RepoInfo.IsTeamServices === true) {
-            messageItems.push({ title : Strings.LearnMore,
-                            url : Constants.TokenLearnMoreUrl,
-                            telemetryId: TelemetryEvents.TokenLearnMoreClick });
-            messageItems.push({ title : Strings.ShowMe,
-                            url : Constants.TokenShowMeUrl,
-                            telemetryId: TelemetryEvents.TokenShowMeClick });
+        if (this._serverContext!.RepoInfo!.IsTeamServices === true) {
+            messageItems.push({
+                title: Strings.LearnMore,
+                url: Constants.TokenLearnMoreUrl,
+                telemetryId: TelemetryEvents.TokenLearnMoreClick
+            });
+            messageItems.push({
+                title: Strings.ShowMe,
+                url: Constants.TokenShowMeUrl,
+                telemetryId: TelemetryEvents.TokenShowMeClick
+            });
             //Need different messages for popup message and status bar
             //Add the account name to the message to help the user
-            error =  util.format(Strings.NoAccessTokenRunSignin, this._serverContext.RepoInfo.Account);
-            displayError = util.format(Strings.NoAccessTokenLearnMoreRunSignin, this._serverContext.RepoInfo.Account);
+            error = util.format(Strings.NoAccessTokenRunSignin, this._serverContext!.RepoInfo!.Account);
+            displayError = util.format(Strings.NoAccessTokenLearnMoreRunSignin, this._serverContext!.RepoInfo!.Account);
         }
         Logger.LogError(error);
         this.setErrorStatus(error, CommandNames.Signin);
         VsCodeUtils.ShowErrorMessage(displayError, ...messageItems);
     }
 
-    private formatErrorLogMessage(err): string {
+    private formatErrorLogMessage(err: any): string {
         let logMsg: string = err.message;
         if (err.stderr) { //Add stderr to logged message if we have it
             logMsg = Utils.FormatMessage(`${logMsg} ${err.stderr}`);
@@ -259,7 +264,7 @@ export class ExtensionManager implements Disposable {
         //If Logging is enabled, the user must have used the extension before so we can enable
         //it here.  This will allow us to log errors when we begin processing TFVC commands.
         Telemetry.SendEvent(TelemetryEvents.Installed); //Send event that the extension is installed (even if not used)
-        this.logStart(this._settings.LoggingLevel, workspace.rootPath);
+        this.logStart(this._settings.LoggingLevel!, workspace.rootPath);
         this._teamServicesStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 100);
         this._feedbackStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 96);
 
@@ -281,52 +286,52 @@ export class ExtensionManager implements Disposable {
                         this.displayNoCredentialsMessage();
                         return;
                     } else {
-                        this._serverContext.CredentialInfo = creds;
-                        Telemetry.Initialize(this._settings, this._serverContext); //Re-initialize the telemetry with the server context information
+                        this._serverContext!.CredentialInfo = creds;
+                        Telemetry.Initialize(this._settings!, this._serverContext); //Re-initialize the telemetry with the server context information
                         Logger.LogDebug("Started ApplicationInsights telemetry");
 
                         //Set up the client we need to talk to the server for more repository information
-                        const repositoryInfoClient: RepositoryInfoClient = new RepositoryInfoClient(this._repoContext, CredentialManager.GetCredentialHandler());
+                        const repositoryInfoClient: RepositoryInfoClient = new RepositoryInfoClient(this._repoContext!, CredentialManager.GetCredentialHandler());
 
                         Logger.LogInfo("Getting repository information with repositoryInfoClient");
-                        Logger.LogDebug("RemoteUrl = " + this._repoContext.RemoteUrl);
+                        Logger.LogDebug("RemoteUrl = " + this._repoContext!.RemoteUrl);
                         try {
                             //At this point, we have either successfully called git.exe or tf.cmd (we just need to verify the remote urls)
                             //For Git repositories, we call vsts/info and get collection ids, etc.
                             //For TFVC, we have to (potentially) make multiple other calls to get collection ids, etc.
-                            this._serverContext.RepoInfo = await repositoryInfoClient.GetRepositoryInfo();
+                            this._serverContext!.RepoInfo = await repositoryInfoClient.GetRepositoryInfo();
 
                             //Now we need to go and get the authorized user information
-                            const connectionUrl: string = (this._serverContext.RepoInfo.IsTeamServices === true ? this._serverContext.RepoInfo.AccountUrl : this._serverContext.RepoInfo.CollectionUrl);
+                            const connectionUrl: string = (this._serverContext!.RepoInfo.IsTeamServices === true ? this._serverContext!.RepoInfo.AccountUrl! : this._serverContext!.RepoInfo.CollectionUrl!);
                             const accountClient: TeamServicesApi = new TeamServicesApi(connectionUrl, [CredentialManager.GetCredentialHandler()]);
                             Logger.LogInfo("Getting connectionData with accountClient");
                             Logger.LogDebug("connectionUrl = " + connectionUrl);
                             try {
-                                const settings: any = await accountClient.connect();
+                                const settings: ConnectionData = await accountClient.connect();
                                 Logger.LogInfo("Retrieved connectionData with accountClient");
                                 this.resetErrorStatus();
 
-                                this._serverContext.UserInfo = new UserInfo(settings.authenticatedUser.id,
-                                                                            settings.authenticatedUser.providerDisplayName,
-                                                                            settings.authenticatedUser.customDisplayName);
+                                this._serverContext!.UserInfo = new UserInfo(settings.authenticatedUser!.id!,
+                                    settings.authenticatedUser!.providerDisplayName!,
+                                    settings.authenticatedUser!.customDisplayName!);
 
                                 this.initializeStatusBars();
-                                await this.initializeClients(this._repoContext.Type);
+                                await this.initializeClients(this._repoContext!.Type);
 
                                 this.sendStartupTelemetry();
                                 Logger.LogInfo(`Sent extension start up telemetry`);
 
                                 Logger.LogObject(settings);
                                 this.logDebugInformation();
-                            } catch (err) {
+                            } catch (err: any) {
                                 this.setErrorStatus(Utils.GetMessageForStatusCode(err, err.message), (err.statusCode === 401 ? CommandNames.Signin : undefined));
                                 //Wrap err here to get a useful call stack
                                 this.ReportError(new Error(err), Utils.GetMessageForStatusCode(err, err.message, "Failed to get results with accountClient: "));
                             }
-                        } catch (err) {
+                        } catch (err: any) {
                             //TODO: With TFVC, creating a RepositoryInfo can throw (can't get project collection, can't get team project, etc.)
                             // We get a 404 on-prem if we aren't TFS 2015 Update 2 or later and 'core id' error with TFS 2013 RTM (and likely later)
-                            if (this._serverContext.RepoInfo.IsTeamFoundationServer === true &&
+                            if (this._serverContext!.RepoInfo!.IsTeamFoundationServer === true &&
                                 (err.statusCode === 404 || (err.message && err.message.indexOf("Failed to find api location for area: core id:") === 0))) {
                                 this.setErrorStatus(Strings.UnsupportedServerVersion);
                                 Logger.LogError(Strings.UnsupportedServerVersion);
@@ -341,9 +346,9 @@ export class ExtensionManager implements Disposable {
 
                     // Now that everything else is ready, create the SCM provider
                     try {
-                        if (this._repoContext.Type === RepositoryType.TFVC) {
+                        if (this._repoContext!.Type === RepositoryType.TFVC) {
                             const tfvcContext: TfvcContext = <TfvcContext>this._repoContext;
-                            this.sendTfvcConfiguredTelemetry(tfvcContext.TfvcRepository);
+                            this.sendTfvcConfiguredTelemetry(tfvcContext.TfvcRepository!);
                             Logger.LogInfo(`Sent TFVC tooling telemetry`);
                             if (!this._scmProvider) {
                                 Logger.LogDebug(`Initializing the TfvcSCMProvider`);
@@ -355,16 +360,16 @@ export class ExtensionManager implements Disposable {
                                 await this._scmProvider.Reinitialize();
                                 Logger.LogDebug(`Re-initialized the TfvcSCMProvider`);
                             }
-                            this.sendTfvcConnectedTelemetry(tfvcContext.TfvcRepository);
+                            this.sendTfvcConnectedTelemetry(tfvcContext.TfvcRepository!);
                         }
-                    } catch (err) {
+                    } catch (err: any) {
                         Logger.LogError(`Caught an exception during Tfvc SCM Provider initialization`);
                         const logMsg: string = this.formatErrorLogMessage(err);
                         Logger.LogError(logMsg);
                         if (err.tfvcErrorCode) {
                             this.setErrorStatus(err.message);
                             //Dispose of the Build and WIT status bar items so they don't show up (they should be re-created once a new folder is opened)
-                            this._teamExtension.cleanup();
+                            this._teamExtension!.cleanup();
                             if (this.shouldDisplayTfvcError(err.tfvcErrorCode)) {
                                 VsCodeUtils.ShowErrorMessage(err.message, ...err.messageOptions);
                             }
@@ -378,7 +383,7 @@ export class ExtensionManager implements Disposable {
                     Telemetry.SendException(err);
                 });
             }
-        } catch (err) {
+        } catch (err: any) {
             const logMsg: string = this.formatErrorLogMessage(err);
             Logger.LogError(logMsg);
             //For now, don't report these errors via the FeedbackClient (TFVC errors could result from TfvcContext creation failing)
@@ -393,9 +398,9 @@ export class ExtensionManager implements Disposable {
     private sendStartupTelemetry(): void {
         let event: string = TelemetryEvents.StartUp;
 
-        if (this._repoContext.Type === RepositoryType.TFVC) {
+        if (this._repoContext!.Type === RepositoryType.TFVC) {
             event = TfvcTelemetryEvents.StartUp;
-        } else if (this._repoContext.Type === RepositoryType.EXTERNAL) {
+        } else if (this._repoContext!.Type === RepositoryType.EXTERNAL) {
             event = TelemetryEvents.ExternalRepository;
         }
 
@@ -441,19 +446,23 @@ export class ExtensionManager implements Disposable {
 
     //Ensure this is async (and is awaited on) so that the extension doesn't continue until user deals with message
     private async showWelcomeMessage(): Promise<void> {
-        if (this._settings.ShowWelcomeMessage) {
+        if (this._settings!.ShowWelcomeMessage) {
             const welcomeMessage: string = `Welcome to version ${Constants.ExtensionVersion} of the Azure Repos extension!`;
             const messageItems: IButtonMessageItem[] = [];
-            messageItems.push({ title : Strings.LearnMore,
-                                url : Constants.ReadmeLearnMoreUrl,
-                                telemetryId : TelemetryEvents.WelcomeLearnMoreClick });
-            messageItems.push({ title : Strings.SetupTfvcSupport,
-                                url : Constants.TfvcLearnMoreUrl,
-                                telemetryId : TfvcTelemetryEvents.SetupTfvcSupportClick });
-            messageItems.push({ title : Strings.DontShowAgain });
-            const chosenItem: IButtonMessageItem = await VsCodeUtils.ShowInfoMessage(welcomeMessage, ...messageItems);
+            messageItems.push({
+                title: Strings.LearnMore,
+                url: Constants.ReadmeLearnMoreUrl,
+                telemetryId: TelemetryEvents.WelcomeLearnMoreClick
+            });
+            messageItems.push({
+                title: Strings.SetupTfvcSupport,
+                url: Constants.TfvcLearnMoreUrl,
+                telemetryId: TfvcTelemetryEvents.SetupTfvcSupportClick
+            });
+            messageItems.push({ title: Strings.DontShowAgain });
+            const chosenItem: IButtonMessageItem | undefined = await VsCodeUtils.ShowInfoMessage(welcomeMessage, ...messageItems);
             if (chosenItem && chosenItem.title === Strings.DontShowAgain) {
-                this._settings.ShowWelcomeMessage = false;
+                this._settings!.ShowWelcomeMessage = false;
             }
         }
     }
@@ -461,14 +470,14 @@ export class ExtensionManager implements Disposable {
     //Set up the initial status bars
     private initializeStatusBars(): void {
         if (this.ensureMinimalInitialization()) {
-            this._teamServicesStatusBarItem.command = CommandNames.OpenTeamSite;
-            this._teamServicesStatusBarItem.text = this._serverContext.RepoInfo.TeamProject ? this._serverContext.RepoInfo.TeamProject : "<none>";
-            this._teamServicesStatusBarItem.tooltip = Strings.NavigateToTeamServicesWebSite;
-            this._teamServicesStatusBarItem.show();
+            this._teamServicesStatusBarItem!.command = CommandNames.OpenTeamSite;
+            this._teamServicesStatusBarItem!.text = this._serverContext!.RepoInfo!.TeamProject ? this._serverContext!.RepoInfo!.TeamProject : "<none>";
+            this._teamServicesStatusBarItem!.tooltip = Strings.NavigateToTeamServicesWebSite;
+            this._teamServicesStatusBarItem!.show();
 
             if (this.EnsureInitialized(RepositoryType.ANY)) {
                 // Update the extensions
-                this._teamExtension.InitializeStatusBars();
+                this._teamExtension!.InitializeStatusBars();
                 //this._tfvcExtension.InitializeStatusBars();
             }
         }
@@ -476,28 +485,28 @@ export class ExtensionManager implements Disposable {
 
     //Set up the initial status bars
     private async initializeClients(repoType: RepositoryType): Promise<void> {
-        await this._teamExtension.InitializeClients(repoType);
-        await this._tfvcExtension.InitializeClients(repoType);
+        await this._teamExtension!.InitializeClients(repoType);
+        await this._tfvcExtension!.InitializeClients(repoType);
     }
 
     private logDebugInformation(): void {
-        Logger.LogDebug("Account: " + this._serverContext.RepoInfo.Account + " "
-                            + "Team Project: " + this._serverContext.RepoInfo.TeamProject + " "
-                            + "Collection: " + this._serverContext.RepoInfo.CollectionName + " "
-                            + "Repository: " + this._serverContext.RepoInfo.RepositoryName + " "
-                            + "UserCustomDisplayName: " + this._serverContext.UserInfo.CustomDisplayName + " "
-                            + "UserProviderDisplayName: " + this._serverContext.UserInfo.ProviderDisplayName + " "
-                            + "UserId: " + this._serverContext.UserInfo.Id + " ");
-        Logger.LogDebug("repositoryFolder: " + this._repoContext.RepoFolder);
-        Logger.LogDebug("repositoryRemoteUrl: " + this._repoContext.RemoteUrl);
-        if (this._repoContext.Type === RepositoryType.GIT) {
-            Logger.LogDebug("gitRepositoryParentFolder: " + this._repoContext.RepositoryParentFolder);
-            Logger.LogDebug("gitCurrentBranch: " + this._repoContext.CurrentBranch);
-            Logger.LogDebug("gitCurrentRef: " + this._repoContext.CurrentRef);
+        Logger.LogDebug("Account: " + this._serverContext!.RepoInfo!.Account + " "
+            + "Team Project: " + this._serverContext!.RepoInfo!.TeamProject + " "
+            + "Collection: " + this._serverContext!.RepoInfo!.CollectionName + " "
+            + "Repository: " + this._serverContext!.RepoInfo!.RepositoryName + " "
+            + "UserCustomDisplayName: " + this._serverContext!.UserInfo!.CustomDisplayName + " "
+            + "UserProviderDisplayName: " + this._serverContext!.UserInfo!.ProviderDisplayName + " "
+            + "UserId: " + this._serverContext!.UserInfo!.Id + " ");
+        Logger.LogDebug("repositoryFolder: " + this._repoContext!.RepoFolder);
+        Logger.LogDebug("repositoryRemoteUrl: " + this._repoContext!.RemoteUrl);
+        if (this._repoContext!.Type === RepositoryType.GIT) {
+            Logger.LogDebug("gitRepositoryParentFolder: " + this._repoContext!.RepositoryParentFolder);
+            Logger.LogDebug("gitCurrentBranch: " + this._repoContext!.CurrentBranch);
+            Logger.LogDebug("gitCurrentRef: " + this._repoContext!.CurrentRef);
         }
-        Logger.LogDebug("IsSsh: " + this._repoContext.IsSsh);
+        Logger.LogDebug("IsSsh: " + this._repoContext!.IsSsh);
         Logger.LogDebug("proxy: " + (Utils.IsProxyEnabled() ? "enabled" : "not enabled")
-                        + ", azure devops services: " + this._serverContext.RepoInfo.IsTeamServices.toString());
+            + ", azure devops services: " + this._serverContext!.RepoInfo!.IsTeamServices.toString());
     }
 
     private logStart(loggingLevel: string, rootPath: string): void {
@@ -533,18 +542,18 @@ export class ExtensionManager implements Disposable {
     private async setupFileSystemWatcherOnHead(): Promise<void> {
         if (this._repoContext && this._repoContext.Type === RepositoryType.GIT) {
             const pattern: string = this._repoContext.RepoFolder + "/HEAD";
-            const fsw:FileSystemWatcher = workspace.createFileSystemWatcher(pattern, true, false, true);
+            const fsw: FileSystemWatcher = workspace.createFileSystemWatcher(pattern, true, false, true);
             fsw.onDidChange(async (/*uri*/) => {
                 Logger.LogInfo("HEAD has changed, re-parsing RepoContext object");
-                this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.rootPath, this._settings);
-                Logger.LogInfo("CurrentBranch is: " + this._repoContext.CurrentBranch);
+                this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.rootPath!, this._settings!);
+                Logger.LogInfo("CurrentBranch is: " + this._repoContext!.CurrentBranch);
                 this.notifyBranchChanged(/*this._repoContext.CurrentBranch*/);
             });
         }
     }
 
     private notifyBranchChanged(/*TODO: currentBranch: string*/): void {
-        this._teamExtension.NotifyBranchChanged();
+        this._teamExtension!.NotifyBranchChanged();
         //this._tfvcExtension.NotifyBranchChanged(currentBranch);
     }
 
@@ -558,7 +567,7 @@ export class ExtensionManager implements Disposable {
         if (this._repoContext && this._repoContext.Type === RepositoryType.GIT) {
             const pattern: string = path.join(workspace.rootPath, ".git", "config");
             //We want to listen to file creation, change and delete events
-            const fsw:FileSystemWatcher = workspace.createFileSystemWatcher(pattern, false, false, false);
+            const fsw: FileSystemWatcher = workspace.createFileSystemWatcher(pattern, false, false, false);
             fsw.onDidCreate((/*uri*/) => {
                 //When a new local repo is initialized (e.g., git init), re-initialize the extension
                 Logger.LogInfo("config has been created, re-initializing the extension");
@@ -566,11 +575,11 @@ export class ExtensionManager implements Disposable {
             });
             fsw.onDidChange(async (uri) => {
                 Logger.LogInfo("config has changed, checking if 'remote origin' changed");
-                const context: IRepositoryContext = await RepositoryContextFactory.CreateRepositoryContext(uri.fsPath, this._settings);
-                const remote: string = context.RemoteUrl;
+                const context: IRepositoryContext | undefined = await RepositoryContextFactory.CreateRepositoryContext(uri.fsPath, this._settings!);
+                const remote: string | undefined = context?.RemoteUrl;
                 if (remote === undefined) {
                     //There is either no remote defined yet or it isn't a Team Services repo
-                    if (this._repoContext.RemoteUrl !== undefined) {
+                    if (this._repoContext!.RemoteUrl !== undefined) {
                         //We previously had a Team Services repo and now we don't, reinitialize
                         Logger.LogInfo("remote was removed, previously had an Azure Repos remote, re-initializing the extension");
                         this.Reinitialize();
@@ -602,10 +611,10 @@ export class ExtensionManager implements Disposable {
     }
 
     private showFeedbackItem(): void {
-        this._feedbackStatusBarItem.command = CommandNames.SendFeedback;
-        this._feedbackStatusBarItem.text = `$(megaphone)`;
-        this._feedbackStatusBarItem.tooltip = Strings.SendFeedback;
-        this._feedbackStatusBarItem.show();
+        this._feedbackStatusBarItem!.command = CommandNames.SendFeedback;
+        this._feedbackStatusBarItem!.text = `$(megaphone)`;
+        this._feedbackStatusBarItem!.tooltip = Strings.SendFeedback;
+        this._feedbackStatusBarItem!.show();
     }
 
     private cleanup(preserveTeamExtension: boolean = false): void {
@@ -619,7 +628,7 @@ export class ExtensionManager implements Disposable {
         }
         //No matter if we're signing out or re-initializing, we need the team extension's
         //status bars and timers to be disposed but not the entire object
-        this._teamExtension.cleanup();
+        this._teamExtension!.cleanup();
 
         //If we are signing out, we need to keep some of the objects around
         if (!preserveTeamExtension && this._teamExtension) {
