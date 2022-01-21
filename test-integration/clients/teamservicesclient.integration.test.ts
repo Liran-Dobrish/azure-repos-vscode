@@ -58,19 +58,18 @@ describe("TeamServicesClient-Integration", function() {
         }
     });
 
-    // Todo: Fix....
-    // it("should verify accountClient.connect", async function() {
-    //     this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
+     it("should verify accountClient.connect", async function() {
+        this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
-    //     const accountClient: TeamServicesApi = new TeamServicesApi(TestSettings.AccountUrl, [CredentialManager.GetCredentialHandler()]);
-    //     const settings: any = await accountClient.connect();
-    //     //console.log(settings);
-    //     assert.isNotNull(settings, "settings was null when it shouldn't have been");
-    //     assert.isNotNull(settings.providerDisplayName);
-    //     assert.isNotNull(settings.customDisplayName);
-    //     assert.isNotNull(settings.authorizedUser.providerDisplayName);
-    //     assert.isNotNull(settings.authorizedUser.customDisplayName);
-    // });
+        const accountClient: TeamServicesApi = new TeamServicesApi(TestSettings.AccountUrl, [CredentialManager.GetCredentialHandler()]);
+        const settings: any = await accountClient.connect();
+        //console.log(settings);
+        assert.isNotNull(settings, "settings was null when it shouldn't have been");
+        assert.isNotNull(settings.providerDisplayName);
+        assert.isNotNull(settings.customDisplayName);
+        assert.isNotNull(settings.authorizedUser.providerDisplayName);
+        assert.isNotNull(settings.authorizedUser.customDisplayName);
+    });
 
     it("should verify repositoryClient.validateTfvcCollectionUrl", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
