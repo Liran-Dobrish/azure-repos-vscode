@@ -19,7 +19,7 @@
 			"type": "gulp",
 			"task": "--no-color",
 			"group": {
-				"_id": "build",
+				"kind": "build",
 				"isDefault": false
 			}
 		},
@@ -28,7 +28,7 @@
 			"type": "gulp",
 			"task": "--no-color",
 			"group": {
-				"_id": "test",
+				"kind": "test",
 				"isDefault": false
 			}
 		},
@@ -36,6 +36,13 @@
 			"label": "clean",
 			"type": "gulp",
 			"task": "--no-color"
+		},
+		{
+			"type": "gulp",
+			"task": "publishbuild",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "gulp: publishbuild"
 		}
 	]
 }

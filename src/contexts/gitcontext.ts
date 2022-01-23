@@ -9,7 +9,6 @@ import { RepoUtils } from "../helpers/repoutils";
 import { IRepositoryContext, RepositoryType } from "./repositorycontext";
 
 import * as pgc from "parse-git-config";
-import * as gri from "git-repo-info";
 import * as path from "path";
 import * as url from "url";
 import gitRepoInfo, { GitRepoInfo } from "git-repo-info";

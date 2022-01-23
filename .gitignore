@@ -4,3 +4,6 @@ out/
 team-extension.log
 *.zip
 .taskkey
+coverage/
+.nyc_output/
+.vscode-test/

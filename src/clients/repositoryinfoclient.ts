@@ -111,7 +111,7 @@ export class RepositoryInfoClient {
                 collection = await coreApiClient.GetProjectCollection(serverUrl, collectionName);
             } else {
                 Logger.LogDebug(`disabled support for Soap`);
-                
+
                 // Logger.LogDebug(`Using SOAP to get the project collection information`);
                 // // When called on-prem without admin privileges: Error: Failed Request: Forbidden(403) - Access Denied: Jeff Young (TFS) needs the following permission(s) to perform this action: Edit instance-level information
                 // const tfsClient: TfsCatalogSoapClient = new TfsCatalogSoapClient(serverUrl, [this._handler]);

@@ -312,8 +312,8 @@ export class ExtensionManager implements Disposable {
                                 this.resetErrorStatus();
 
                                 this._serverContext!.UserInfo = new UserInfo(settings.authenticatedUser!.id!,
-                                    settings.authenticatedUser!.providerDisplayName!,
-                                    settings.authenticatedUser!.customDisplayName!);
+                                                                             settings.authenticatedUser!.providerDisplayName!,
+                                                                             settings.authenticatedUser!.customDisplayName!);
 
                                 this.initializeStatusBars();
                                 await this.initializeClients(this._repoContext!.Type);

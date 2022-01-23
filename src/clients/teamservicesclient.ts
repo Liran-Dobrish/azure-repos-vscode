@@ -4,13 +4,13 @@
 *--------------------------------------------------------------------------------------------*/
 "use strict";
 
-import basem from "azure-devops-node-api/ClientApiBases"
 import VsoBaseInterfaces from "azure-devops-node-api/interfaces/common/VsoBaseInterfaces"
 import { IRestResponse } from "typed-rest-client/RestClient"
 import { LocationsApi } from "azure-devops-node-api/LocationsApi"
 import { ConnectionData } from "azure-devops-node-api/interfaces/LocationsInterfaces";
+import { ClientApiBase } from "azure-devops-node-api/ClientApiBases";
 
-export class TeamServicesApi extends basem.ClientApiBase {
+export class TeamServicesApi extends ClientApiBase {
     handlers: VsoBaseInterfaces.IRequestHandler[];
     constructor(baseUrl: string, handlers: VsoBaseInterfaces.IRequestHandler[]) {
         super(baseUrl, handlers, "node-vsts-vscode-api");
