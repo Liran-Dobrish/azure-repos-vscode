@@ -191,7 +191,7 @@ export class RepositoryInfoClient {
 
     //RepositoryInfo uses repository.remoteUrl to set up accountUrl
     private getTfvcRepoInfoBlob(serverUrl: string, collectionId: string, collectionName: string, collectionUrl: string,
-        projectId: string, projectName: string, projectDesc: string, projectUrl: string): any {
+                                projectId: string, projectName: string, projectDesc: string, projectUrl: string): any {
         return {
             serverUrl: serverUrl,
             collection: {

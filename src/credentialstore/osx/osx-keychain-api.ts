@@ -10,7 +10,7 @@ import { ICredentialStore } from "../interfaces/icredentialstore";
 import * as Q from "q";
 
 /* tslint:disable:no-var-keyword */
-var osxkeychain = require("./osx-keychain");
+const osxkeychain = require("./osx-keychain");
 /* tslint:enable:no-var-keyword */
 
 /*

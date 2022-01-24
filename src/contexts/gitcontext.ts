@@ -75,7 +75,9 @@ export class GitContext implements IRepositoryContext {
                             if (splitHref.length === 2) {  //RemoteUrl is SSH
                                 this._isSsh = true;
                                 //  VSTS now has three URL modes v3, _git, and _ssh.
+                                /* tslint:disable:no-null-keyword */
                                 if (purl.pathname != null && purl.pathname.indexOf("/_git/") >= 0) {
+                                /* tslint:enable:no-null-keyword */
                                     //  For Team Services, default to https:// as the protocol
                                     this._gitRemoteUrl = "https://" + purl.hostname + purl.pathname;
                                 } else if (RepoUtils.IsTeamFoundationServicesV3SshRepo(purl.href)) {

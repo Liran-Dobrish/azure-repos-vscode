@@ -58,7 +58,7 @@ describe("TeamServicesClient-Integration", function() {
         }
     });
 
-     it("should verify accountClient.connect", async function() {
+    it("should verify accountClient.connect", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const accountClient: TeamServicesApi = new TeamServicesApi(TestSettings.AccountUrl, [CredentialManager.GetCredentialHandler()]);

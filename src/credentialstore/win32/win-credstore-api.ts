@@ -9,7 +9,7 @@ import { ICredentialStore } from "../interfaces/icredentialstore";
 
 import * as Q from "q";
 /* tslint:disable:no-var-keyword */
-var wincredstore = require("./win-credstore");
+const wincredstore = require("./win-credstore");
 /* tslint:enable:no-var-keyword */
 
 /*

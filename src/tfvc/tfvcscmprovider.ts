@@ -99,19 +99,19 @@ export class TfvcSCMProvider {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
         await tfvcProvider._model?.Exclude(paths);
-    };
+    }
 
     public static async Refresh(): Promise<void> {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
         await tfvcProvider._model?.Refresh();
-    };
+    }
 
     public static async Unexclude(paths: string[]): Promise<void> {
         const tfvcProvider: TfvcSCMProvider = TfvcSCMProvider.getProviderInstance();
 
         await tfvcProvider._model?.Unexclude(paths);
-    };
+    }
 
     /* Public methods */
 
@@ -140,12 +140,15 @@ export class TfvcSCMProvider {
         //Set the command to run when user accepts changes via Ctrl+Enter in input box.
         this._sourceControl.acceptInputCommand = { command: TfvcCommandNames.Checkin, title: "Checkin" };
 
-        if (this.conflictsGroup)
+        if (this.conflictsGroup) {
             this._disposables.push(this.conflictsGroup);
-        if (this.includedGroup)
+        }
+        if (this.includedGroup) {
             this._disposables.push(this.includedGroup);
-        if (this.excludedGroup)
+        }
+        if (this.excludedGroup) {
             this._disposables.push(this.excludedGroup);
+        }
     }
 
     private onDidModelChange(): void {

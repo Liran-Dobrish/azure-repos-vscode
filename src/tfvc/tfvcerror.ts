@@ -58,7 +58,6 @@ export class TfvcError extends Error {
         //     this.error = undefined;
         // }
 
-
         this.message = data.message || Strings.TfExecFailedError;
         this.messageOptions = data.messageOptions || [];
         this.stdout = data.stdout;
@@ -100,4 +99,4 @@ export class TfvcErrorCodes {
     public static get NoItemsMatch(): string { return "TfvcNoItemsMatch"; }
     public static get UnknownError(): string { return "UnknownError"; }
     public static get WorkspaceNotKnownToClc(): string { return "WorkspaceNotKnownToClc"; }
-};
+}

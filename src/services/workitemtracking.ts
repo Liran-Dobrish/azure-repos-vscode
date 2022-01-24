@@ -121,10 +121,8 @@ export class WorkItemTrackingService {
         }
 
         /* tslint:disable:no-null-keyword */
-        const workItems: WorkItem[] = await this._witApi!.getWorkItems(workItemIds,
-            [WorkItemFields.Id, WorkItemFields.Title, WorkItemFields.WorkItemType],
-            undefined,
-            WorkItemExpand.None);
+        const workItems: WorkItem[] = await this._witApi!.getWorkItems(workItemIds, [WorkItemFields.Id, WorkItemFields.Title, WorkItemFields.WorkItemType],
+                                                                       undefined, WorkItemExpand.None);
         /* tslint:enable:no-null-keyword */
 
         //Keep original sort order that wiql specified

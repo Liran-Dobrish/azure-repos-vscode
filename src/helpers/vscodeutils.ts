@@ -93,8 +93,7 @@ export class VsCodeUtils {
             if (chosenItem.command) {
                 commands.executeCommand<void>(chosenItem.command);
             }
-        }
-        else {
+        } else {
             return undefined;
         }
     }

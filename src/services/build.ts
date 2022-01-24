@@ -28,7 +28,7 @@ export class BuildService {
     //Get extra details of a build based on the build id
     public async GetBuildById(teamProject: string, buildId: number): Promise<Build> {
         return await this._buildApi.getBuild(teamProject, buildId);
-    };
+    }
 
     //Returns the build definitions (regardless of type) for the team project
     public async GetBuildDefinitions(teamProject: string): Promise<DefinitionReference[]> {
@@ -39,7 +39,7 @@ export class BuildService {
     public async GetBuilds(teamProject: string): Promise<Build[]> {
         /* tslint:disable:no-null-keyword */
         return await this._buildApi.getBuilds(teamProject, undefined, undefined, undefined, undefined, undefined, undefined, undefined, BuildStatus.Completed, undefined, undefined, undefined,
-            100, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
+                                              100, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
         /* tslint:enable:no-null-keyword */
     }
 
@@ -47,7 +47,7 @@ export class BuildService {
     public async GetBuildsByDefinitionId(teamProject: string, definitionId: number): Promise<Build[]> {
         /* tslint:disable:no-null-keyword */
         return await this._buildApi.getBuilds(teamProject, [definitionId], undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-            1, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
+                                              1, undefined, 1, QueryDeletedOption.ExcludeDeleted, BuildQueryOrder.FinishTimeDescending);
         /* tslint:enable:no-null-keyword */
     }
 

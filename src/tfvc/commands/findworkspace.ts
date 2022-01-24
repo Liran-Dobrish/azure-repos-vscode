@@ -260,7 +260,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
         workspacePath = workspacePath.toLowerCase();
 
         return openedPath.startsWith(workspacePath);
-    };
+    }
 
     //If the path doesn't end with a separator, add one
     private addTrailingSeparator(path: string, separator: string): string {

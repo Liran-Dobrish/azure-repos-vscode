@@ -331,7 +331,7 @@ describe("Tfvc-FindWorkspaceCommand", function () {
             stderr: undefined
         };
 
-        const workspace: IWorkspace | undefined= await cmd.ParseOutput(executionResult);
+        const workspace: IWorkspace | undefined = await cmd.ParseOutput(executionResult);
         assert.equal(workspace?.name, "MyWorkspace");
         assert.equal(workspace?.server, "http://server:8080/tfs/spaces in the name/");
         assert.equal(workspace?.defaultTeamProject, "project1");
@@ -423,7 +423,7 @@ describe("Tfvc-FindWorkspaceCommand", function () {
             stderr: undefined
         };
 
-        const workspace: IWorkspace | undefined= await cmd.ParseExeOutput(executionResult);
+        const workspace: IWorkspace | undefined = await cmd.ParseExeOutput(executionResult);
         assert.equal(workspace?.name, "MyWorkspace");
         assert.equal(workspace?.server, "http://server:8080/tfs/");
         assert.equal(workspace?.defaultTeamProject, "project1");

@@ -100,6 +100,6 @@ export class Undo implements ITfvcCommand<string[]> {
         if (idx > 0) {
             return line.substring(idx + prefix.length);
         }
-        return ""
+        return "";
     }
 }

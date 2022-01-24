@@ -101,7 +101,7 @@ export class Settings extends BaseSettings implements ISettings {
         this._pollingInterval = this.readSetting<number>(pollingInterval, 10);
         Logger.LogDebug("Polling interval value (minutes): " + this._pollingInterval?.toString());
         if (this._pollingInterval) {
-            // Ensure a minimum value when an invalid value is set        
+            // Ensure a minimum value when an invalid value is set
             if (this._pollingInterval < 10) {
                 Logger.LogDebug("Polling interval must be greater than 10 minutes.");
                 this._pollingInterval = 10;
