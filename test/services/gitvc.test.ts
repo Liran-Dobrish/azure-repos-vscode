@@ -38,7 +38,7 @@ describe("GitVcService", function() {
         assert.equal(GitVcService.GetFileHistoryUrl(url, file, branch), url + "#path=" + file + "&version=GB" + branch + "&_a=history");
     });
 
-    it("should verify GetPullRequestDiscussionUrl", function() {
+    it("should verify GetPullRequestDiscussionUrl by id", function() {
         const repositoryUrl: string = "https://account.visualstudio.com/DefaultCollection/_git/project";
         const id: string = "42";
 
@@ -51,7 +51,7 @@ describe("GitVcService", function() {
         assert.equal(GitVcService.GetPullRequestsUrl(repositoryUrl), repositoryUrl + "/pullrequests");
     });
 
-    it("should verify GetPullRequestDiscussionUrl", function() {
+    it("should verify GetPullRequestDiscussionUrl by branch", function() {
         const repositoryUrl: string = "https://account.visualstudio.com/DefaultCollection/_git/project";
         const branch: string = "branch";
 

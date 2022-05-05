@@ -47,8 +47,8 @@ describe("Tfvc-Error", function() {
             tfvcCommand: undefined,
             tfvcErrorCode: undefined
         });
-        assert.equal(error.error.name, "err1");
-        assert.equal(error.error.message, "error1 message");
+        assert.equal(error.error!.name, "err1");
+        assert.equal(error.error!.message, "error1 message");
         assert.equal(error.exitCode, 0);
         assert.equal(error.message, "error1 message");
         assert.equal(error.stderr, undefined);
@@ -67,8 +67,8 @@ describe("Tfvc-Error", function() {
             tfvcCommand: undefined,
             tfvcErrorCode: undefined
         });
-        assert.equal(error.error.name, "err1");
-        assert.equal(error.error.message, "error1 message");
+        assert.equal(error.error!.name, "err1");
+        assert.equal(error.error!.message, "error1 message");
         assert.equal(error.exitCode, 0);
         assert.equal(error.message, "error1 message");
         assert.equal(error.stderr, undefined);
@@ -120,8 +120,8 @@ describe("Tfvc-Error", function() {
 
     it("should verify CreateUnknownError", function() {
         const error: TfvcError = TfvcError.CreateUnknownError({ name: "err1", message: "error1 message" });
-        assert.equal(error.error.name, "err1");
-        assert.equal(error.error.message, "error1 message");
+        assert.equal(error.error!.name, "err1");
+        assert.equal(error.error!.message, "error1 message");
         assert.equal(error.exitCode, undefined);
         assert.equal(error.message, "error1 message");
         assert.equal(error.stderr, undefined);

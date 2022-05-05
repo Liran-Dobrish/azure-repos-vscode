@@ -35,7 +35,7 @@ export class RepositoryInfoClient {
 
         if (this._repoContext.Type === RepositoryType.GIT) {
             Logger.LogDebug(`Getting repository information for a Git repository at ${this._repoContext.RemoteUrl}`);
-            repositoryClient = new TeamServicesApi(this._repoContext.RemoteUrl, [this._handler]);
+            repositoryClient = new TeamServicesApi(this._repoContext.RemoteUrl!, [this._handler]);
             repoInfo = await repositoryClient.getVstsInfo();
             Logger.LogDebug(`Repository information blob:`);
             Logger.LogObject(repoInfo);
@@ -52,7 +52,7 @@ export class RepositoryInfoClient {
 
             let serverUrl: string;
             let collectionName: string;
-            const isTeamServices: boolean = RepoUtils.IsTeamFoundationServicesRepo(this._repoContext.RemoteUrl);
+            const isTeamServices: boolean = RepoUtils.IsTeamFoundationServicesRepo(this._repoContext.RemoteUrl!);
             if (isTeamServices) {
                 // The Team Services collection is ALWAYS defaultCollection, and both the url with defaultcollection
                 // and the url without defaultCollection will validate just fine. However, it expects you to refer to
@@ -60,7 +60,7 @@ export class RepositoryInfoClient {
                 // recreate the url.
                 // If validation fails, we return false.
                 collectionName = repositoryInfo.Account!;
-                if (RepoUtils.IsTeamFoundationServicesAzureRepo(this._repoContext.RemoteUrl)) {
+                if (RepoUtils.IsTeamFoundationServicesAzureRepo(this._repoContext.RemoteUrl!)) {
                     serverUrl = `https://${repositoryInfo.Host}/${repositoryInfo.Account}/`;
                 } else {
                     serverUrl = `https://${repositoryInfo.Account}.visualstudio.com/`;
@@ -73,7 +73,7 @@ export class RepositoryInfoClient {
                 }
                 Logger.LogDebug(`Successfully validated the hosted TFVC repository. Collection name: '${collectionName}', 'Url: ${serverUrl}'`);
             } else { //This could be either a TFVC context or an External context
-                serverUrl = this._repoContext.RemoteUrl;
+                serverUrl = this._repoContext.RemoteUrl!;
                 // A full Team Foundation Server collection url is required for the validate call to succeed.
                 // So we try the url given. If that fails, we assume it is a server Url and the collection is
                 // the defaultCollection. If that assumption fails we return false.

@@ -10,7 +10,7 @@ async function main() {
 
         // The path to the extension test runner script
         // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, "./out/test/**.test.js");
+        const extensionTestsPath = path.resolve(__dirname, "./**/**.test.js");
 
         // Download VS Code, unzip it and run the integration test
         await runTests({ extensionDevelopmentPath: extensionDevelopmentPath, extensionTestsPath: extensionTestsPath, launchArgs: ["--trace-deprecation", "--disable-extensions"] });

@@ -60,7 +60,7 @@ export class GitClient extends BaseClient {
             let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder!, editor.document.fileName);
             relativePath = relativePath.split("\\").join("/");  //Replace all
 
-            url = GitVcService.GetFileBlameUrl(context.RemoteUrl, relativePath, context.CurrentBranch!);
+            url = GitVcService.GetFileBlameUrl(context.RemoteUrl!, relativePath, context.CurrentBranch!);
             //Note: if file hasn't been pushed yet, blame link we generate won't point to anything valid (basically a 404)
             Logger.LogInfo("OpenBlame: " + url);
             Utils.OpenUrl(url);
@@ -80,7 +80,7 @@ export class GitClient extends BaseClient {
         if (!editor) {
             Telemetry.SendEvent(TelemetryEvents.OpenRepositoryHistory);
 
-            historyUrl = GitVcService.GetRepositoryHistoryUrl(context.RemoteUrl, context.CurrentBranch!);
+            historyUrl = GitVcService.GetRepositoryHistoryUrl(context.RemoteUrl!, context.CurrentBranch!);
             Logger.LogInfo("OpenRepoHistory: " + historyUrl);
         } else {
             Telemetry.SendEvent(TelemetryEvents.OpenFileHistory);
@@ -89,7 +89,7 @@ export class GitClient extends BaseClient {
             let relativePath: string = "\\" + path.relative(context.RepositoryParentFolder!, editor.document.fileName);
             relativePath = relativePath.split("\\").join("/");  //Replace all
 
-            historyUrl = GitVcService.GetFileHistoryUrl(context.RemoteUrl, relativePath, context.CurrentBranch!);
+            historyUrl = GitVcService.GetFileHistoryUrl(context.RemoteUrl!, relativePath, context.CurrentBranch!);
             //Note: if file hasn't been pushed yet, history link we generate won't point to anything valid (basically a 404)
             Logger.LogInfo("OpenFileHistory: " + historyUrl);
         }

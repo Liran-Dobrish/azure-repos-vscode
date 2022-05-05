@@ -11,11 +11,11 @@ import { ISettings } from "../helpers/settings";
 
 export class ExternalContext implements IRepositoryContext {
     private _folder: string | undefined;
-    private _remoteUrl: string = "";
+    private _remoteUrl: string | undefined = "";
     private _isSsh: boolean = false;
     private _isTeamServicesUrl: boolean = false;
     private _isTeamFoundationServer: boolean = false;
-    private _teamProjectName: string = "";
+    private _teamProjectName: string | undefined = "";
 
     constructor(rootPath: string | undefined) {
         //The passed in path is the workspace.rootPath (which could be a sub-folder)
@@ -42,8 +42,13 @@ export class ExternalContext implements IRepositoryContext {
     }
 
     // Tfvc implementation
-    public get TeamProjectName(): string {
-        return this._teamProjectName;
+    public get TeamProjectName(): string | undefined {
+        if (this._teamProjectName !== "") {
+            return this._teamProjectName;
+        }
+        else {
+            return undefined;
+        }
     }
 
     // Git implementation
@@ -55,7 +60,7 @@ export class ExternalContext implements IRepositoryContext {
     }
 
     // IRepositoryContext implementation
-    public get RepoFolder(): string| undefined {
+    public get RepoFolder(): string | undefined {
         return this._folder;
     }
     public get IsSsh(): boolean {
@@ -67,8 +72,13 @@ export class ExternalContext implements IRepositoryContext {
     public get IsTeamServices(): boolean {
         return this._isTeamServicesUrl;
     }
-    public get RemoteUrl(): string {
-        return this._remoteUrl;
+    public get RemoteUrl(): string | undefined {
+        if (this._remoteUrl !== "") {
+            return this._remoteUrl;
+        }
+        else {
+            return undefined;
+        }
     }
     public get RepositoryParentFolder(): string | undefined {
         return undefined;

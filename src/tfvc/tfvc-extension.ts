@@ -352,7 +352,7 @@ export class TfvcExtension {
                 Telemetry.SendEvent(TfvcTelemetryEvents.OpenFileHistory);
                 const serverPath: string = itemInfos[0].serverItem!;
                 const file: string = encodeURIComponent(serverPath);
-                let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl, "_versionControl");
+                let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl!, "_versionControl");
                 historyUrl = UrlBuilder.AddQueryParams(historyUrl, `path=${file}`, `_a=history`);
                 Utils.OpenUrl(historyUrl);
                 return;
@@ -413,7 +413,7 @@ export class TfvcExtension {
 
     private showRepositoryHistory(): void {
         Telemetry.SendEvent(TfvcTelemetryEvents.OpenRepositoryHistory);
-        let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl, "_versionControl");
+        let historyUrl: string = UrlBuilder.Join(this._manager.RepoContext!.RemoteUrl!, "_versionControl");
         historyUrl = UrlBuilder.AddQueryParams(historyUrl, `_a=history`);
         Utils.OpenUrl(historyUrl);
     }

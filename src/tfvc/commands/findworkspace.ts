@@ -113,7 +113,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
         //If we're restricting the workspace, find the proper teamProject name
         if (this._restrictWorkspace) {
             for (let i: number = 0; i < mappings.length; i++) {
-                const isWithin: boolean = this.pathIsWithin(this._localPath, mappings[i].localPath);
+                const isWithin: boolean = this.pathIsWithin(this._localPath, mappings[i].localPath!);
                 if (isWithin) {
                     const project: string = this.getTeamProject(mappings[i].serverPath); //maintain case in serverPath
                     teamProject = project;
@@ -209,10 +209,13 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
             }
             const start: number = cloaked ? line.indexOf(")") + 1 : 0;
             const serverPath: string = line.slice(start, end).trim();
-            let localPath: string = "";
+            let localPath: string | undefined = "";
             //cloaked entries don't have local paths
             if (end >= 0 && end + 1 < line.length) {
                 localPath = line.slice(end + 1).trim();
+            }
+            else {
+                localPath = undefined;
             }
             return {
                 serverPath: serverPath,

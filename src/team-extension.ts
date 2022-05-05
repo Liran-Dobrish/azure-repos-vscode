@@ -284,7 +284,7 @@ export class TeamExtension {
     public OpenNewPullRequest(): void {
         if (this._manager.EnsureInitialized(RepositoryType.GIT)) {
             if (this._gitClient) {
-                this._gitClient.OpenNewPullRequest(this._manager.RepoContext!.RemoteUrl, this._manager.RepoContext!.CurrentBranch!);
+                this._gitClient.OpenNewPullRequest(this._manager.RepoContext!.RemoteUrl!, this._manager.RepoContext!.CurrentBranch!);
             }
         } else {
             this._manager.DisplayErrorMessage();

@@ -178,15 +178,15 @@ export class CommandHelper {
         });
     }
 
-    public static TrimToXml(xml?: string): string {
-        if (xml) {
+    public static TrimToXml(xml?: string): string | undefined {
+        if (xml !== undefined) {
             const start: number = xml.indexOf("<?xml");
             const end: number = xml.lastIndexOf(">");
             if (start >= 0 && end > start) {
                 return xml.slice(start, end + 1);
-            }
+            }            
         }
-        return "";
+        return xml;
     }
 
     private static normalizeName(name: string): string {

@@ -22,7 +22,7 @@ export interface IRepositoryContext {
     IsSsh: boolean;
     IsTeamFoundation: boolean;
     IsTeamServices: boolean;
-    RemoteUrl: string;
+    RemoteUrl: string | undefined;
     RepoFolder: string | undefined;
     RepositoryParentFolder: string | undefined;
 

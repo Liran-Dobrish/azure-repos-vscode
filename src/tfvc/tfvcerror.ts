@@ -10,7 +10,7 @@ import { ITfvcErrorData } from "./interfaces";
 
 export class TfvcError extends Error {
     name: string = "TfvcError";
-    error: Error = new Error(undefined);
+    error: Error | undefined = new Error(undefined);
     message: string = "";
     messageOptions: IButtonMessageItem[] = [];
     stdout: string | undefined;
@@ -54,11 +54,11 @@ export class TfvcError extends Error {
             this.error = data.error;
             this.message = data.error.message;
         }
-        // else {
-        //     this.error = undefined;
-        // }
+        else {
+            this.error = undefined;
+            this.message = data.message || Strings.TfExecFailedError;
+        }
 
-        this.message = data.message || Strings.TfExecFailedError;
         this.messageOptions = data.messageOptions || [];
         this.stdout = data.stdout;
         this.stderr = data.stderr;

@@ -92,6 +92,7 @@ export class Checkin implements ITfvcCommand<string> {
                 return CommandHelper.GetChangesetNumber(executionResult.stdout);
             }
         }
+        return await Promise.resolve("");
     }
 
     public GetExeArguments(): IArgumentProvider {

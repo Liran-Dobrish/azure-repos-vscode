@@ -64,7 +64,7 @@ export class Status implements ITfvcCommand<IPendingChange[]> {
         CommandHelper.ProcessErrors(executionResult);
 
         const changes: IPendingChange[] = [];
-        const xml: string = CommandHelper.TrimToXml(executionResult.stdout);
+        const xml: string | undefined = CommandHelper.TrimToXml(executionResult.stdout);
         // Parse the xml using xml2js
         const json: any = await CommandHelper.ParseXml(xml);
         if (json && json.status) {

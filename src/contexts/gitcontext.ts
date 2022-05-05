@@ -18,11 +18,11 @@ export class GitContext implements IRepositoryContext {
     private _gitConfig: any;
     private _gitRepoInfo?: GitRepoInfo;
     private _gitFolder: string | undefined = "";
-    private _gitParentFolder: string = "";
+    private _gitParentFolder: string | undefined = "";
     private _gitOriginalRemoteUrl: string = "";
     private _gitRemoteUrl: string | undefined = "";
     private _gitCurrentBranch: string = "";
-    private _gitCurrentRef: string = "";
+    private _gitCurrentRef: string | undefined = "";
     private _isSsh: boolean = false;
     private _isTeamServicesUrl: boolean = false;
     private _isTeamFoundationServer: boolean = false;
@@ -77,7 +77,7 @@ export class GitContext implements IRepositoryContext {
                                 //  VSTS now has three URL modes v3, _git, and _ssh.
                                 /* tslint:disable:no-null-keyword */
                                 if (purl.pathname != null && purl.pathname.indexOf("/_git/") >= 0) {
-                                /* tslint:enable:no-null-keyword */
+                                    /* tslint:enable:no-null-keyword */
                                     //  For Team Services, default to https:// as the protocol
                                     this._gitRemoteUrl = "https://" + purl.hostname + purl.pathname;
                                 } else if (RepoUtils.IsTeamFoundationServicesV3SshRepo(purl.href)) {
@@ -122,11 +122,21 @@ export class GitContext implements IRepositoryContext {
     }
 
     //Git implementation
-    public get CurrentBranch(): string {
-        return this._gitCurrentBranch;
+    public get CurrentBranch(): string | undefined {
+        if (this._gitCurrentBranch !== "") {
+            return this._gitCurrentBranch;
+        }
+        else {
+            return undefined;
+        }
     }
-    public get CurrentRef(): string {
-        return this._gitCurrentRef;
+    public get CurrentRef(): string | undefined {
+        if (this._gitCurrentRef !== "") {
+            return this._gitCurrentRef;
+        }
+        else {
+            return undefined;
+        }
     }
 
     //TFVC implementation
@@ -148,14 +158,19 @@ export class GitContext implements IRepositoryContext {
     public get IsTeamServices(): boolean {
         return this._isTeamServicesUrl;
     }
-    public get RemoteUrl(): string {
+    public get RemoteUrl(): string | undefined {
         if (this._gitRemoteUrl) {
             return this._gitRemoteUrl;
         }
-        return "";
+        return undefined;
     }
-    public get RepositoryParentFolder(): string {
-        return this._gitParentFolder;
+    public get RepositoryParentFolder(): string | undefined {
+        if (this._gitParentFolder !== "") {
+            return this._gitParentFolder;
+        }
+        else {
+            return undefined;
+        }
     }
     public get Type(): RepositoryType {
         return RepositoryType.GIT;

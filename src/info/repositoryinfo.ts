@@ -9,6 +9,7 @@ import { RepoUtils } from "../helpers/repoutils";
 import { UrlBuilder } from "../helpers/urlbuilder";
 import * as url from "url";
 import { ParsedUrlQuery } from "querystring";
+import { IRepositoryContext } from "../contexts/repositorycontext";
 
 //When a RepositoryInfo object is created, we have already verified whether or not it
 //is either a Team Services or Team Foundation Server repository.  With the introduction
@@ -42,7 +43,9 @@ export class RepositoryInfo {
     constructor(repositoryInfo: any);
 
     constructor(repositoryInfo: any) {
-        if (!repositoryInfo) {
+        console.log(`my info: [${repositoryInfo}]`);
+        
+        if (repositoryInfo === undefined) {
             throw new Error(`repositoryInfo is undefined`);
         }
 

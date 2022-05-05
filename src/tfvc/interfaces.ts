@@ -48,7 +48,7 @@ export interface IWorkspace {
 
 export interface IWorkspaceMapping {
     serverPath: string;
-    localPath: string;
+    localPath: string | undefined;
     cloaked: boolean;
 }
 

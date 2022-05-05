@@ -133,12 +133,12 @@ describe("Utils", function () {
     });
 
     it("should verify GetBuildResultIcon with all values", function () {
-        expect(Utils.GetBuildResultIcon(BuildResult.Succeeded)).to.equal("octicon-check");
-        expect(Utils.GetBuildResultIcon(BuildResult.Canceled)).to.equal("octicon-alert");
-        expect(Utils.GetBuildResultIcon(BuildResult.Failed)).to.equal("octicon-stop");
-        expect(Utils.GetBuildResultIcon(BuildResult.PartiallySucceeded)).to.equal("octicon-alert");
-        expect(Utils.GetBuildResultIcon(BuildResult.None)).to.equal("octicon-question");
-        expect(Utils.GetBuildResultIcon(undefined)).to.equal("octicon-question");
+        expect(Utils.GetBuildResultIcon(BuildResult.Succeeded)).to.equal("check");
+        expect(Utils.GetBuildResultIcon(BuildResult.Canceled)).to.equal("alert");
+        expect(Utils.GetBuildResultIcon(BuildResult.Failed)).to.equal("stop");
+        expect(Utils.GetBuildResultIcon(BuildResult.PartiallySucceeded)).to.equal("alert");
+        expect(Utils.GetBuildResultIcon(BuildResult.None)).to.equal("question");
+        expect(Utils.GetBuildResultIcon(undefined)).to.equal("question");
     });
 
     it("should verify IsProxyEnabled", function () {

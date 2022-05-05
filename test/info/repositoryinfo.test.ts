@@ -33,7 +33,7 @@ describe("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, undefined);
     });
 
-    it("should verify valid values in repositoryInfo to RepositoryInfo constructor", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo object constructor", function() {
         const repositoryInfo: any = {
            "serverUrl": "http://server:8080/tfs",
            "collection": {
@@ -144,7 +144,7 @@ describe("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    it("should verify valid values in repositoryInfo to RepositoryInfo constructor", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo string constructor", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "account.visualstudio.com");
         assert.equal(repoInfo.Account, "account");
