@@ -53,8 +53,7 @@ export class TfvcError extends Error {
         if (data.error) {
             this.error = data.error;
             this.message = data.error.message;
-        }
-        else {
+        } else {
             this.error = undefined;
             this.message = data.message || Strings.TfExecFailedError;
         }

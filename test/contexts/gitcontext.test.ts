@@ -10,15 +10,15 @@ import * as path from "path";
 import { GitContext } from "../../src/contexts/gitcontext";
 import { RepositoryType } from "../../src/contexts/repositorycontext";
 
-describe("GitContext", function() {
+describe("GitContext", function () {
     const TEST_REPOS_FOLDER: string = "testrepos";
     const DOT_GIT_FOLDER: string = "dotgit";
 
-    beforeEach(function() {
+    beforeEach(function () {
         // console.log("__dirname: " + __dirname);
     });
 
-    it("should verify all undefined properties for undefined GitContext path", function() {
+    it("should verify all undefined properties for undefined GitContext path", function () {
         //Verify an undefined path does not set any values
         const gc: GitContext = new GitContext(undefined);
 
@@ -28,7 +28,7 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify undefined values for invalid GitContext path", function() {
+    it("should verify undefined values for invalid GitContext path", function () {
         //Actually pass a value to constructor (instead of undefined), values should be undefined
         const gc: GitContext = new GitContext(__dirname + "invalid");
 
@@ -38,17 +38,17 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify initialize returns true", async function() {
+    it("should verify initialize returns true", async function () {
         const gc: GitContext = new GitContext(__dirname);
         assert.isTrue(await gc.Initialize());
     });
 
-    it("should cover dispose", async function() {
+    it("should cover dispose", async function () {
         const gc: GitContext = new GitContext(__dirname);
         gc.dispose();
     });
 
-    it("should verify repository with an empty origin remote", function() {
+    it("should verify repository with an empty origin remote", function () {
         const repoName: string = "emptyconfig";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -64,12 +64,12 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify GitHub origin remote", function() {
+    it("should verify GitHub origin remote", function () {
         const repoName: string = "githubrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch,"updates");
+        assert.equal(gc.CurrentBranch, "updates");
         assert.equal(gc.CurrentRef, "refs/heads/updates");
         assert.isFalse(gc.IsSsh);
         assert.isFalse(gc.IsTeamFoundation);
@@ -80,7 +80,7 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify TeamServices origin remote", function() {
+    it("should verify TeamServices origin remote", function () {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -97,7 +97,7 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify TeamServices origin remote cloned with old-style ssh url", function() {
+    it("should verify TeamServices origin remote cloned with old-style ssh url", function () {
         const repoName: string = "gitrepo-old-ssh";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -148,7 +148,7 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify TeamFoundationServer origin remote", function() {
+    it("should verify TeamFoundationServer origin remote", function () {
         const repoName: string = "tfsrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -164,7 +164,7 @@ describe("GitContext", function() {
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
-    it("should verify TeamFoundationServer origin remote cloned with ssh", function() {
+    it("should verify TeamFoundationServer origin remote cloned with ssh", function () {
         const repoName: string = "tfsrepo-ssh";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);

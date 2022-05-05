@@ -46,9 +46,7 @@ export class ExternalContext implements IRepositoryContext {
         if (this._teamProjectName !== "") {
             return this._teamProjectName;
         }
-        else {
-            return undefined;
-        }
+        return undefined;
     }
 
     // Git implementation
@@ -73,12 +71,7 @@ export class ExternalContext implements IRepositoryContext {
         return this._isTeamServicesUrl;
     }
     public get RemoteUrl(): string | undefined {
-        if (this._remoteUrl !== "") {
-            return this._remoteUrl;
-        }
-        else {
-            return undefined;
-        }
+        return (this._remoteUrl !== "" ? this._remoteUrl : undefined);
     }
     public get RepositoryParentFolder(): string | undefined {
         return undefined;

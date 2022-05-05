@@ -213,8 +213,7 @@ export class FindWorkspace implements ITfvcCommand<IWorkspace> {
             //cloaked entries don't have local paths
             if (end >= 0 && end + 1 < line.length) {
                 localPath = line.slice(end + 1).trim();
-            }
-            else {
+            } else {
                 localPath = undefined;
             }
             return {

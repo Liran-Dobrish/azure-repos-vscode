@@ -44,7 +44,7 @@ export class RepositoryInfo {
 
     constructor(repositoryInfo: any) {
         console.log(`my info: [${repositoryInfo}]`);
-        
+
         if (repositoryInfo === undefined) {
             throw new Error(`repositoryInfo is undefined`);
         }

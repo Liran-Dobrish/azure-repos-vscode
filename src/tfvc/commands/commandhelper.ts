@@ -184,7 +184,7 @@ export class CommandHelper {
             const end: number = xml.lastIndexOf(">");
             if (start >= 0 && end > start) {
                 return xml.slice(start, end + 1);
-            }            
+            }
         }
         return xml;
     }

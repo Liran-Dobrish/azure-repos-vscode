@@ -126,17 +126,13 @@ export class GitContext implements IRepositoryContext {
         if (this._gitCurrentBranch !== "") {
             return this._gitCurrentBranch;
         }
-        else {
-            return undefined;
-        }
+        return undefined;
     }
     public get CurrentRef(): string | undefined {
         if (this._gitCurrentRef !== "") {
             return this._gitCurrentRef;
         }
-        else {
-            return undefined;
-        }
+        return undefined;
     }
 
     //TFVC implementation
@@ -168,9 +164,7 @@ export class GitContext implements IRepositoryContext {
         if (this._gitParentFolder !== "") {
             return this._gitParentFolder;
         }
-        else {
-            return undefined;
-        }
+        return undefined;
     }
     public get Type(): RepositoryType {
         return RepositoryType.GIT;
