@@ -62,18 +62,18 @@ gulp.task('tslint', gulp.series('build', function () {
 }));
 
 gulp.task('publishbuild', gulp.series('tslint', function () {
-    gulp.src(['./src/credentialstore/**/*.js'])
-        .pipe(gulp.dest('./out/src/credentialstore'));
-    gulp.src(['./src/credentialstore/bin/win32/*'])
+    return gulp.src(['./src/credentialstore/**/*.js'])
+        .pipe(gulp.dest('./out/src/credentialstore'))
+        .pipe(gulp.src(['./src/credentialstore/bin/win32/*']))
         .pipe(gulp.dest('./out/src/credentialstore/bin/win32'));
 }));
 
 gulp.task('publishall', gulp.series('publishbuild', function () {
-    gulp.src(['./test/contexts/testrepos/**/*'])
-        .pipe(gulp.dest('./out/test/contexts/testrepos'));
-    gulp.src(['./test/helpers/testrepos/**/*'])
-        .pipe(gulp.dest('./out/test/helpers/testrepos'));
-    gulp.src(['./patches/azure-devops-node-api/handlers/ntlm.js'])
+    return gulp.src(['./test/contexts/testrepos/**/*'])
+        .pipe(gulp.dest('./out/test/contexts/testrepos'))
+        .pipe(gulp.src(['./test/helpers/testrepos/**/*']))
+        .pipe(gulp.dest('./out/test/helpers/testrepos'))
+        .pipe(gulp.src(['./patches/vso-node-api/handlers/ntlm.js']))
         .pipe(gulp.dest('./node_modules/azure-devops-node-api/handlers'));
 }));
 
