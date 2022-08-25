@@ -2,7 +2,7 @@
 	"name": "argutec-azure-repos",
 	"displayName": "Argutec Azure Repos",
 	"description": "Connect to Azure Repos and work with Git and Team Foundation Version Control (TFVC) repositories. Manage your pull requests, work items, and more.",
-	"version": "1.2007.4",
+	"version": "1.2205.1",
 	"publisher": "argutec",
 	"icon": "assets/team.png",
 	"markdown": "standard",
