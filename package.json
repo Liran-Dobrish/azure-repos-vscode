@@ -492,7 +492,7 @@
     "chai": "^3.4.1",
     "del": "^2.2.0",
     "gulp-istanbul": "^1.1.1",
-    "gulp-mocha": "^3.0.1",
+    "gulp-mocha": "^8.0.0",
     "gulp-sourcemaps": "^2.4.0",
     "gulp-tslint": "^7.1.0",
     "gulp-typescript": "^3.1.4",
