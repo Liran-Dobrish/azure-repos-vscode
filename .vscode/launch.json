@@ -4,36 +4,47 @@
 	"version": "0.1.0",
 	"configurations": [
 		{
-			"name": "Launch Extension",
+			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}" ],
-			"stopOnEntry": false,
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out/src",
-			"preLaunchTask": "publishbuild"
+			"preLaunchTask": "${defaultBuildTask}"
 		},
 		{
-			"name": "Launch Tests",
+			"name": "Extension Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/out/test" ],
-			"stopOnEntry": false,
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/out/test/index"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/test/**/*.js"
+			],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out/test",			
+			"preLaunchTask": "npm: test-compile"
 		},
 		{
-			"name": "Launch Integration Tests",
+			"name": "Extension Integration Tests",
 			"type": "extensionHost",
 			"request": "launch",
 			"runtimeExecutable": "${execPath}",
-			"args": ["--extensionDevelopmentPath=${workspaceRoot}", "--extensionTestsPath=${workspaceRoot}/out/test-integration" ],
-			"stopOnEntry": false,
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensionTestsPath=${workspaceFolder}/out/test-integration/index"
+			],
+			"outFiles": [
+				"${workspaceFolder}/out/test-integration/**/*.js"
+			],
 			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/out/test-integration",
-			"preLaunchTask": "publishall"
+			"preLaunchTask": "npm: test-compile"
 		}
 	]
 }

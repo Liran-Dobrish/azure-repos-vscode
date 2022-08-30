@@ -1,48 +1,20 @@
-// Available variables which can be used inside of strings.
-// ${workspaceRoot}: the root folder of the team
-// ${file}: the current opened file
-// ${fileBasename}: the current opened file's basename
-// ${fileDirname}: the current opened file's dirname
-// ${fileExtname}: the current opened file's extension
-// ${cwd}: the current working directory of the spawned process
-
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
 {
 	"version": "2.0.0",
-	"command": "gulp",
-	"problemMatcher": "$gulp-tsc",
-	"args": [
-		"--no-color"
-	],
 	"tasks": [
 		{
-			"label": "publishall",
-			"type": "gulp",
-			"task": "--no-color",
+			"type": "npm",
+			"script": "watch",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
 			"group": {
 				"kind": "build",
-				"isDefault": false
+				"isDefault": true
 			}
-		},
-		{
-			"label": "test",
-			"type": "gulp",
-			"task": "--no-color",
-			"group": {
-				"kind": "test",
-				"isDefault": false
-			}
-		},
-		{
-			"label": "clean",
-			"type": "gulp",
-			"task": "--no-color"
-		},
-		{
-			"type": "gulp",
-			"task": "publishbuild",
-			"group": "build",
-			"problemMatcher": [],
-			"label": "gulp: publishbuild"
 		}
 	]
 }
