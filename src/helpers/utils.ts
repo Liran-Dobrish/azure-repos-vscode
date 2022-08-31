@@ -9,9 +9,9 @@ import { Strings } from "./strings";
 import * as vscode from "vscode";
 
 import * as fs from "fs";
-import * as path from "path";
-import open from "open";
-import opener from "opener";
+import path = require("path");
+import open = require("open");
+import opener = require("opener");
 
 export class Utils {
 

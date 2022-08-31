@@ -21,8 +21,7 @@ import { TfvcOutput } from "./tfvcoutput";
 import * as _ from "underscore";
 import * as fs from "fs";
 import * as path from "path";
-import internal from "stream";
-
+import internal = require("stream");
 /**
  * This is a static class that facilitates running the TFVC command line.
  * To use this class create a repository object or call Exec directly.
@@ -127,7 +126,7 @@ export class TfCommandLineRunner {
         }
     }
 
-    public static async Exec(tfvc: ITfCommandLine, cwd: string, args: IArgumentProvider, options: any = {}): Promise<IExecutionResult> {
+    public static async exec(tfvc: ITfCommandLine, cwd: string, args: IArgumentProvider, options: any = {}): Promise<IExecutionResult> {
         // default to the cwd passed in, but allow options.cwd to overwrite it
         options = _.extend({ cwd }, options || {});
 

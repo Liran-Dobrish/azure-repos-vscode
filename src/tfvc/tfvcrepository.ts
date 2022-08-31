@@ -208,6 +208,6 @@ export class TfvcRepository {
     private async exec(args: IArgumentProvider, options: any = {}): Promise<IExecutionResult> {
         options.env = _.assign({}, options.env || {});
         options.env = _.assign(options.env, this._env);
-        return await TfCommandLineRunner.Exec(this._tfCommandLine, this._repositoryRootFolder, args, options);
+        return await TfCommandLineRunner.exec(this._tfCommandLine, this._repositoryRootFolder, args, options);
     }
 }

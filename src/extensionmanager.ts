@@ -389,7 +389,7 @@ export class ExtensionManager implements Disposable {
             //For now, don't report these errors via the FeedbackClient (TFVC errors could result from TfvcContext creation failing)
             if (!err.tfvcErrorCode || this.shouldDisplayTfvcError(err.tfvcErrorCode)) {
                 this.setErrorStatus(err.message);
-                VsCodeUtils.ShowErrorMessage(err.message, ...err.messageOptions);
+                VsCodeUtils.ShowErrorMessage(err.message);
             }
         }
     }
