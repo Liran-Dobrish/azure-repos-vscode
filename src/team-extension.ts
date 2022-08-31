@@ -158,6 +158,8 @@ export class TeamExtension {
                             // We don't test the credentials to make sure they're good here.  Do so on the next command that's run.
                             Logger.LogDebug(`Reinitializing after successfully storing credentials for Team Foundation Server.`);
                             this._manager.Reinitialize();
+                        }, (err) => {
+                            Logger.LogDebug(err);
                         }).catch((err) => {
                             // TODO: Should the message direct the user to open an issue?  send feedback?
                             const msg: string = Strings.UnableToStoreCredentials + this._manager.ServerContext?.RepoInfo?.Host;

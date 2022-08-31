@@ -107,11 +107,9 @@ export class TfvcRepository {
     }
 
     public async FindWorkspace(localPath: string): Promise<IWorkspace | undefined> {
-        if (this._serverContext) {
             Logger.LogDebug(`TFVC Repository.FindWorkspace with localPath='${localPath}'`);
             return this.RunCommand<IWorkspace>(
-                new FindWorkspace(localPath, this._settings.RestrictWorkspace));
-        }
+                new FindWorkspace(localPath, this._settings.RestrictWorkspace));        
     }
 
     public async GetInfo(itemPaths: string[]): Promise<IItemInfo[] | undefined> {
