@@ -32,6 +32,26 @@ const config = {
       // Webpack 5 no longer polyfills Node.js core modules automatically.
       // see https://webpack.js.org/configuration/resolve/#resolvefallback
       // for the list of Node.js core module polyfills.
+      "fs": false,
+      "tls": false,
+      "net": false,
+      "path": false,
+      "zlib": false,
+      "http": false,
+      "https": false,
+      "stream": false,
+      "crypto": false,
+      "os": false,
+      "assert": false,
+      "buffer": false,
+      "timers": false,
+      "child_process": false,
+      "module": false,
+      "console": false,
+      "async_hooks": false,
+      "dns": false,
+      "constants": false,
+      "applicationinsights-native-metrics": false
     }
   },
   module: {
