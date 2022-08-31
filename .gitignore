@@ -7,3 +7,4 @@ team-extension.log
 coverage/
 .nyc_output/
 .vscode-test/
+dist/
