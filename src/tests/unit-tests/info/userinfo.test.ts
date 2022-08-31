@@ -8,9 +8,9 @@ import { assert } from "chai";
 
 import { UserInfo } from "../../../info/userinfo";
 
-describe("UserInfo", function() {
+suite("UserInfo", function() {
 
-    it("should verify the constructor sets the proper values", function() {
+    test("should verify the constructor sets the proper values", function() {
         const user: UserInfo = new UserInfo("id", "providerDisplayName", "customDisplayName");
         assert.equal(user.Id, "id");
         assert.equal(user.ProviderDisplayName, "providerDisplayName");

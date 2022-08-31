@@ -15,7 +15,7 @@ import { UserAgentProvider } from "../../../helpers/useragentprovider";
 import { TeamServerContext } from "../../../contexts/servercontext";
 import { SimpleWorkItem, WorkItemTrackingService } from "../../../services/workitemtracking";
 
-describe("WorkItemTrackingService-Integration", function () {
+suite("WorkItemTrackingService-Integration", function () {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
@@ -35,7 +35,7 @@ describe("WorkItemTrackingService-Integration", function () {
 
     //Even though CreateWorkItem isn't exposed in the extension, run it so we can get to 200, then 20,000
     //work items in the team project.  At that point, we can test other scenarios around WIT.
-    it("should verify WorkItemTrackingService.CreateWorkItem", async function () {
+    test("should verify WorkItemTrackingService.CreateWorkItem", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -51,7 +51,7 @@ describe("WorkItemTrackingService-Integration", function () {
         assert.isNotNull(item, "item was null when it shouldn't have been");
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItems", async function () {
+    test("should verify WorkItemTrackingService.GetWorkItems", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -65,7 +65,7 @@ describe("WorkItemTrackingService-Integration", function () {
         //console.log(items);
     });
 
-    it("should verify WorkItemTrackingService.GetQueryResultCount", async function () {
+    test("should verify WorkItemTrackingService.GetQueryResultCount", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -83,7 +83,7 @@ describe("WorkItemTrackingService-Integration", function () {
         expect(count).to.be.at.least(2);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemHierarchyItems", async function () {
+    test("should verify WorkItemTrackingService.GetWorkItemHierarchyItems", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -98,7 +98,7 @@ describe("WorkItemTrackingService-Integration", function () {
         expect(items?.length).to.equal(2);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery", async function () {
+    test("should verify WorkItemTrackingService.GetWorkItemQuery", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -115,7 +115,7 @@ describe("WorkItemTrackingService-Integration", function () {
         assert.isTrue(items.length > 0);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemTypes", async function () {
+    test("should verify WorkItemTrackingService.GetWorkItemTypes", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -130,7 +130,7 @@ describe("WorkItemTrackingService-Integration", function () {
         expect(items.length).to.equal(7);
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemById", async function () {
+    test("should verify WorkItemTrackingService.GetWorkItemById", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -145,7 +145,7 @@ describe("WorkItemTrackingService-Integration", function () {
         expect(item.id).to.equal(TestSettings.WorkItemId.toString());
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery with a Link query", function (done) {
+    test("should verify WorkItemTrackingService.GetWorkItemQuery with a Link query", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -172,7 +172,7 @@ describe("WorkItemTrackingService-Integration", function () {
         );
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery with maximum 200 results", function (done) {
+    test("should verify WorkItemTrackingService.GetWorkItemQuery with maximum 200 results", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -200,7 +200,7 @@ describe("WorkItemTrackingService-Integration", function () {
         );
     });
 
-    it("should verify WorkItemTrackingService.GetWorkItemQuery which returns zero results", function (done) {
+    test("should verify WorkItemTrackingService.GetWorkItemQuery which returns zero results", function (done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);

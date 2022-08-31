@@ -14,7 +14,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-describe("Tfvc-SyncCommand", function() {
+suite("Tfvc-SyncCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -42,76 +42,76 @@ describe("Tfvc-SyncCommand", function() {
         });
     });
 
-    it("should verify constructor", function() {
+    test("should verify constructor", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         new Sync(new TeamServerContext(""), localPaths, true);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         new Sync(context, localPaths, true);
     });
 
     //ToDo: fix....
-    // it("should verify constructor - undefined args", function() {
+    // test("should verify constructor - undefined args", function() {
     //     assert.throws(() => new Sync(new TeamServerContext(""), undefined, false), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, false);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, false);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify arguments", function() {
+    test("should verify arguments", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, false);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "get -noprompt -nosummary " + localPaths[0]);
     });
 
-    it("should verify arguments with context", function() {
+    test("should verify arguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(context, localPaths, false);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "get -noprompt -collection:" + collectionUrl + " ******** -nosummary " + localPaths[0]);
     });
 
-    it("should verify arguments with context and recursive", function() {
+    test("should verify arguments with context and recursive", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(context, localPaths, true);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "get -noprompt -collection:" + collectionUrl + " ******** -nosummary " + localPaths[0] + " -recursive");
     });
 
-    it("should verify getExeArguments", function() {
+    test("should verify getExeArguments", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, false);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "get -noprompt -nosummary " + localPaths[0]);
     });
 
-    it("should verify getExeArguments with context", function() {
+    test("should verify getExeArguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(context, localPaths, false);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "get -noprompt ******** -nosummary " + localPaths[0]);
     });
 
-    it("should verify getExeArguments with context and recursive", function() {
+    test("should verify getExeArguments with context and recursive", function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(context, localPaths, true);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "get -noprompt ******** -nosummary " + localPaths[0] + " -recursive");
     });
 
-    it("should verify parse output - no output", async function() {
+    test("should verify parse output - no output", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -126,7 +126,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.hasErrors, false);
     });
 
-    it("should verify parse output - up to date", async function() {
+    test("should verify parse output - up to date", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -141,7 +141,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.hasErrors, false);
     });
 
-    it("should verify parse output - single file edit - no errors", async function() {
+    test("should verify parse output - single file edit - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -159,7 +159,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo1/test", "test1.txt"));
     });
 
-    it("should verify parse output - single file add - no errors", async function() {
+    test("should verify parse output - single file add - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -177,7 +177,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo1/test", "test1.txt"));
     });
 
-    it("should verify parse output - single file add - spaces - no errors", async function() {
+    test("should verify parse output - single file add - spaces - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo 1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -195,7 +195,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo 1/test", "test 1.txt"));
     });
 
-    it("should verify parse output - multiple files - with conflict", async function() {
+    test("should verify parse output - multiple files - with conflict", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -245,7 +245,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[8].message, "Unable to perform the get operation because you have a conflicting rename, edit");
     });
 
-    it("should verify parse output - errors - exit code 1", async function() {
+    test("should verify parse output - errors - exit code 1", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -271,7 +271,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[2].message, "Unable to perform the get operation because it is writable");
     });
 
-    it("should verify parse output - errors - no conflicts", async function() {
+    test("should verify parse output - errors - no conflicts", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -297,7 +297,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[2].message, "/usr/alias/repo1/folder cannot be deleted because it is not empty");
     });
 
-    it("should verify parse output - errors - exit code 100", async function() {
+    test("should verify parse output - errors - exit code 100", async function() {
         const localPaths: string[] = ["/usr/alias/repo 1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -318,7 +318,7 @@ describe("Tfvc-SyncCommand", function() {
      * The methods below are duplicates of the parse output methods but call the parseExeOutput.
      ***********************************************************************************************/
 
-    it("should verify parse EXE output - no output", async function() {
+    test("should verify parse EXE output - no output", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -333,7 +333,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.hasErrors, false);
     });
 
-    it("should verify parse EXE output - up to date", async function() {
+    test("should verify parse EXE output - up to date", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -348,7 +348,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.hasErrors, false);
     });
 
-    it("should verify parse EXE output - single file edit - no errors", async function() {
+    test("should verify parse EXE output - single file edit - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -366,7 +366,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo1/test", "test1.txt"));
     });
 
-    it("should verify parse EXE output - single file add - no errors", async function() {
+    test("should verify parse EXE output - single file add - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -384,7 +384,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo1/test", "test1.txt"));
     });
 
-    it("should verify parse EXE output - single file add - spaces - no errors", async function() {
+    test("should verify parse EXE output - single file add - spaces - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo 1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -402,7 +402,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[0].itemPath, path.join("/usr/alias/repo 1/test", "test 1.txt"));
     });
 
-    it("should verify parse EXE output - multiple files - with conflict", async function() {
+    test("should verify parse EXE output - multiple files - with conflict", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -452,7 +452,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[8].message, "Unable to perform the get operation because you have a conflicting rename, edit");
     });
 
-    it("should verify parse EXE output - errors - exit code 1", async function() {
+    test("should verify parse EXE output - errors - exit code 1", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -478,7 +478,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[2].message, "Unable to perform the get operation because it is writable");
     });
 
-    it("should verify parse EXE output - errors - no conflicts", async function() {
+    test("should verify parse EXE output - errors - no conflicts", async function() {
         const localPaths: string[] = ["/usr/alias/repo1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {
@@ -504,7 +504,7 @@ describe("Tfvc-SyncCommand", function() {
         assert.equal(results.itemResults[2].message, "/usr/alias/repo1/folder cannot be deleted because it is not empty");
     });
 
-    it("should verify parse EXE output - errors - exit code 100", async function() {
+    test("should verify parse EXE output - errors - exit code 100", async function() {
         const localPaths: string[] = ["/usr/alias/repo 1"];
         const cmd: Sync = new Sync(new TeamServerContext(""), localPaths, true);
         const executionResult: IExecutionResult = {

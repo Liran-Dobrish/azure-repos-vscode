@@ -9,26 +9,26 @@ import { assert } from "chai";
 import { Strings } from "../../../../helpers/strings";
 import { ConflictsGroup, ExcludedGroup, IncludedGroup } from "../../../../tfvc/scm/resourcegroups";
 
-describe("Tfvc-ResourceGroups", function() {
+suite("Tfvc-ResourceGroups", function() {
     beforeEach(function() {
         //
     });
 
-    it("should verify ConflictsGroup - constructor", function() {
+    test("should verify ConflictsGroup - constructor", function() {
         const group: ConflictsGroup = new ConflictsGroup([]);
         assert.equal(group.id, "conflicts");
         assert.equal(group.label, Strings.ConflictsGroupName);
         assert.equal(group.resources.length, 0);
     });
 
-    it("should verify ExcludedGroup - constructor", function() {
+    test("should verify ExcludedGroup - constructor", function() {
         const group: ExcludedGroup = new ExcludedGroup([]);
         assert.equal(group.id, "excluded");
         assert.equal(group.label, Strings.ExcludedGroupName);
         assert.equal(group.resources.length, 0);
     });
 
-    it("should verify IncludedGroup - constructor", function() {
+    test("should verify IncludedGroup - constructor", function() {
         const group: IncludedGroup = new IncludedGroup([]);
         assert.equal(group.id, "included");
         assert.equal(group.label, Strings.IncludedGroupName);

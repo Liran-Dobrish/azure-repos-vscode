@@ -14,7 +14,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-describe("Tfvc-ResolveConflictsCommand", function() {
+suite("Tfvc-ResolveConflictsCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -42,76 +42,76 @@ describe("Tfvc-ResolveConflictsCommand", function() {
         });
     });
 
-    it("should verify constructor", function() {
+    test("should verify constructor", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         new ResolveConflicts(context, localPaths, AutoResolveType.KeepYours);
     });
 
     // ToDo: Fix...
-    // it("should verify constructor - undefined args", function() {
+    // test("should verify constructor - undefined args", function() {
     //     assert.throws(() => new ResolveConflicts(new TeamServerContext(""), undefined, undefined), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify arguments", function() {
+    test("should verify arguments", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "resolve -noprompt " + localPaths[0] + " -auto:KeepYours");
     });
 
-    it("should verify arguments with context", function() {
+    test("should verify arguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(context, localPaths, AutoResolveType.KeepYours);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "resolve -noprompt -collection:" + collectionUrl + " ******** " + localPaths[0] + " -auto:KeepYours");
     });
 
-    it("should verify arguments with TakeTheirs", function() {
+    test("should verify arguments with TakeTheirs", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(context, localPaths, AutoResolveType.TakeTheirs);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "resolve -noprompt -collection:" + collectionUrl + " ******** " + localPaths[0] + " -auto:TakeTheirs");
     });
 
-    it("should verify GetExeArguments", function() {
+    test("should verify GetExeArguments", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "resolve -noprompt " + localPaths[0] + " -auto:KeepYours");
     });
 
-    it("should verify GetExeArguments with context", function() {
+    test("should verify GetExeArguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(context, localPaths, AutoResolveType.KeepYours);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "resolve -noprompt ******** " + localPaths[0] + " -auto:KeepYours");
     });
 
-    it("should verify GetExeArguments with TakeTheirs", function() {
+    test("should verify GetExeArguments with TakeTheirs", function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(context, localPaths, AutoResolveType.TakeTheirs);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "resolve -noprompt ******** " + localPaths[0] + " -auto:TakeTheirs");
     });
 
-    it("should verify parse output - no output", async function() {
+    test("should verify parse output - no output", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {
@@ -124,7 +124,7 @@ describe("Tfvc-ResolveConflictsCommand", function() {
         assert.equal(results.length, 0);
     });
 
-    it("should verify parse output - no errors", async function() {
+    test("should verify parse output - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt", "/usr/alias/repo1/file2.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {
@@ -142,7 +142,7 @@ describe("Tfvc-ResolveConflictsCommand", function() {
         assert.equal(results[1].type, ConflictType.RESOLVED);
     });
 
-    it("should verify parse output - errors - exit code 100", async function() {
+    test("should verify parse output - errors - exit code 100", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {
@@ -163,7 +163,7 @@ describe("Tfvc-ResolveConflictsCommand", function() {
      * The methods below are duplicates of the parse output methods but call the parseExeOutput.
      ***********************************************************************************************/
 
-    it("should verify parse EXE output - no output", async function() {
+    test("should verify parse EXE output - no output", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {
@@ -176,7 +176,7 @@ describe("Tfvc-ResolveConflictsCommand", function() {
         assert.equal(results.length, 0);
     });
 
-    it("should verify parse EXE output - no errors", async function() {
+    test("should verify parse EXE output - no errors", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt", "/usr/alias/repo1/file2.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {
@@ -194,7 +194,7 @@ describe("Tfvc-ResolveConflictsCommand", function() {
         assert.equal(results[1].type, ConflictType.RESOLVED);
     });
 
-    it("should verify parse EXE output - errors - exit code 100", async function() {
+    test("should verify parse EXE output - errors - exit code 100", async function() {
         const localPaths: string[] = ["/usr/alias/repo1/file.txt"];
         const cmd: ResolveConflicts = new ResolveConflicts(new TeamServerContext(""), localPaths, AutoResolveType.KeepYours);
         const executionResult: IExecutionResult = {

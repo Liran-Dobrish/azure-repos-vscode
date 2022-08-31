@@ -11,7 +11,7 @@ import { BuildResult } from "azure-devops-node-api/interfaces/BuildInterfaces";
 import { Utils } from "../../../helpers/utils";
 import { Strings } from "../../../helpers/strings";
 
-describe("Utils", function () {
+suite("Utils", function () {
     const TEST_REPOS_FOLDER: string = "testrepos";
     const DOT_GIT_FOLDER: string = "dotgit";
 
@@ -19,7 +19,7 @@ describe("Utils", function () {
         //
     });
 
-    it("should verify IsOffline", function () {
+    test("should verify IsOffline", function () {
         let reason: any = { code: "ENOENT" };
         assert.isTrue(Utils.IsOffline(reason));
         reason = { code: "ENOTFOUND" };
@@ -36,7 +36,7 @@ describe("Utils", function () {
         assert.isFalse(Utils.IsOffline(reason));
     });
 
-    it("should verify IsUnauthorized", function () {
+    test("should verify IsUnauthorized", function () {
         const reason = { code: 401 };
         assert.isTrue(Utils.IsUnauthorized(reason));
         const reason2 = { statusCode: 401 };
@@ -45,31 +45,31 @@ describe("Utils", function () {
         assert.isFalse(Utils.IsUnauthorized(undefined));
     });
 
-    it("should verify GetMessageForStatusCode with 401", function () {
+    test("should verify GetMessageForStatusCode with 401", function () {
         const reason = { code: "401" };
         const message: string = Utils.GetMessageForStatusCode(reason);
         assert.equal(message, Strings.StatusCode401);
     });
 
-    it("should verify GetMessageForStatusCode for offline - ENOENT", function () {
+    test("should verify GetMessageForStatusCode for offline - ENOENT", function () {
         const reason = { code: "ENOENT" };
         const message: string = Utils.GetMessageForStatusCode(reason);
         assert.equal(message, Strings.StatusCodeOffline);
     });
 
-    it("should verify GetMessageForStatusCode for offline - ENOTFOUND", function () {
+    test("should verify GetMessageForStatusCode for offline - ENOTFOUND", function () {
         const reason = { code: "ENOTFOUND" };
         const message: string = Utils.GetMessageForStatusCode(reason);
         assert.equal(message, Strings.StatusCodeOffline);
     });
 
-    it("should verify GetMessageForStatusCode for offline - EAI_AGAIN", function () {
+    test("should verify GetMessageForStatusCode for offline - EAI_AGAIN", function () {
         const reason = { code: "EAI_AGAIN" };
         const message: string = Utils.GetMessageForStatusCode(reason);
         assert.equal(message, Strings.StatusCodeOffline);
     });
 
-    it("should verify GetMessageForStatusCode for proxy - ECONNRESET", function () {
+    test("should verify GetMessageForStatusCode for proxy - ECONNRESET", function () {
         const reason = { code: "ECONNRESET" };
         process.env.HTTP_PROXY = "azure-repos-vscode unit tests";
         const message: string = Utils.GetMessageForStatusCode(reason);
@@ -77,7 +77,7 @@ describe("Utils", function () {
         assert.equal(message, Strings.ProxyUnreachable);
     });
 
-    it("should verify GetMessageForStatusCode for proxy - ECONNREFUSED", function () {
+    test("should verify GetMessageForStatusCode for proxy - ECONNREFUSED", function () {
         const reason = { code: "ECONNREFUSED" };
         process.env.HTTP_PROXY = "azure-repos-vscode unit tests";
         const message: string = Utils.GetMessageForStatusCode(reason);
@@ -85,21 +85,21 @@ describe("Utils", function () {
         assert.equal(message, Strings.ProxyUnreachable);
     });
 
-    it("should verify GetMessageForStatusCode for no proxy - ECONNRESET", function () {
+    test("should verify GetMessageForStatusCode for no proxy - ECONNRESET", function () {
         const reason = { code: "ECONNRESET" };
         process.env.HTTP_PROXY = "";
         const message: string = Utils.GetMessageForStatusCode(reason, "default message");
         assert.equal(message, "default message");
     });
 
-    it("should verify GetMessageForStatusCode for no proxy - ECONNREFUSED", function () {
+    test("should verify GetMessageForStatusCode for no proxy - ECONNREFUSED", function () {
         const reason = { code: "ECONNREFUSED" };
         process.env.HTTP_PROXY = "";
         const message: string = Utils.GetMessageForStatusCode(reason, "default message");
         assert.equal(message, "default message");
     });
 
-    it("should verify GetMessageForStatusCode for 404", function () {
+    test("should verify GetMessageForStatusCode for 404", function () {
         const reason = { statusCode: "404" };
         const msg = "This should be the message that is returned.";
 
@@ -107,7 +107,7 @@ describe("Utils", function () {
         assert.equal(message, msg);
     });
 
-    it("should verify GetMessageForStatusCode for 401 with prefix", function () {
+    test("should verify GetMessageForStatusCode for 401 with prefix", function () {
         const reason = { statusCode: "401" };
         const msg = Strings.StatusCode401;
         const prefix: string = "PREFIX:";
@@ -116,7 +116,7 @@ describe("Utils", function () {
         assert.equal(message, prefix + " " + msg);
     });
 
-    it("should verify FindGitFolder with subfolder", function () {
+    test("should verify FindGitFolder with subfolder", function () {
         const repoName: string = "gitreposubfolder";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, "folder", "subfolder");
         // Pass in DOT_GIT_FOLDER to find our test repo folder
@@ -125,14 +125,14 @@ describe("Utils", function () {
         assert.equal(actualRepoPath, path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER));
     });
 
-    it("should verify FindGitFolder with no found .git folder", function () {
+    test("should verify FindGitFolder with no found .git folder", function () {
         const repoPath: string = __dirname;
         //We need use DOT_GIT_FOLDER here since the test resides in a .git repository
         const actualRepoPath: string | undefined = Utils.FindGitFolder(repoPath, DOT_GIT_FOLDER);
         assert.isUndefined(actualRepoPath);
     });
 
-    it("should verify GetBuildResultIcon with all values", function () {
+    test("should verify GetBuildResultIcon with all values", function () {
         expect(Utils.GetBuildResultIcon(BuildResult.Succeeded)).to.equal("check");
         expect(Utils.GetBuildResultIcon(BuildResult.Canceled)).to.equal("alert");
         expect(Utils.GetBuildResultIcon(BuildResult.Failed)).to.equal("stop");
@@ -141,7 +141,7 @@ describe("Utils", function () {
         expect(Utils.GetBuildResultIcon(undefined)).to.equal("question");
     });
 
-    it("should verify IsProxyEnabled", function () {
+    test("should verify IsProxyEnabled", function () {
         const httpProxy: string = (process.env.HTTP_PROXY ? process.env.HTTP_PROXY : "");
         const httpsProxy: string = (process.env.HTTPS_PROXY ? process.env.HTTPS_PROXY : "");
         try {
@@ -163,7 +163,7 @@ describe("Utils", function () {
         }
     });
 
-    it("should verify IsProxyIssue", function () {
+    test("should verify IsProxyIssue", function () {
         const httpProxy: string = (process.env.HTTP_PROXY ? process.env.HTTP_PROXY : "");
         try {
             process.env.HTTP_PROXY = "azure-repos-vscode unit tests";

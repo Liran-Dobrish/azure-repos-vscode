@@ -14,7 +14,7 @@ import { UserAgentProvider } from "../../../helpers/useragentprovider";
 import { TeamServerContext } from "../../../contexts/servercontext";
 import { GitVcService, PullRequestScore } from "../../../services/gitvc";
 
-describe("GitVcService-Integration", function () {
+suite("GitVcService-Integration", function () {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
@@ -32,7 +32,7 @@ describe("GitVcService-Integration", function () {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    it("should verify GitVcService.GetRepositories", async function () {
+    test("should verify GitVcService.GetRepositories", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -47,7 +47,7 @@ describe("GitVcService-Integration", function () {
         expect(repos.length).to.equal(2);
     });
 
-    it("should verify GitVcService.GetPullRequests", async function () {
+    test("should verify GitVcService.GetPullRequests", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);
@@ -62,7 +62,7 @@ describe("GitVcService-Integration", function () {
         expect(requests.length).to.equal(4);
     });
 
-    it("should verify GitVcService.GetPullRequestScore", async function () {
+    test("should verify GitVcService.GetPullRequestScore", async function () {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);

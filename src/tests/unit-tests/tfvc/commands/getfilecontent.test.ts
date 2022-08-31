@@ -13,7 +13,7 @@ import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 import { Strings } from "../../../../helpers/strings";
 
-describe("Tfvc-GetFileContentCommand", function() {
+suite("Tfvc-GetFileContentCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -41,95 +41,95 @@ describe("Tfvc-GetFileContentCommand", function() {
         });
     });
 
-    it("should verify constructor - windows", function() {
+    test("should verify constructor - windows", function() {
         const localPath: string = "c:\\repos\\Tfvc.L2VSCodeExtension.RC\\README.md";
         new GetFileContent(new TeamServerContext(""), localPath);
     });
 
-    it("should verify constructor - mac/linux", function() {
+    test("should verify constructor - mac/linux", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         new GetFileContent(new TeamServerContext(""), localPath);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         new GetFileContent(context, localPath);
     });
 
     // ToDo: Fix...
-    // it("should verify constructor - undefined args", function() {
+    // test("should verify constructor - undefined args", function() {
     //     assert.throws(() => new GetFileContent(new TeamServerContext(""), undefined), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetArguments", function() {
+    test("should verify GetArguments", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "print -noprompt " + localPath);
     });
 
-    it("should verify GetArguments with context", function() {
+    test("should verify GetArguments with context", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(context, localPath);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "print -noprompt -collection:" + collectionUrl + " ******** " + localPath);
     });
 
-    it("should verify GetArguments + versionSpec", function() {
+    test("should verify GetArguments + versionSpec", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath, "42");
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "print -noprompt " + localPath + " -version:42");
     });
 
-    it("should verify GetArguments + versionSpec with context", function() {
+    test("should verify GetArguments + versionSpec with context", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(context, localPath, "42");
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "print -noprompt -collection:" + collectionUrl + " ******** " + localPath + " -version:42");
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify GetExeArguments", function() {
+    test("should verify GetExeArguments", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "view -noprompt " + localPath);
     });
 
-    it("should verify GetExeArguments with context", function() {
+    test("should verify GetExeArguments with context", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(context, localPath);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "view -noprompt -collection:" + collectionUrl + " ******** " + localPath);
     });
 
-    it("should verify GetExeArguments + versionSpec", function() {
+    test("should verify GetExeArguments + versionSpec", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath, "42");
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "view -noprompt " + localPath + " -version:42");
     });
 
-    it("should verify GetExeArguments + versionSpec with context", function() {
+    test("should verify GetExeArguments + versionSpec with context", function() {
         const localPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md";
         const cmd: GetFileContent = new GetFileContent(context, localPath, "42");
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "view -noprompt -collection:" + collectionUrl + " ******** " + localPath + " -version:42");
     });
 
-    it("should verify parse output - single file - no errors", async function() {
+    test("should verify parse output - single file - no errors", async function() {
         const localPath: string = "README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         const fileContent: string = "This is the content of the README.md file\n...and I mean that.\n";
@@ -143,7 +143,7 @@ describe("Tfvc-GetFileContentCommand", function() {
         assert.equal(content, fileContent);
     });
 
-    it("should verify parse output - no file matches", async function() {
+    test("should verify parse output - no file matches", async function() {
         const localPath: string = "folder1/file1.txt";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath, undefined, true); //ignoring file not found
         const executionResult: IExecutionResult = {
@@ -156,7 +156,7 @@ describe("Tfvc-GetFileContentCommand", function() {
         assert.equal(content, "");
     });
 
-    it("should verify parse output - file doesn't exist", async function() {
+    test("should verify parse output - file doesn't exist", async function() {
         const localPath: string = "folder1/file1.txt";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath, "66", true); //ignoring file not found
         const executionResult: IExecutionResult = {
@@ -169,7 +169,7 @@ describe("Tfvc-GetFileContentCommand", function() {
         assert.equal(content, "");
     });
 
-    it("should verify parse output - error exit code", async function() {
+    test("should verify parse output - error exit code", async function() {
         const localPath: string = "folder1/file1.txt";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -186,7 +186,7 @@ describe("Tfvc-GetFileContentCommand", function() {
         }
     });
 
-    it("should verify parse Exe output - single file - no errors", async function() {
+    test("should verify parse Exe output - single file - no errors", async function() {
         const localPath: string = "README.md";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         const fileContent: string = "This is the content of the README.md file\n...and I mean that.\n";
@@ -200,7 +200,7 @@ describe("Tfvc-GetFileContentCommand", function() {
         assert.equal(content, fileContent);
     });
 
-    it("should verify parse Exe output - error exit code", async function() {
+    test("should verify parse Exe output - error exit code", async function() {
         const localPath: string = "folder1/file1.txt";
         const cmd: GetFileContent = new GetFileContent(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {

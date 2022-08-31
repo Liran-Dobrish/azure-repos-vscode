@@ -15,7 +15,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-describe("Tfvc-RenameCommand", function() {
+suite("Tfvc-RenameCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -43,21 +43,21 @@ describe("Tfvc-RenameCommand", function() {
         });
     });
 
-    it("should verify constructor - windows", function() {
+    test("should verify constructor - windows", function() {
         const startPath: string = "c:\\repos\\Tfvc.L2VSCodeExtension.RC\\";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
         new Rename(new TeamServerContext(""), sourcePath, destinationPath);
     });
 
-    it("should verify constructor - mac/linux", function() {
+    test("should verify constructor - mac/linux", function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
         new Rename(new TeamServerContext(""), sourcePath, destinationPath);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -65,29 +65,29 @@ describe("Tfvc-RenameCommand", function() {
     });
 
     // ToDo: Fix...
-    // it("should verify constructor - no destination path", function() {
+    // test("should verify constructor - no destination path", function() {
     //     const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
     //     const sourcePath: string = path.join(startPath, "README.md");
     //     assert.throws(() => new Rename(new TeamServerContext(""), sourcePath, undefined), TfvcError, /Argument is required/);
     // });
 
-    // it("should verify constructor - no source path", function() {
+    // test("should verify constructor - no source path", function() {
     //     const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
     //     const destinationPath: string = path.join(startPath, "READU.md");
     //     assert.throws(() => new Rename(new TeamServerContext(""), undefined, destinationPath), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const cmd: Rename = new Rename(context, "sourcePath", "destinationPath");
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const cmd: Rename = new Rename(context, "sourcePath", "destinationPath");
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify arguments", function() {
+    test("should verify arguments", function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -97,7 +97,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "rename -noprompt -collection:" + collectionUrl + " ******** " + sourcePath + " " + destinationPath);
     });
 
-    it("should verify GetExeArguments", function() {
+    test("should verify GetExeArguments", function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -107,7 +107,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "rename -noprompt ******** " + sourcePath + " " + destinationPath);
     });
 
-    it("should verify parse output - no output", async function() {
+    test("should verify parse output - no output", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -123,7 +123,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, "");
     });
 
-    it("should verify parse output - single line", async function() {
+    test("should verify parse output - single line", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -139,7 +139,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, "READU.md");
     });
 
-    it("should verify parse output - with path", async function() {
+    test("should verify parse output - with path", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -155,7 +155,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, destinationPath);
     });
 
-    it("should verify parse output - source file not in workspace", async function() {
+    test("should verify parse output - source file not in workspace", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -175,7 +175,7 @@ describe("Tfvc-RenameCommand", function() {
         }
     });
 
-    it("should verify parse output - error exit code", async function() {
+    test("should verify parse output - error exit code", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -199,7 +199,7 @@ describe("Tfvc-RenameCommand", function() {
      * The methods below are duplicates of the parse output methods but call the parseExeOutput.
      ***********************************************************************************************/
 
-    it("should verify parse EXE output - no output", async function() {
+    test("should verify parse EXE output - no output", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -215,7 +215,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, "");
     });
 
-    it("should verify parse EXE output - single line", async function() {
+    test("should verify parse EXE output - single line", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -231,7 +231,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, "READU.md");
     });
 
-    it("should verify parse EXE output - with path", async function() {
+    test("should verify parse EXE output - with path", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -247,7 +247,7 @@ describe("Tfvc-RenameCommand", function() {
         assert.equal(result, destinationPath);
     });
 
-    it("should verify parse EXE output - source file not in workspace", async function() {
+    test("should verify parse EXE output - source file not in workspace", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");
@@ -267,7 +267,7 @@ describe("Tfvc-RenameCommand", function() {
         }
     });
 
-    it("should verify parse EXE output - error exit code", async function() {
+    test("should verify parse EXE output - error exit code", async function() {
         const startPath: string = "/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/";
         const sourcePath: string = path.join(startPath, "README.md");
         const destinationPath: string = path.join(startPath, "READU.md");

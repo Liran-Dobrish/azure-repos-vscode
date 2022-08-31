@@ -7,13 +7,13 @@
 import { assert } from "chai";
 import { Logger, LoggingLevel } from "../../../helpers/logger";
 
-describe("Logger", function() {
+suite("Logger", function() {
 
     beforeEach(function() {
         //
     });
 
-    it("should cover Initialize", function() {
+    test("should cover Initialize", function() {
         Logger.SetLoggingLevel("error");
         Logger.LogWarning("unit test warning message");
         Logger.LogInfo("unit test info message");
@@ -21,7 +21,7 @@ describe("Logger", function() {
         Logger.LogObject({ property: "value" });
     });
 
-    it("should verify setting LoggingLevel", function() {
+    test("should verify setting LoggingLevel", function() {
         Logger.SetLoggingLevel("debug");
         assert.equal(Logger.LoggingLevel, LoggingLevel.Debug);
         Logger.SetLoggingLevel("error");
@@ -38,14 +38,14 @@ describe("Logger", function() {
         assert.isUndefined(Logger.LoggingLevel);
     });
 
-    it("should verify setting LogPath", function() {
+    test("should verify setting LogPath", function() {
         Logger.LogPath = undefined;
         assert.equal(Logger.LogPath, "");
         Logger.LogPath = "/usr/logger/logfile";
         assert.equal(Logger.LogPath, "/usr/logger/logfile");
     });
 
-    it("should ensure getNow()", function() {
+    test("should ensure getNow()", function() {
         const now: string = Logger.Now;  //calls private getNow()
         const date: number = Date.parse(now);
         assert.isDefined(date);

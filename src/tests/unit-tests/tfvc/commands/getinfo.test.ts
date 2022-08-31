@@ -15,7 +15,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-describe("Tfvc-GetInfoCommand", function() {
+suite("Tfvc-GetInfoCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -43,62 +43,62 @@ describe("Tfvc-GetInfoCommand", function() {
         });
     });
 
-    it("should verify constructor", function() {
+    test("should verify constructor", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         new GetInfo(new TeamServerContext(""), localPaths);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         new GetInfo(context, localPaths);
     });
 
     // ToDo: Fix...
-    // it("should verify constructor - undefined args", function() {
+    // test("should verify constructor - undefined args", function() {
     //     assert.throws(() => new GetInfo(new TeamServerContext(""), undefined), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify arguments", function() {
+    test("should verify arguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "info -noprompt " + localPaths[0]);
     });
 
-    it("should verify arguments with context", function() {
+    test("should verify arguments with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(context, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "info -noprompt -collection:" + collectionUrl + " ******** " + localPaths[0]);
     });
 
-    it("should verify GetExeArguments", function() {
+    test("should verify GetExeArguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "info -noprompt " + localPaths[0]);
     });
 
-    it("should verify GetExeArguments with context", function() {
+    test("should verify GetExeArguments with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(context, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "info -noprompt -collection:" + collectionUrl + " ******** " + localPaths[0]);
     });
 
-    it("should verify parse output - no output", async function() {
+    test("should verify parse output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -111,7 +111,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos.length, 0);
     });
 
-    it("should verify parse output - single item", async function() {
+    test("should verify parse output - single item", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -151,7 +151,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[0].fileSize, "1385");
     });
 
-    it("should verify parse output - multiple items", async function() {
+    test("should verify parse output - multiple items", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -220,7 +220,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[1].fileSize, "1386");
     });
 
-    it("should verify parse output - multiple items with errors", async function() {
+    test("should verify parse output - multiple items with errors", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "nomatch", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -292,7 +292,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[2].fileSize, "1386");
     });
 
-    it("should verify parse output - all errors", async function() {
+    test("should verify parse output - all errors", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -315,7 +315,7 @@ describe("Tfvc-GetInfoCommand", function() {
      * The methods below are duplicates of the parse output methods but call the parseExeOutput.
      ***********************************************************************************************/
 
-    it("should verify parse EXE output - no output", async function() {
+    test("should verify parse EXE output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -328,7 +328,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos.length, 0);
     });
 
-    it("should verify parse EXE output - single item", async function() {
+    test("should verify parse EXE output - single item", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -368,7 +368,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[0].fileSize, "1385");
     });
 
-    it("should verify parse EXE output - multiple items", async function() {
+    test("should verify parse EXE output - multiple items", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -436,7 +436,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[1].fileSize, "1386");
     });
 
-    it("should verify parse EXE output - multiple items with errors", async function() {
+    test("should verify parse EXE output - multiple items with errors", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "nomatch", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -506,7 +506,7 @@ describe("Tfvc-GetInfoCommand", function() {
         assert.equal(itemInfos[2].fileSize, "1386");
     });
 
-    it("should verify parse EXE output - all errors", async function() {
+    test("should verify parse EXE output - all errors", async function() {
         const localPaths: string[] = ["/path/to/workspace/file.txt", "/path/to/workspace/file2.txt"];
         const cmd: GetInfo = new GetInfo(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {

@@ -9,9 +9,9 @@ import { assert } from "chai";
 import { CredentialInfo } from "../../../info/credentialinfo";
 import { ExtensionRequestHandler } from "../../../info/extensionrequesthandler";
 
-describe("CredentialInfo", function() {
+suite("CredentialInfo", function() {
 
-    it("should ensure all properties work as expected", function() {
+    test("should ensure all properties work as expected", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password", "domain", "workstation");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
@@ -21,14 +21,14 @@ describe("CredentialInfo", function() {
         assert.equal(credentialInfo.Workstation, "workstation");
     });
 
-    it("should ensure PAT returns a BasicCredentialHandler", function() {
+    test("should ensure PAT returns a BasicCredentialHandler", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("pat-token");
         const basic: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         assert.isDefined(basic);
         assert.equal(basic.Password, "pat-token");
     });
 
-    it("should ensure username + password returns an NtlmCredentialHandler", function() {
+    test("should ensure username + password returns an NtlmCredentialHandler", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
@@ -38,7 +38,7 @@ describe("CredentialInfo", function() {
         assert.equal(ntlm.Password, "password");
     });
 
-    it("should ensure username + password + domain returns an NtlmCredentialHandler", function() {
+    test("should ensure username + password + domain returns an NtlmCredentialHandler", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password", "domain");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
@@ -48,7 +48,7 @@ describe("CredentialInfo", function() {
         assert.equal(ntlm.Password, "password");
     });
 
-    it("should ensure username + password + domain + workstation returns an NtlmCredentialHandler", function() {
+    test("should ensure username + password + domain + workstation returns an NtlmCredentialHandler", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("username", "password", "domain", "workstation");
         assert.isDefined(credentialInfo);
         assert.isDefined(credentialInfo.CredentialHandler);
@@ -61,7 +61,7 @@ describe("CredentialInfo", function() {
     });
 
     // Todo: Fix...
-    it("should ensure properties work as intended", function() {
+    test("should ensure properties work as intended", function() {
         const credentialInfo: CredentialInfo = new CredentialInfo("pat-token");
         const basic: ExtensionRequestHandler = <ExtensionRequestHandler><unknown>(credentialInfo.CredentialHandler);
         credentialInfo.CredentialHandler = undefined;

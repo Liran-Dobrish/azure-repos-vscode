@@ -13,7 +13,7 @@ import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 //import { TfvcError } from "../../../src/tfvc/tfvcerror";
 
-describe("Tfvc-ArgumentBuilder", function() {
+suite("Tfvc-ArgumentBuilder", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -41,7 +41,7 @@ describe("Tfvc-ArgumentBuilder", function() {
         });
     });
 
-    it("should verify constructor", function() {
+    test("should verify constructor", function() {
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd);
         assert.equal(builder.GetCommand(), cmd);
@@ -51,7 +51,7 @@ describe("Tfvc-ArgumentBuilder", function() {
         assert.equal(args.length, 2);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd, context);
         assert.equal(builder.GetCommand(), cmd);
@@ -63,7 +63,7 @@ describe("Tfvc-ArgumentBuilder", function() {
         assert.equal(args.length, 4);
     });
 
-    it("should verify constructor with context - user and domain", function() {
+    test("should verify constructor with context - user and domain", function() {
         context.CredentialInfo = new CredentialInfo(user, pass, "domain", "workstation");
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd, context);
@@ -77,29 +77,29 @@ describe("Tfvc-ArgumentBuilder", function() {
     });
 
     // Todo: Fix...
-    // it("should verify constructor error", function() {
+    // test("should verify constructor error", function() {
     //     assert.throws(() => new ArgumentBuilder(undefined), TfvcError, /Argument is required/);
     // });
 
-    it("should verify ToString", function() {
+    test("should verify ToString", function() {
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd, context);
         assert.equal(builder.ToString(), "mycmd -noprompt -collection:" + collectionUrl + " ********");
     });
 
-    it("should verify BuildCommandLine with context", function() {
+    test("should verify BuildCommandLine with context", function() {
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd, context);
         assert.equal(builder.BuildCommandLine().trim(), "mycmd -noprompt -collection:" + collectionUrl + " -login:" + user + "," + pass);
     });
 
-    it("should verify BuildCommandLine", function() {
+    test("should verify BuildCommandLine", function() {
         const cmd: string = "mycmd";
         const builder: ArgumentBuilder = new ArgumentBuilder(cmd);
         assert.equal(builder.BuildCommandLine().trim(), "mycmd -noprompt");
     });
 
-    it("should verify BuildCommandLine with spaces in options", function() {
+    test("should verify BuildCommandLine with spaces in options", function() {
         const cmd: string = "mycmd";
         const path: string = "/path/with a space/file.txt";
         const option: string = "option with space";
@@ -110,7 +110,7 @@ describe("Tfvc-ArgumentBuilder", function() {
         assert.equal(builder.BuildCommandLine().trim(), "mycmd -noprompt \"/path/with a space/file.txt\" \"-option with space\" \"-option with space:/path/with a space/file.txt\"");
     });
 
-    it("should verify BuildCommandLine with spaces in some", function() {
+    test("should verify BuildCommandLine with spaces in some", function() {
         const cmd: string = "mycmd";
         const path: string = "/path/with a space/file.txt";
         const option: string = "option";
@@ -121,7 +121,7 @@ describe("Tfvc-ArgumentBuilder", function() {
         assert.equal(builder.BuildCommandLine().trim(), "mycmd -noprompt \"/path/with a space/file.txt\" -option \"-option:/path/with a space/file.txt\"");
     });
 
-    it("should verify interface implemented", function() {
+    test("should verify interface implemented", function() {
         const cmd: string = "mycmd";
         const argProvider: IArgumentProvider = new ArgumentBuilder(cmd, context);
         // GetCommand

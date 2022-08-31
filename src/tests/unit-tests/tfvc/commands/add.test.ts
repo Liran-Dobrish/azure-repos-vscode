@@ -13,7 +13,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-describe("Tfvc-AddCommand", function() {
+suite("Tfvc-AddCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -41,67 +41,67 @@ describe("Tfvc-AddCommand", function() {
         });
     });
 
-    it("should verify constructor - windows", function() {
+    test("should verify constructor - windows", function() {
         const localPaths: string[] = ["c:\\repos\\Tfvc.L2VSCodeExtension.RC\\README.md"];
         new Add(new TeamServerContext(""), localPaths);
     });
 
-    it("should verify constructor - mac/linux", function() {
+    test("should verify constructor - mac/linux", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         new Add(new TeamServerContext(""), localPaths);
     });
 
-    it("should verify constructor with context", function() {
+    test("should verify constructor with context", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         new Add(context, localPaths);
     });
 
     // Todo: Fix...
-    // it("should verify constructor - undefined args", function() {
+    // test("should verify constructor - undefined args", function() {
     //     assert.throws(() => new Add(new TeamServerContext(""), undefined), TfvcError, /Argument is required/);
     // });
 
-    it("should verify GetOptions", function() {
+    test("should verify GetOptions", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    it("should verify GetExeOptions", function() {
+    test("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    it("should verify arguments", function() {
+    test("should verify arguments", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "add -noprompt " + localPaths[0]);
     });
 
-    it("should verify Exe arguments", function() {
+    test("should verify Exe arguments", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "add -noprompt " + localPaths[0]);
     });
 
-    it("should verify arguments with context", function() {
+    test("should verify arguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(context, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "add -noprompt -collection:" + collectionUrl + " ******** " + localPaths[0]);
     });
 
-    it("should verify Exe arguments with context", function() {
+    test("should verify Exe arguments with context", function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/README.md"];
         const cmd: Add = new Add(context, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "add -noprompt ******** " + localPaths[0]);
     });
 
-    it("should verify parse output - no files to add", async function() {
+    test("should verify parse output - no files to add", async function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/file-does-not-exist.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -114,7 +114,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded.length, 0);
     });
 
-    it("should verify parse output - single empty folder - no errors", async function() {
+    test("should verify parse output - single empty folder - no errors", async function() {
         const localPaths: string[] = ["empty-folder"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -133,7 +133,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], path.join(localPaths[0], localPaths[0]));
     });
 
-    it("should verify parse output - single folder+file - no errors", async function() {
+    test("should verify parse output - single folder+file - no errors", async function() {
         const localPaths: string[] = [path.join("folder1", "file1.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -148,7 +148,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], localPaths[0]);
     });
 
-    it("should verify parse output - single subfolder+file - no errors", async function() {
+    test("should verify parse output - single subfolder+file - no errors", async function() {
         const localPaths: string[] = [path.join("folder1", "folder2", "file2.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -163,7 +163,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], localPaths[0]);
     });
 
-    it("should verify parse output - single folder+file - spaces - no errors", async function() {
+    test("should verify parse output - single folder+file - spaces - no errors", async function() {
         const localPaths: string[] = [path.join("fold er1", "file1.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -179,7 +179,7 @@ describe("Tfvc-AddCommand", function() {
     });
 
     /// Verify ParseExeOutput values (for tf.exe)
-    it("should verify parse Exe output - no files to add", async function() {
+    test("should verify parse Exe output - no files to add", async function() {
         const localPaths: string[] = ["/usr/alias/repos/Tfvc.L2VSCodeExtension.RC/file-does-not-exist.md"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         //This return value is different for tf.exe than the CLC
@@ -193,7 +193,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded.length, 0);
     });
 
-    it("should verify parse Exe output - single empty folder - no errors", async function() {
+    test("should verify parse Exe output - single empty folder - no errors", async function() {
         const localPaths: string[] = ["empty-folder"];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         //This return value is different for tf.exe than the CLC
@@ -210,7 +210,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], localPaths[0]);
     });
 
-    it("should verify parse Exe output - single folder+file - no errors", async function() {
+    test("should verify parse Exe output - single folder+file - no errors", async function() {
         const localPaths: string[] = [path.join("folder1", "file1.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -225,7 +225,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], localPaths[0]);
     });
 
-    it("should verify parse Exe output - single subfolder+file - no errors", async function() {
+    test("should verify parse Exe output - single subfolder+file - no errors", async function() {
         const localPaths: string[] = [path.join("folder1", "folder2", "file2.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {
@@ -240,7 +240,7 @@ describe("Tfvc-AddCommand", function() {
         assert.equal(filesAdded[0], localPaths[0]);
     });
 
-    it("should verify parse Exe output - single folder+file - spaces - no errors", async function() {
+    test("should verify parse Exe output - single folder+file - spaces - no errors", async function() {
         const localPaths: string[] = [path.join("fold er1", "file1.txt")];
         const cmd: Add = new Add(new TeamServerContext(""), localPaths);
         const executionResult: IExecutionResult = {

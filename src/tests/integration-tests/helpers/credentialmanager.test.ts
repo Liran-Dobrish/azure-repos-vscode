@@ -14,7 +14,7 @@ import { CredentialInfo } from "../../../info/credentialinfo";
 import { TeamServerContext } from "../../../contexts/servercontext";
 import { Constants } from "../../../helpers/constants";
 
-describe("CredentialManager-Integration", function() {
+suite("CredentialManager-Integration", function() {
     this.timeout(TestSettings.SuiteTimeout); //http://mochajs.org/#timeouts
 
     const credentialManager: CredentialManager = new CredentialManager();
@@ -32,7 +32,7 @@ describe("CredentialManager-Integration", function() {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    it("should verify store, get, remove credentials for Azure DevOps Services (no token in settings)", async function() {
+    test("should verify store, get, remove credentials for Azure DevOps Services (no token in settings)", async function() {
         try {
             await credentialManager.StoreCredentials(ctx, TestSettings.AccountUser, TestSettings.Password);
             let credInfo: CredentialInfo = await credentialManager.GetCredentials(ctx);
@@ -48,7 +48,7 @@ describe("CredentialManager-Integration", function() {
         }
     });
 
-    it("should verify store, get, remove credentials for Team Foundation Server", async function() {
+    test("should verify store, get, remove credentials for Team Foundation Server", async function() {
         try {
             const ctx: TeamServerContext = Mocks.TeamServerContext("http://java-tfs2015:8081/tfs/DefaultCollection/_git/GitJava");
             //const account: string = "java-tfs2015:8081";
@@ -69,7 +69,7 @@ describe("CredentialManager-Integration", function() {
         }
     });
 
-    it("should verify azure accounts use both host + account", async function() {
+    test("should verify azure accounts use both host + account", async function() {
         try {
             const ctxAccount1: TeamServerContext = Mocks.TeamServerContext("http://mytest.azure.com/account1/_git/GitJava");
             const ctxAccount2: TeamServerContext = Mocks.TeamServerContext("http://mytest.azure.com/account2/_git/GitJava");
@@ -95,7 +95,7 @@ describe("CredentialManager-Integration", function() {
         }
     });
 
-    it("should verify visualstudio accounts only use host", async function() {
+    test("should verify visualstudio accounts only use host", async function() {
         try {
             const ctxAccount1: TeamServerContext = Mocks.TeamServerContext("http://account.visualstudio.com/DefaultCollection/_git/GitJava");
             const ctxAccount2: TeamServerContext = Mocks.TeamServerContext("http://account.visualstudio.com/DefaultCollection/_git/GitJava");
