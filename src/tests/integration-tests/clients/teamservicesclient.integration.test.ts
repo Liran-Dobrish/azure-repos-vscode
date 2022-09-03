@@ -14,7 +14,7 @@ import { UserAgentProvider } from "../../../helpers/useragentprovider";
 import { TeamServerContext } from "../../../contexts/servercontext";
 import { TeamServicesApi } from "../../../clients/teamservicesclient";
 
-suite("TeamServicesClient-Integration", function() {
+describe("TeamServicesClient-Integration", function() {
     this.timeout(TestSettings.SuiteTimeout); //http://mochajs.org/#timeouts
 
     const credentialManager: CredentialManager = new CredentialManager();
@@ -32,7 +32,7 @@ suite("TeamServicesClient-Integration", function() {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    test("should verify repositoryClient.getVstsInfo", async function() {
+    it("should verify repositoryClient.getVstsInfo", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const repositoryClient: TeamServicesApi = new TeamServicesApi(TestSettings.RemoteRepositoryUrl, [CredentialManager.GetCredentialHandler()]);
@@ -45,7 +45,7 @@ suite("TeamServicesClient-Integration", function() {
         expect(repoInfo.repository.name).to.equal(TestSettings.RepositoryName);
     });
 
-    test("should verify repositoryClient.getVstsInfo and 404", async function() {
+    it("should verify repositoryClient.getVstsInfo and 404", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         try {
@@ -58,7 +58,7 @@ suite("TeamServicesClient-Integration", function() {
         }
     });
 
-    test("should verify accountClient.connect", async function() {
+    it("should verify accountClient.connect", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const accountClient: TeamServicesApi = new TeamServicesApi(TestSettings.AccountUrl, [CredentialManager.GetCredentialHandler()]);
@@ -71,7 +71,7 @@ suite("TeamServicesClient-Integration", function() {
         assert.isNotNull(settings.authorizedUser.customDisplayName);
     });
 
-    test("should verify repositoryClient.validateTfvcCollectionUrl", async function() {
+    it("should verify repositoryClient.validateTfvcCollectionUrl", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         let success: boolean = false;
@@ -84,7 +84,7 @@ suite("TeamServicesClient-Integration", function() {
         }
     });
 
-    test("should verify repositoryClient.validateTfvcCollectionUrl and 404", async function() {
+    it("should verify repositoryClient.validateTfvcCollectionUrl and 404", async function() {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         try {

@@ -3,7 +3,7 @@
   "mochaExplorer.autoload": false,
   "mochaExplorer.ipcRole": "server",
   "mochaExplorer.env": {
-    "VSCODE_VERSION": "1.6.0",
+    "VSCODE_VERSION": "1.63.2",
     "ELECTRON_RUN_AS_NODE": null
   }
 }

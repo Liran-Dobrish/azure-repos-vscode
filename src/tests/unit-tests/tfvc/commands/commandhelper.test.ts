@@ -12,45 +12,45 @@ import { IExecutionResult } from "../../../../tfvc/interfaces";
 import { TfvcError, TfvcErrorCodes } from "../../../../tfvc/tfvcerror";
 import { CommandHelper } from "../../../../tfvc/commands/commandhelper";
 
-suite("Tfvc-CommandHelper", function () {
+describe("Tfvc-CommandHelper", function () {
 
-    test("should verify RequireArgument - success", function () {
+    it("should verify RequireArgument - success", function () {
         const arg: any = { prop1: "prop 1" };
         CommandHelper.RequireArgument(arg, "arg");
     });
 
-    test("should verify RequireArgument - failure", function () {
+    it("should verify RequireArgument - failure", function () {
         const arg: any = undefined;
         assert.throws(() => CommandHelper.RequireArgument(arg, "arg"), TfvcError, /Argument is required/);
     });
 
-    test("should verify RequireStringArgument - success", function () {
+    it("should verify RequireStringArgument - success", function () {
         const arg: string = "myString";
         CommandHelper.RequireStringArgument(arg, "arg");
     });
 
-    test("should verify RequireStringArgument - failure", function () {
+    it("should verify RequireStringArgument - failure", function () {
         const arg: string = "";
         assert.throws(() => CommandHelper.RequireStringArgument(arg, "arg"), TfvcError, /Argument is required/);
     });
 
-    test("should verify RequireStringArrayArgument - success", function () {
+    it("should verify RequireStringArrayArgument - success", function () {
         const arg: string[] = ["myString"];
         CommandHelper.RequireStringArrayArgument(arg, "arg");
     });
 
-    test("should verify RequireStringArrayArgument - failure - empty array", function () {
+    it("should verify RequireStringArrayArgument - failure - empty array", function () {
         const arg: string[] = [];
         assert.throws(() => CommandHelper.RequireStringArrayArgument(arg, "arg"), TfvcError, /Argument is required/);
     });
 
     // todo: Fix...
-    // test("should verify RequireStringArrayArgument - failure - undefined", function() {
+    // it("should verify RequireStringArrayArgument - failure - undefined", function() {
     //     const arg: string[] = undefined;
     //     assert.throws(() => CommandHelper.RequireStringArrayArgument(arg, "arg"), TfvcError, /Argument is required/);
     // });
 
-    test("should verify HasError - no errors", function () {
+    it("should verify HasError - no errors", function () {
         const result: IExecutionResult = {
             exitCode: 123,
             stdout: undefined,
@@ -63,7 +63,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(CommandHelper.HasError(undefined, undefined), false);
     });
 
-    test("should verify HasError - has errors", function () {
+    it("should verify HasError - has errors", function () {
         const result: IExecutionResult = {
             exitCode: 123,
             stdout: undefined,
@@ -79,7 +79,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(CommandHelper.HasError(result, undefined), false);
     });
 
-    test("should verify ProcessErrors - no errors", function () {
+    it("should verify ProcessErrors - no errors", function () {
         const result: IExecutionResult = {
             exitCode: 0,
             stdout: undefined,
@@ -88,7 +88,7 @@ suite("Tfvc-CommandHelper", function () {
         CommandHelper.ProcessErrors(result);
     });
 
-    test("should verify ProcessErrors - bad exit code only", function () {
+    it("should verify ProcessErrors - bad exit code only", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -102,7 +102,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - auth failed", function () {
+    it("should verify ProcessErrors - auth failed", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -117,7 +117,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - auth failed at WS", function () {
+    it("should verify ProcessErrors - auth failed at WS", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -132,7 +132,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - no workspace", function () {
+    it("should verify ProcessErrors - no workspace", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -147,7 +147,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - no repo", function () {
+    it("should verify ProcessErrors - no repo", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -162,7 +162,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - no collection", function () {
+    it("should verify ProcessErrors - no collection", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -177,7 +177,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - access denied", function () {
+    it("should verify ProcessErrors - access denied", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -192,7 +192,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - no java", function () {
+    it("should verify ProcessErrors - no java", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -207,7 +207,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - no mapping", function () {
+    it("should verify ProcessErrors - no mapping", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -222,7 +222,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - not in workspace", function () {
+    it("should verify ProcessErrors - not in workspace", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -237,7 +237,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ProcessErrors - Server workspace detection (TF30063)", function () {
+    it("should verify ProcessErrors - Server workspace detection (TF30063)", function () {
         const result: IExecutionResult = {
             exitCode: 100,
             stdout: undefined,
@@ -254,7 +254,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify SplitIntoLines", function () {
+    it("should verify SplitIntoLines", function () {
         const text: string = "one\ntwo\r\nthree\r\nfour\nfive\n";
         const lines: string[] = CommandHelper.SplitIntoLines(text);
         assert.equal(lines.length, 6);
@@ -266,20 +266,20 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(lines[5], "");
     });
 
-    test("should verify SplitIntoLines - undefined input", function () {
+    it("should verify SplitIntoLines - undefined input", function () {
         const lines: string[] = CommandHelper.SplitIntoLines(undefined);
         assert.isDefined(lines);
         assert.equal(lines.length, 0);
     });
 
-    test("should verify SplitIntoLines - empty input", function () {
+    it("should verify SplitIntoLines - empty input", function () {
         const text: string = "";
         const lines: string[] = CommandHelper.SplitIntoLines(text);
         assert.isDefined(lines);
         assert.equal(lines.length, 0);
     });
 
-    test("should verify SplitIntoLines - trim WARNings", function () {
+    it("should verify SplitIntoLines - trim WARNings", function () {
         const text: string = "WARN 1\nWARN 2\nwarning\none\ntwo\r\n\n";
         const lines: string[] = CommandHelper.SplitIntoLines(text);
         assert.equal(lines.length, 5);
@@ -290,7 +290,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(lines[4], "");
     });
 
-    test("should verify SplitIntoLines - leave WARNings", function () {
+    it("should verify SplitIntoLines - leave WARNings", function () {
         const text: string = "WARN 1\nWARN 2\nwarning\none\ntwo\r\n\n";
         const lines: string[] = CommandHelper.SplitIntoLines(text, false);
         assert.equal(lines.length, 7);
@@ -303,7 +303,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(lines[6], "");
     });
 
-    test("should verify SplitIntoLines - filter empty lines", function () {
+    it("should verify SplitIntoLines - filter empty lines", function () {
         const text: string = "zero\n      \none\ntwo\r\n"; //ensure there's a line with just spaces too
         const lines: string[] = CommandHelper.SplitIntoLines(text, false, true);
         assert.equal(lines.length, 3);
@@ -312,7 +312,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(lines[2], "two");
     });
 
-    test("should verify SplitIntoLines - leave empty lines", function () {
+    it("should verify SplitIntoLines - leave empty lines", function () {
         const text: string = "one\ntwo\n\nthree\nfour\n\n";
         const lines: string[] = CommandHelper.SplitIntoLines(text);
         assert.equal(lines.length, 7);
@@ -325,23 +325,23 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(lines[6], "");
     });
 
-    test("should verify TrimToXml", async function () {
+    it("should verify TrimToXml", async function () {
         const text: string = "WARN 1\nWARN 2\nwarning\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<status>\r\n</status>\n\n";
         const xml: string | undefined = CommandHelper.TrimToXml(text);
         assert.equal(xml, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<status>\r\n</status>");
     });
 
-    test("should verify TrimToXml - empty values", async function () {
+    it("should verify TrimToXml - empty values", async function () {
         assert.equal(CommandHelper.TrimToXml(undefined), undefined);
         assert.equal(CommandHelper.TrimToXml(""), "");
     });
 
-    test("should verify ParseXml - undefined input", async function () {
+    it("should verify ParseXml - undefined input", async function () {
         const xml: any = await CommandHelper.ParseXml(undefined);
         assert.isUndefined(xml);
     });
 
-    test("should verify ParseXml - invalid xml input", async function () {
+    it("should verify ParseXml - invalid xml input", async function () {
         try {
             await CommandHelper.ParseXml("<?xml><<<<");
             assert.fail("didn't throw!");
@@ -350,7 +350,7 @@ suite("Tfvc-CommandHelper", function () {
         }
     });
 
-    test("should verify ParseXml", async function () {
+    it("should verify ParseXml", async function () {
         const text: string = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<one attr1=\"35\" attr2=\"two\"><child1 attr1=\"44\" attr2=\"55\" attr3=\"three\"/><child2>child two</child2>\r\n</one>\n\n";
         const xml: any = await CommandHelper.ParseXml(text);
         const expectedJSON = {
@@ -374,7 +374,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(JSON.stringify(xml), JSON.stringify(expectedJSON));
     });
 
-    test("should verify GetChangesetNumber", async function () {
+    it("should verify GetChangesetNumber", async function () {
         const text: string = "/Users/leantk/tfvc-tfs/tfsTest_01/addFold:\n" +
             "Checking in edit: testHere.txt\n" +
             "\n" +
@@ -387,19 +387,19 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(changeset, "23");
     });
 
-    test("should verify GetChangesetNumber - exact", async function () {
+    it("should verify GetChangesetNumber - exact", async function () {
         const text: string = "Changeset #20 checked in.";
         const changeset: string = CommandHelper.GetChangesetNumber(text);
         assert.equal(changeset, "20");
     });
 
-    test("should verify GetChangesetNumber - no match", async function () {
+    it("should verify GetChangesetNumber - no match", async function () {
         const text: string = "WARN 1\nWARN 2\ntext\nChangeset # checked in.\n\r\ntext\r\nmore text\n\n";
         const changeset: string = CommandHelper.GetChangesetNumber(text);
         assert.equal(changeset, "");
     });
 
-    test("should verify GetNewLineCharacter", async function () {
+    it("should verify GetNewLineCharacter", async function () {
         assert.equal(CommandHelper.GetNewLineCharacter(undefined), "\n");
         assert.equal(CommandHelper.GetNewLineCharacter(""), "\n");
         assert.equal(CommandHelper.GetNewLineCharacter("blah blah\nblah blah\n\rblah\nblah"), "\n");
@@ -407,7 +407,7 @@ suite("Tfvc-CommandHelper", function () {
         assert.equal(CommandHelper.GetNewLineCharacter("blah /r/nblah blah/n blah\r blah\r blah"), "\n");
     });
 
-    test("should verify GetFilePath", async function () {
+    it("should verify GetFilePath", async function () {
         //assert.equal(CommandHelper.GetFilePath(undefined, undefined, undefined), undefined);
         assert.equal(CommandHelper.GetFilePath("/path/folder", "file.txt", undefined), path.join("/path/folder", "file.txt"));
         assert.equal(CommandHelper.GetFilePath("/path/folder:", "file.txt", undefined), path.join("/path/folder", "file.txt"));

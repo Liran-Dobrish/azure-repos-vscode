@@ -11,7 +11,7 @@ import { RepositoryType } from "../../../contexts/repositorycontext";
 import { ExternalContext } from "../../../contexts/externalcontext";
 import { SettingsMock } from "./contexthelper";
 
-suite("ExternalContext", function() {
+describe("ExternalContext", function() {
     const TEST_REPOS_FOLDER: string = "testrepos";
     const DOT_GIT_FOLDER: string = "dotgit";
 
@@ -19,7 +19,7 @@ suite("ExternalContext", function() {
         // console.log("__dirname: " + __dirname);
     });
 
-    test("should verify all undefined properties for undefined rootPath", function() {
+    it("should verify all undefined properties for undefined rootPath", function() {
         //Verify an undefined path does not set any values
         const ctx: ExternalContext = new ExternalContext(undefined);
 
@@ -35,7 +35,7 @@ suite("ExternalContext", function() {
         assert.equal(ctx.Type, RepositoryType.EXTERNAL);
     });
 
-    test("should verify values for valid rootPath path", function() {
+    it("should verify values for valid rootPath path", function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         //const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -54,7 +54,7 @@ suite("ExternalContext", function() {
         assert.equal(ctx.RepoFolder, repoPath);
     });
 
-    test("should cover dispose", function() {
+    it("should cover dispose", function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         //const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
@@ -62,7 +62,7 @@ suite("ExternalContext", function() {
         ctx.dispose();
     });
 
-    test("should verify values for valid rootPath path and settings", async function() {
+    it("should verify values for valid rootPath path and settings", async function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const ctx: ExternalContext = new ExternalContext(repoPath);
@@ -78,7 +78,7 @@ suite("ExternalContext", function() {
         assert.equal(ctx.Type, RepositoryType.EXTERNAL);
     });
 
-    test("should verify initialize is false for missing RemoteUrl", async function() {
+    it("should verify initialize is false for missing RemoteUrl", async function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const ctx: ExternalContext = new ExternalContext(repoPath);
@@ -95,7 +95,7 @@ suite("ExternalContext", function() {
         assert.equal(ctx.Type, RepositoryType.EXTERNAL);
     });
 
-    test("should verify initialize is false for missing TeamProject", async function() {
+    it("should verify initialize is false for missing TeamProject", async function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const ctx: ExternalContext = new ExternalContext(repoPath);
@@ -112,7 +112,7 @@ suite("ExternalContext", function() {
         assert.equal(ctx.Type, RepositoryType.EXTERNAL);
     });
 
-    test("should verify initialize is false for missing RemoteUrl and TeamProject", async function() {
+    it("should verify initialize is false for missing RemoteUrl and TeamProject", async function() {
         const repoName: string = "gitrepo";
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const ctx: ExternalContext = new ExternalContext(repoPath);

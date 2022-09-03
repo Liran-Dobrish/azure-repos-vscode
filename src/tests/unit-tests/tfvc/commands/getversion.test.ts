@@ -10,29 +10,29 @@ import { IExecutionResult } from "../../../../tfvc/interfaces";
 import { TfvcErrorCodes } from "../../../../tfvc/tfvcerror";
 import { Strings } from "../../../../helpers/strings";
 
-suite("Tfvc-GetVersionCommand", function() {
+describe("Tfvc-GetVersionCommand", function() {
 
-    test("should verify GetOptions", function() {
+    it("should verify GetOptions", function() {
         const cmd: GetVersion = new GetVersion();
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    test("should verify GetExeOptions", function() {
+    it("should verify GetExeOptions", function() {
         const cmd: GetVersion = new GetVersion();
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    test("should verify arguments", function() {
+    it("should verify arguments", function() {
         const cmd: GetVersion = new GetVersion();
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "add -noprompt -?");
     });
 
-    test("should verify Exe arguments", function() {
+    it("should verify Exe arguments", function() {
         const cmd: GetVersion = new GetVersion();
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "add -noprompt -?");
     });
 
-    test("should verify parse output - no version", async function() {
+    it("should verify parse output - no version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -52,7 +52,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse Exe output - no version", async function() {
+    it("should verify parse Exe output - no version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -72,7 +72,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse output - valid version", async function() {
+    it("should verify parse output - valid version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -84,7 +84,7 @@ suite("Tfvc-GetVersionCommand", function() {
         assert.equal(version, "14.0.3.201603291047");
     });
 
-    test("should verify parse EXE output - valid version", async function() {
+    it("should verify parse EXE output - valid version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -96,7 +96,7 @@ suite("Tfvc-GetVersionCommand", function() {
         assert.equal(version, "14.102.25619.0");
     });
 
-    test("should verify parse output - error exit code", async function() {
+    it("should verify parse output - error exit code", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 42,
@@ -116,7 +116,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse output - java object heap error", async function() {
+    it("should verify parse output - java object heap error", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 1,
@@ -137,7 +137,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse Exe output - error exit code", async function() {
+    it("should verify parse Exe output - error exit code", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 42,
@@ -157,7 +157,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse EXE output - Spanish version", async function() {
+    it("should verify parse EXE output - Spanish version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -177,7 +177,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse EXE output - French version", async function() {
+    it("should verify parse EXE output - French version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -197,7 +197,7 @@ suite("Tfvc-GetVersionCommand", function() {
         }
     });
 
-    test("should verify parse EXE output - German version", async function() {
+    it("should verify parse EXE output - German version", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,
@@ -209,7 +209,7 @@ suite("Tfvc-GetVersionCommand", function() {
         assert.equal(version, "14.102.25619.0");
     });
 
-    test("should verify parse EXE output - version is not in the first line", async function() {
+    it("should verify parse EXE output - version is not in the first line", async function() {
         const cmd: GetVersion = new GetVersion();
         const executionResult: IExecutionResult = {
             exitCode: 0,

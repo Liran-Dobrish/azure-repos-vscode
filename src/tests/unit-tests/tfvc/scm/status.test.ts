@@ -8,17 +8,17 @@ import { expect } from "chai";
 
 import { GetStatuses, Status } from "../../../../tfvc/scm/status";
 
-suite("Tfvc-Version", function() {
+describe("Tfvc-Version", function() {
     beforeEach(function() {
         //
     });
 
-    test("should verify GetStatuses - empty strings", function() {
+    it("should verify GetStatuses - empty strings", function() {
         expect(GetStatuses("")).to.have.same.members([]);
         expect(GetStatuses(undefined)).to.have.same.members([]);
     });
 
-    test("should verify GetStatuses - single value", function() {
+    it("should verify GetStatuses - single value", function() {
         expect(GetStatuses("add")).to.have.same.members([Status.ADD]);
         expect(GetStatuses("branch")).to.have.same.members([Status.BRANCH]);
         expect(GetStatuses("delete")).to.have.same.members([Status.DELETE]);
@@ -31,13 +31,13 @@ suite("Tfvc-Version", function() {
         expect(GetStatuses("blah blah")).to.have.same.members([Status.UNKNOWN]);
     });
 
-    test("should verify GetStatuses - multiple values", function() {
+    it("should verify GetStatuses - multiple values", function() {
         expect(GetStatuses("add, edit")).to.have.same.members([Status.ADD, Status.EDIT]);
         expect(GetStatuses("branch    ,    lock")).to.have.same.members([Status.BRANCH, Status.LOCK]);
         expect(GetStatuses("     delete    ,merge   ")).to.have.same.members([Status.DELETE, Status.MERGE]);
     });
 
-    test("should verify GetStatuses - multiple values with unknown", function() {
+    it("should verify GetStatuses - multiple values with unknown", function() {
         expect(GetStatuses("add, unk, edit")).to.have.same.members([Status.ADD, Status.UNKNOWN, Status.EDIT]);
         expect(GetStatuses("unk  , branch    ,    lock")).to.have.same.members([Status.UNKNOWN, Status.BRANCH, Status.LOCK]);
         expect(GetStatuses("     delete    ,merge,    unk   ")).to.have.same.members([Status.DELETE, Status.MERGE, Status.UNKNOWN]);

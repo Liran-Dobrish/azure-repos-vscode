@@ -8,48 +8,48 @@ import { assert } from "chai";
 
 import { UrlBuilder } from "../../../helpers/urlbuilder";
 
-suite("UrlBuilder", function() {
+describe("UrlBuilder", function() {
 
     beforeEach(function() {
         //
     });
 
-    test("should ensure undefined baseUrl returns undefined", function() {
+    it("should ensure undefined baseUrl returns undefined", function() {
         const url: any = undefined;
 
         const result: string = UrlBuilder.Join(url);
         assert.isUndefined(result);
     });
 
-    test("should ensure baseUrl with trailing slash returns the original url", function() {
+    it("should ensure baseUrl with trailing slash returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
 
         const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
-    test("should ensure baseUrl without trailing slash returns the original url", function() {
+    it("should ensure baseUrl without trailing slash returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
         const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
-    test("should ensure baseUrl with trailing slash and undefined args returns the original url", function() {
+    it("should ensure baseUrl with trailing slash and undefined args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
 
         const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
-    test("should ensure baseUrl without trailing slash and undefined args returns the original url", function() {
+    it("should ensure baseUrl without trailing slash and undefined args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
         const result: string = UrlBuilder.Join(url);
         assert.equal(url, result);
     });
 
-    test("should ensure baseUrl with trailing slash and empty args returns the original url", function() {
+    it("should ensure baseUrl with trailing slash and empty args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
         const args: string = "";
 
@@ -57,7 +57,7 @@ suite("UrlBuilder", function() {
         assert.equal(url, result);
     });
 
-    test("should ensure baseUrl without trailing slash and empty args returns the original url", function() {
+    it("should ensure baseUrl without trailing slash and empty args returns the original url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
         const args: string = "";
 
@@ -66,7 +66,7 @@ suite("UrlBuilder", function() {
     });
 
     //Single path argument
-    test("should ensure baseUrl with trailing slash and single arg returns the proper url", function() {
+    it("should ensure baseUrl with trailing slash and single arg returns the proper url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
         const args: string = "_build";
 
@@ -74,7 +74,7 @@ suite("UrlBuilder", function() {
         assert.equal(`${url}${args}`, result);
     });
 
-    test("should ensure baseUrl without trailing slash and single arg returns the proper url", function() {
+    it("should ensure baseUrl without trailing slash and single arg returns the proper url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
         const args: string = "_build";
 
@@ -83,21 +83,21 @@ suite("UrlBuilder", function() {
     });
 
     //Multiple path arguments
-    test("should ensure baseUrl with trailing slash and multiple args returns the proper url", function() {
+    it("should ensure baseUrl with trailing slash and multiple args returns the proper url", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
 
         const result: string = UrlBuilder.Join(url, "_build", "index", "buildId=42");
         assert.equal(`${url}_build/index/buildId=42`, result);
     });
 
-    test("should ensure baseUrl without trailing slash and multiple args returns the proper url", function() {
+    it("should ensure baseUrl without trailing slash and multiple args returns the proper url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
         const result: string = UrlBuilder.Join(url, "_build", "index", "buildId=42");
         assert.equal(`${url}/_build/index/buildId=42`, result);
     });
 
-    test("should ensure baseUrl and multiple args and various leading slashes returns the proper url", function() {
+    it("should ensure baseUrl and multiple args and various leading slashes returns the proper url", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
         const result: string = UrlBuilder.Join(url, "/_build", "/index", "/buildId=42");
@@ -105,28 +105,28 @@ suite("UrlBuilder", function() {
     });
 
     /* AddQueryParams */
-    test("should ensure AddQueryParams supports undefined baseUrl", function() {
+    it("should ensure AddQueryParams supports undefined baseUrl", function() {
         const url: any = undefined;
 
         const result: string = UrlBuilder.AddQueryParams(url);
         assert.isUndefined(result);
     });
 
-    test("should ensure AddQueryParams supports baseUrl with no query params", function() {
+    it("should ensure AddQueryParams supports baseUrl with no query params", function() {
         const url: string = "http://xplatalm.visualstudio.com/index";
 
         const result: string = UrlBuilder.AddQueryParams(url);
         assert.equal(url, result);
     });
 
-    test("should ensure AddQueryParams supports baseUrl with trailing slash and single query params", function() {
+    it("should ensure AddQueryParams supports baseUrl with trailing slash and single query params", function() {
         const url: string = "http://xplatalm.visualstudio.com/index/";
 
         const result: string = UrlBuilder.AddQueryParams(url, "buildId=42");
         assert.equal("http://xplatalm.visualstudio.com/index?buildId=42", result);
     });
 
-    test("should ensure AddQueryParams supports single query parameter", function() {
+    it("should ensure AddQueryParams supports single query parameter", function() {
         const url: string = "http://xplatalm.visualstudio.com/index";
 
         let result: string = UrlBuilder.AddQueryParams(url, "buildId=42");
@@ -139,7 +139,7 @@ suite("UrlBuilder", function() {
         assert.equal(`${url}?buildId=42`, result);
     });
 
-    test("should ensure AddQueryParams supports multiple query parameters", function() {
+    it("should ensure AddQueryParams supports multiple query parameters", function() {
         const url: string = "http://xplatalm.visualstudio.com/index";
 
         let result: string = UrlBuilder.AddQueryParams(url, "buildId=42", "whatever=andever", "foo=bar");
@@ -153,7 +153,7 @@ suite("UrlBuilder", function() {
     });
 
     /* AddHashes */
-    test("should ensure AddHashes supports undefined baseUrl and undefined arg", function() {
+    it("should ensure AddHashes supports undefined baseUrl and undefined arg", function() {
         let url: any = undefined;
         const arg: any = undefined;
 
@@ -164,7 +164,7 @@ suite("UrlBuilder", function() {
         assert.equal(url, result);
     });
 
-    test("should ensure AddHashes supports url with trailing slash", function() {
+    it("should ensure AddHashes supports url with trailing slash", function() {
         const url: string = "http://xplatalm.visualstudio.com/";
         const arg: string = "#path";
 
@@ -172,7 +172,7 @@ suite("UrlBuilder", function() {
         assert.equal(`http://xplatalm.visualstudio.com${arg}`, result);
     });
 
-    test("should ensure AddHashes supports single arg with or without leading #", function() {
+    it("should ensure AddHashes supports single arg with or without leading #", function() {
         const url: string = "http://xplatalm.visualstudio.com";
         let arg: string = "#path";
 
@@ -183,7 +183,7 @@ suite("UrlBuilder", function() {
         assert.equal(`${url}#${arg}`, result);
     });
 
-    test("should ensure AddHashes supports multiple arg with or without leading #", function() {
+    it("should ensure AddHashes supports multiple arg with or without leading #", function() {
         const url: string = "http://xplatalm.visualstudio.com";
 
         let result: string = UrlBuilder.AddHashes(url, "path", "file");
@@ -194,7 +194,7 @@ suite("UrlBuilder", function() {
     });
 
     /* Combined function calls */
-    test("should ensure combined function calls work as expected", function() {
+    it("should ensure combined function calls work as expected", function() {
         const url: string = "http://xplatalm.visualstudio.com/_build";
 
         let result: string = UrlBuilder.Join(url, "index");

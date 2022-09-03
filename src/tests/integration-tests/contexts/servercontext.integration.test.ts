@@ -12,7 +12,7 @@ import { TestSettings } from "../helpers-integration/testsettings";
 import { CredentialManager } from "../../../helpers/credentialmanager";
 import { TeamServerContext } from "../../../contexts/servercontext";
 
-suite("ServerContext-Integration", function() {
+describe("ServerContext-Integration", function() {
     this.timeout(TestSettings.SuiteTimeout);
 
     const credentialManager: CredentialManager = new CredentialManager();
@@ -29,7 +29,7 @@ suite("ServerContext-Integration", function() {
         return credentialManager.RemoveCredentials(ctx);
     });
 
-    test("should verify ServerContext CredentialHandler, UserInfo", function(done) {
+    it("should verify ServerContext CredentialHandler, UserInfo", function(done) {
         this.timeout(TestSettings.TestTimeout); //http://mochajs.org/#timeouts
 
         const ctx: TeamServerContext = Mocks.TeamServerContext(TestSettings.RemoteRepositoryUrl);

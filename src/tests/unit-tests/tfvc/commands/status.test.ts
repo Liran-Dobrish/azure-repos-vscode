@@ -13,7 +13,7 @@ import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 import { Strings } from "../../../../helpers/strings";
 
-suite("Tfvc-StatusCommand", function() {
+describe("Tfvc-StatusCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -41,91 +41,91 @@ suite("Tfvc-StatusCommand", function() {
         });
     });
 
-    test("should verify constructor", function() {
+    it("should verify constructor", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         new Status(new TeamServerContext(""), true, localPaths);
     });
 
-    test("should verify constructor - no paths", function() {
+    it("should verify constructor - no paths", function() {
         new Status(new TeamServerContext(""), true);
     });
 
-    test("should verify constructor with context", function() {
+    it("should verify constructor with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         new Status(context, true, localPaths);
     });
 
-    test("should verify constructor with context - no paths", function() {
+    it("should verify constructor with context - no paths", function() {
         new Status(context, true);
     });
 
-    test("should verify GetOptions", function() {
+    it("should verify GetOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    test("should verify GetExeOptions", function() {
+    it("should verify GetExeOptions", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    test("should verify arguments", function() {
+    it("should verify arguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive " + localPaths[0]);
     });
 
-    test("should verify Exe arguments", function() {
+    it("should verify Exe arguments", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive " + localPaths[0]);
     });
 
-    test("should verify arguments - no paths", function() {
+    it("should verify arguments - no paths", function() {
         const cmd: Status = new Status(new TeamServerContext(""), true);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive");
     });
 
-    test("should verify Exe arguments - no paths", function() {
+    it("should verify Exe arguments - no paths", function() {
         const cmd: Status = new Status(new TeamServerContext(""), true);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive");
     });
 
-    test("should verify arguments - multiple paths", function() {
+    it("should verify arguments - multiple paths", function() {
         const localPaths: string[] = ["/path/to/workspace", "/path/to/workspace2"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -format:xml -recursive " + localPaths[0] + " " + localPaths[1]);
     });
 
-    test("should verify Exe arguments - multiple paths", function() {
+    it("should verify Exe arguments - multiple paths", function() {
         const localPaths: string[] = ["/path/to/workspace", "/path/to/workspace2"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -format:detailed -recursive " + localPaths[0] + " " + localPaths[1]);
     });
 
-    test("should verify arguments with context", function() {
+    it("should verify arguments with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(context, true, localPaths);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "status -noprompt -collection:" + collectionUrl + " ******** -format:xml -recursive " + localPaths[0]);
     });
 
-    test("should verify Exe arguments with context", function() {
+    it("should verify Exe arguments with context", function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(context, true, localPaths);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "status -noprompt -collection:" + collectionUrl + " ******** -format:detailed -recursive " + localPaths[0]);
     });
 
-    test("should verify parse output - no output", async function() {
+    it("should verify parse output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -138,7 +138,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes.length, 0);
     });
 
-    test("should verify parse Exe output - no output", async function() {
+    it("should verify parse Exe output - no output", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -151,7 +151,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes.length, 0);
     });
 
-    test("should verify parse output - valid json", async function() {
+    it("should verify parse output - valid json", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const stdout: string = `<?xml version="1.0" encoding="utf-8"?>
@@ -197,7 +197,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes[1].workspace, "Folder1_00");
     });
 
-    test("should verify parse Exe output - pending changes only - no errors", async function() {
+    it("should verify parse Exe output - pending changes only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -230,7 +230,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes[0].workspace, "jeyou-dev00-tfexe-OnPrem");
     });
 
-    test("should verify parse Exe output - pending and detected changes - no errors", async function() {
+    it("should verify parse Exe output - pending and detected changes - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -285,7 +285,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes[1].workspace, "jeyou-dev00-tfexe-OnPrem");
     });
 
-    test("should verify parse Exe output - detected changes only - no errors", async function() {
+    it("should verify parse Exe output - detected changes only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -320,7 +320,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes[0].workspace, "jeyou-dev00-tfexe-OnPrem");
     });
 
-    test("should verify parse Exe output - multiple pending and multiple detected changes - no errors", async function() {
+    it("should verify parse Exe output - multiple pending and multiple detected changes - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -371,7 +371,7 @@ suite("Tfvc-StatusCommand", function() {
         //Other tests verify the actual values (so skip them here)
     });
 
-    test("should verify parse Exe output - pending rename only - no errors", async function() {
+    it("should verify parse Exe output - pending rename only - no errors", async function() {
         const localPaths: string[] = ["/path/to/workspace"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -405,7 +405,7 @@ suite("Tfvc-StatusCommand", function() {
         assert.equal(changes[0].workspace, "jeyou-dev00-tfexe-OnPrem");
     });
 
-    test("should verify parse output - error exit code", async function() {
+    it("should verify parse output - error exit code", async function() {
         const localPaths: string[] = ["folder1/file1.txt", "folder2/file2.txt"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {
@@ -422,7 +422,7 @@ suite("Tfvc-StatusCommand", function() {
         }
     });
 
-    test("should verify parse Exe output - error exit code", async function() {
+    it("should verify parse Exe output - error exit code", async function() {
         const localPaths: string[] = ["folder1/file1.txt", "folder2/file2.txt"];
         const cmd: Status = new Status(new TeamServerContext(""), true, localPaths);
         const executionResult: IExecutionResult = {

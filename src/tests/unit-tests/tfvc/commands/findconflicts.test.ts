@@ -14,7 +14,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-suite("Tfvc-FindConflictsCommand", function() {
+describe("Tfvc-FindConflictsCommand", function() {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -42,62 +42,62 @@ suite("Tfvc-FindConflictsCommand", function() {
         });
     });
 
-    test("should verify constructor", function() {
+    it("should verify constructor", function() {
         const localPath: string = "/usr/alias/repo1";
         new FindConflicts(new TeamServerContext(""), localPath);
     });
 
-    test("should verify constructor with context", function() {
+    it("should verify constructor with context", function() {
         const localPath: string = "/usr/alias/repo1";
         new FindConflicts(context, localPath);
     });
 
     // Todo: Fix...
-    // test("should verify constructor - undefined args", function() {
+    // it("should verify constructor - undefined args", function() {
     //     assert.throws(() => new FindConflicts(new TeamServerContext(""), undefined), TfvcError, /Argument is required/);
     // });
 
-    test("should verify GetOptions", function() {
+    it("should verify GetOptions", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    test("should verify GetExeOptions", function() {
+    it("should verify GetExeOptions", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    test("should verify arguments", function() {
+    it("should verify arguments", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "resolve -noprompt " + localPath + " -recursive -preview");
     });
 
-    test("should verify Exe arguments", function() {
+    it("should verify Exe arguments", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "resolve -noprompt " + localPath + " -recursive -preview");
     });
 
-    test("should verify arguments with context", function() {
+    it("should verify arguments with context", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(context, localPath);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "resolve -noprompt -collection:" + collectionUrl + " ******** " + localPath + " -recursive -preview");
     });
 
-    test("should verify Exe arguments with context", function() {
+    it("should verify Exe arguments with context", function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(context, localPath);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "resolve -noprompt ******** " + localPath + " -recursive -preview");
     });
 
-    test("should verify parse output - no output", async function() {
+    it("should verify parse output - no output", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -110,7 +110,7 @@ suite("Tfvc-FindConflictsCommand", function() {
         assert.equal(results.length, 0);
     });
 
-    test("should verify parse output - one of each type", async function() {
+    it("should verify parse output - one of each type", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -150,7 +150,7 @@ suite("Tfvc-FindConflictsCommand", function() {
     });
 
     //With _JAVA_OPTIONS set and there are conflicts, _JAVA_OPTIONS will appear in stderr along with the results also in stderr (and stdout will be empty)
-    test("should verify parse output - one of each type - _JAVA_OPTIONS", async function() {
+    it("should verify parse output - one of each type - _JAVA_OPTIONS", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -191,7 +191,7 @@ suite("Tfvc-FindConflictsCommand", function() {
     });
 
     //With _JAVA_OPTIONS set and there are no conflicts, _JAVA_OPTIONS is in stderr but the result we want to process is moved to stdout
-    test("should verify parse output - no conflicts - _JAVA_OPTIONS", async function() {
+    it("should verify parse output - no conflicts - _JAVA_OPTIONS", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -204,7 +204,7 @@ suite("Tfvc-FindConflictsCommand", function() {
         assert.equal(results.length, 0);
     });
 
-    test("should verify parse output - errors - exit code 100", async function() {
+    it("should verify parse output - errors - exit code 100", async function() {
         const localPath: string = "/usr/alias/repo 1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -221,7 +221,7 @@ suite("Tfvc-FindConflictsCommand", function() {
         }
     });
 
-    test("should verify parse Exe output - no output", async function() {
+    it("should verify parse Exe output - no output", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -234,7 +234,7 @@ suite("Tfvc-FindConflictsCommand", function() {
         assert.equal(results.length, 0);
     });
 
-    test("should verify parse Exe output - one of each type", async function() {
+    it("should verify parse Exe output - one of each type", async function() {
         const localPath: string = "/usr/alias/repo1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {
@@ -252,7 +252,7 @@ suite("Tfvc-FindConflictsCommand", function() {
         assert.equal(results[1].type, ConflictType.DELETE);
     });
 
-    test("should verify parse Exe output - errors - exit code 100", async function() {
+    it("should verify parse Exe output - errors - exit code 100", async function() {
         const localPath: string = "/usr/alias/repo 1";
         const cmd: FindConflicts = new FindConflicts(new TeamServerContext(""), localPath);
         const executionResult: IExecutionResult = {

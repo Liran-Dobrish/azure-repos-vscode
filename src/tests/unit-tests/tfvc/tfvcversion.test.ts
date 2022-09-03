@@ -8,12 +8,12 @@ import { assert } from "chai";
 
 import { TfvcVersion } from "../../../tfvc/tfvcversion";
 
-suite("Tfvc-Version", function() {
+describe("Tfvc-Version", function() {
     beforeEach(function() {
         //
     });
 
-    test("should verify constructor", function() {
+    it("should verify constructor", function() {
         const version: TfvcVersion = new TfvcVersion(12, 11, 10, "");
         assert.equal(version.ToString(), "12.11.10");
         assert.equal(version.Major, 12);
@@ -22,7 +22,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "");
     });
 
-    test("should verify constructor - with build", function() {
+    it("should verify constructor - with build", function() {
         const version: TfvcVersion = new TfvcVersion(12, 11, 10, "buildpart");
         assert.equal(version.ToString(), "12.11.10.buildpart");
         assert.equal(version.Major, 12);
@@ -31,7 +31,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "buildpart");
     });
 
-    test("should verify constructor - with dotted build", function() {
+    it("should verify constructor - with dotted build", function() {
         const version: TfvcVersion = new TfvcVersion(12, 11, 10, "build.part.");
         assert.equal(version.ToString(), "12.11.10.build.part.");
         assert.equal(version.Major, 12);
@@ -40,7 +40,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "build.part.");
     });
 
-    test("should verify FromString", function() {
+    it("should verify FromString", function() {
         const version: TfvcVersion = TfvcVersion.FromString("12.11.10.build.part.");
         assert.equal(version.ToString(), "12.11.10.build.part.");
         assert.equal(version.Major, 12);
@@ -49,7 +49,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "build.part.");
     });
 
-    test("should verify FromString - missing build", function() {
+    it("should verify FromString - missing build", function() {
         const version: TfvcVersion = TfvcVersion.FromString("12.11.10");
         assert.equal(version.ToString(), "12.11.10");
         assert.equal(version.Major, 12);
@@ -58,7 +58,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "");
     });
 
-    test("should verify FromString - missing revision", function() {
+    it("should verify FromString - missing revision", function() {
         const version: TfvcVersion = TfvcVersion.FromString("12.11");
         assert.equal(version.ToString(), "12.11.0");
         assert.equal(version.Major, 12);
@@ -67,7 +67,7 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "");
     });
 
-    test("should verify FromString - undefined", function() {
+    it("should verify FromString - undefined", function() {
         const version: TfvcVersion = TfvcVersion.FromString(undefined);
         assert.equal(version.ToString(), "0.0.0");
         assert.equal(version.Major, 0);
@@ -76,28 +76,28 @@ suite("Tfvc-Version", function() {
         assert.equal(version.Build, "");
     });
 
-    test("should verify Compare", function() {
+    it("should verify Compare", function() {
         const version1: TfvcVersion = TfvcVersion.FromString("12.11");
         const version2: TfvcVersion = TfvcVersion.FromString("12.11.10");
         assert.isTrue(TfvcVersion.Compare(version1, version2) < 0);
         assert.isTrue(TfvcVersion.Compare(version2, version1) > 0);
     });
 
-    test("should verify Compare - major difference", function() {
+    it("should verify Compare - major difference", function() {
         const version1: TfvcVersion = TfvcVersion.FromString("12.11");
         const version2: TfvcVersion = TfvcVersion.FromString("13.1.1");
         assert.isTrue(TfvcVersion.Compare(version1, version2) < 0);
         assert.isTrue(TfvcVersion.Compare(version2, version1) > 0);
     });
 
-    test("should verify Compare - minor difference", function() {
+    it("should verify Compare - minor difference", function() {
         const version1: TfvcVersion = TfvcVersion.FromString("12.11");
         const version2: TfvcVersion = TfvcVersion.FromString("12.13.1");
         assert.isTrue(TfvcVersion.Compare(version1, version2) < 0);
         assert.isTrue(TfvcVersion.Compare(version2, version1) > 0);
     });
 
-    test("should verify Compare - equals", function() {
+    it("should verify Compare - equals", function() {
         const version1: TfvcVersion = TfvcVersion.FromString("12.11.10");
         const version2: TfvcVersion = TfvcVersion.FromString("12.11.10");
         assert.isTrue(TfvcVersion.Compare(version1, version2) === 0);

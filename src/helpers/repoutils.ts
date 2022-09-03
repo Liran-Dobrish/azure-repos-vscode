@@ -90,7 +90,7 @@ export class RepoUtils {
         const scheme = "https://";
         const match = RepoUtils.sshV3.exec(respositoryUrl.toLowerCase());
         /* tslint:disable:no-null-keyword */
-        if (match != null && match.length === 5) {
+        if (match !== null && match.length === 5) {
         /* tslint:enable:no-null-keyword */
             if (match[1] === "visualstudio.com") {
                 return scheme + match[2] + "." + match[1] + "/" + match[3] + "/_git/" + match[4];

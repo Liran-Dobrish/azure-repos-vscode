@@ -13,7 +13,7 @@ import { TeamServerContext } from "../../../../contexts/servercontext";
 import { CredentialInfo } from "../../../../info/credentialinfo";
 import { RepositoryInfo } from "../../../../info/repositoryinfo";
 
-suite("Tfvc-CheckinCommand", function () {
+describe("Tfvc-CheckinCommand", function () {
     const serverUrl: string = "http://server:8080/tfs";
     const repoUrl: string = "http://server:8080/tfs/collection1/_git/repo1";
     const collectionUrl: string = "http://server:8080/tfs/collection1";
@@ -41,69 +41,69 @@ suite("Tfvc-CheckinCommand", function () {
         });
     });
 
-    test("should verify constructor", function () {
+    it("should verify constructor", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         new Checkin(new TeamServerContext(""), files);
     });
 
-    test("should verify constructor with context", function () {
+    it("should verify constructor with context", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         new Checkin(context, files);
     });
 
     // ToDo: Fix...
-    // test("should verify constructor - undefined args", function() {
+    // it("should verify constructor - undefined args", function() {
     //     assert.throws(() => new Checkin(new TeamServerContext(""), undefined), TfvcError, /Argument is required/);
     // });
 
-    test("should verify GetOptions", function () {
+    it("should verify GetOptions", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         assert.deepEqual(cmd.GetOptions(), {});
     });
 
-    test("should verify GetExeOptions", function () {
+    it("should verify GetExeOptions", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         assert.deepEqual(cmd.GetExeOptions(), {});
     });
 
-    test("should verify arguments", function () {
+    it("should verify arguments", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "checkin -noprompt " + files[0]);
     });
 
-    test("should verify Exe arguments", function () {
+    it("should verify Exe arguments", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "checkin -noprompt " + files[0]);
     });
 
-    test("should verify arguments with context", function () {
+    it("should verify arguments with context", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "checkin -noprompt -collection:" + collectionUrl + " ******** " + files[0]);
     });
 
-    test("should verify Exe arguments with context", function () {
+    it("should verify Exe arguments with context", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files);
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "checkin -noprompt ******** " + files[0]);
     });
 
-    test("should verify arguments with workitems", function () {
+    it("should verify arguments with workitems", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, undefined, [1, 2, 3]);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "checkin -noprompt -collection:" + collectionUrl + " ******** " + files[0] + " -associate:1,2,3");
     });
 
-    test("should verify Exe arguments with workitems", function () {
+    it("should verify Exe arguments with workitems", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, undefined, [1, 2, 3]);
 
@@ -111,28 +111,28 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "checkin -noprompt ******** " + files[0]);
     });
 
-    test("should verify arguments with comment", function () {
+    it("should verify arguments with comment", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, "a comment\nthat has\r\nmultiple lines");
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "checkin -noprompt -collection:" + collectionUrl + " ******** " + files[0] + " -comment:a comment that has multiple lines");
     });
 
-    test("should verify Exe arguments with comment", function () {
+    it("should verify Exe arguments with comment", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, "a comment\nthat has\r\nmultiple lines");
 
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "checkin -noprompt ******** " + files[0] + " -comment:a comment that has multiple lines");
     });
 
-    test("should verify arguments with all params", function () {
+    it("should verify arguments with all params", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, "a comment", [1, 2, 3]);
 
         assert.equal(cmd.GetArguments().GetArgumentsForDisplay(), "checkin -noprompt -collection:" + collectionUrl + " ******** " + files[0] + " -comment:a comment -associate:1,2,3");
     });
 
-    test("should verify Exe arguments with all params", function () {
+    it("should verify Exe arguments with all params", function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(context, files, "a comment", [1, 2, 3]);
 
@@ -140,7 +140,7 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(cmd.GetExeArguments().GetArgumentsForDisplay(), "checkin -noprompt ******** " + files[0] + " -comment:a comment");
     });
 
-    test("should verify parse output - no output", async function () {
+    it("should verify parse output - no output", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {
@@ -153,7 +153,7 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(result, "");
     });
 
-    test("should verify parse output - no errors", async function () {
+    it("should verify parse output - no errors", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {
@@ -173,7 +173,7 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(result, "23");
     });
 
-    test("should verify parse output - with error", async function () {
+    it("should verify parse output - with error", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {
@@ -195,7 +195,7 @@ suite("Tfvc-CheckinCommand", function () {
     //
     //
     //
-    test("should verify parse Exe output - no output", async function () {
+    it("should verify parse Exe output - no output", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {
@@ -208,7 +208,7 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(result, "");
     });
 
-    test("should verify parse Exe output - no errors", async function () {
+    it("should verify parse Exe output - no errors", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {
@@ -228,7 +228,7 @@ suite("Tfvc-CheckinCommand", function () {
         assert.equal(result, "23");
     });
 
-    test("should verify parse Exe output - with error", async function () {
+    it("should verify parse Exe output - with error", async function () {
         const files: string[] = ["/path/to/workspace/file.txt"];
         const cmd: Checkin = new Checkin(new TeamServerContext(""), files);
         const executionResult: IExecutionResult = {

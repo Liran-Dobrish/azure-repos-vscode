@@ -8,10 +8,10 @@ import { assert } from "chai";
 
 import { RepositoryInfo } from "../../../info/repositoryinfo";
 
-suite("RepositoryInfo", function() {
+describe("RepositoryInfo", function() {
 
     /* Team Foundation Server URLs */
-    test("should verify host, account and isTeamFoundationServer for valid remoteUrl", function() {
+    it("should verify host, account and isTeamFoundationServer for valid remoteUrl", function() {
         const url: string = "http://jeyou-dev00000:8080/tfs/DefaultCollection/_git/GitAgile";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "jeyou-dev00000:8080");  //TODO: Should host on-prem contain the port number?
@@ -33,7 +33,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, undefined);
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo object constructor", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo object constructor", function() {
         const repositoryInfo: any = {
            "serverUrl": "http://server:8080/tfs",
            "collection": {
@@ -74,11 +74,11 @@ suite("RepositoryInfo", function() {
     });
 
     /* Team Services URLs */
-    test("should verify undefined remoteUrl", function() {
+    it("should verify undefined remoteUrl", function() {
         assert.throws(() => { new RepositoryInfo(undefined); });
     });
 
-    test("should verify host, account and isTeamServices for valid remoteUrl", function() {
+    it("should verify host, account and isTeamServices for valid remoteUrl", function() {
         const url: string = "https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "account.visualstudio.com");
@@ -89,7 +89,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify host, account and isTeamServices for valid azure remoteUrl", function() {
+    it("should verify host, account and isTeamServices for valid azure remoteUrl", function() {
         const url: string = "https://test.azure.com/account/teamproject/_git/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "test.azure.com");
@@ -100,7 +100,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify host, account and isTeamServices for valid remoteUrl - limited refs - full", function() {
+    it("should verify host, account and isTeamServices for valid remoteUrl - limited refs - full", function() {
         const url: string = "https://account.visualstudio.com/DefaultCollection/teamproject/_git/_full/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "account.visualstudio.com");
@@ -111,7 +111,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify host, account and isTeamServices for valid azure remoteUrl - limited refs - full", function() {
+    it("should verify host, account and isTeamServices for valid azure remoteUrl - limited refs - full", function() {
         const url: string = "https://test.azure.com/account/teamproject/_git/_full/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "test.azure.com");
@@ -122,7 +122,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify host, account and isTeamServices for valid remoteUrl - limited refs - optimized", function() {
+    it("should verify host, account and isTeamServices for valid remoteUrl - limited refs - optimized", function() {
         const url: string = "https://account.visualstudio.com/DefaultCollection/teamproject/_git/_optimized/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "account.visualstudio.com");
@@ -133,7 +133,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify host, account and isTeamServices for valid azure remoteUrl - limited refs - optimized", function() {
+    it("should verify host, account and isTeamServices for valid azure remoteUrl - limited refs - optimized", function() {
         const url: string = "https://test.azure.com/account/teamproject/_git/_optimized/repositoryName";
         const repoInfo: RepositoryInfo = new RepositoryInfo(url);
         assert.equal(repoInfo.Host, "test.azure.com");
@@ -144,7 +144,7 @@ suite("RepositoryInfo", function() {
         assert.isTrue(repoInfo.IsTeamFoundation);
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo string constructor", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo string constructor", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "account.visualstudio.com");
         assert.equal(repoInfo.Account, "account");
@@ -189,7 +189,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://account.visualstudio.com/teamproject");
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo constructor for azure", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo constructor for azure", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://test.azure.com/account/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "test.azure.com");
         assert.equal(repoInfo.Account, "account");
@@ -234,7 +234,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://test.azure.com/account/teamproject");
     });
 
-    test("should verify 'collection in the domain' case insensitivity in repositoryInfo to RepositoryInfo constructor", function() {
+    it("should verify 'collection in the domain' case insensitivity in repositoryInfo to RepositoryInfo constructor", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "account.visualstudio.com");
         assert.equal(repoInfo.Account, "account");
@@ -282,7 +282,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://account.visualstudio.com/teamproject");
     });
 
-    test("should verify 'collection in the domain' case insensitivity in repositoryInfo to RepositoryInfo constructor for azure", function() {
+    it("should verify 'collection in the domain' case insensitivity in repositoryInfo to RepositoryInfo constructor for azure", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://test.azure.com/account/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "test.azure.com");
         assert.equal(repoInfo.Account, "account");
@@ -330,7 +330,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://test.azure.com/account/teamproject");
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - full", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - full", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "account.visualstudio.com");
         assert.equal(repoInfo.Account, "account");
@@ -375,7 +375,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://account.visualstudio.com/teamproject");
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - full: for azure", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - full: for azure", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://test.azure.com/account/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "test.azure.com");
         assert.equal(repoInfo.Account, "account");
@@ -420,7 +420,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://test.azure.com/account/teamproject");
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - optimized", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - optimized", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://account.visualstudio.com/DefaultCollection/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "account.visualstudio.com");
         assert.equal(repoInfo.Account, "account");
@@ -465,7 +465,7 @@ suite("RepositoryInfo", function() {
         assert.equal(repoInfo.TeamProjectUrl, "https://account.visualstudio.com/teamproject");
     });
 
-    test("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - optimized: for azure", function() {
+    it("should verify valid values in repositoryInfo to RepositoryInfo constructor - limited refs - optimized: for azure", function() {
         let repoInfo: RepositoryInfo = new RepositoryInfo("https://test.azure.com/account/teamproject/_git/repositoryName");
         assert.equal(repoInfo.Host, "test.azure.com");
         assert.equal(repoInfo.Account, "account");
