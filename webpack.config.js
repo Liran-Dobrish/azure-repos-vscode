@@ -4,6 +4,7 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const CopyPlugin = require("copy-webpack-plugin");
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -60,7 +61,8 @@ const config = {
         test: /\.ts$/,
         exclude: [
           '/node_modules/',
-          '/src/tests'],
+          '/src/tests/'
+        ],
         use: [
           {
             loader: 'ts-loader'
@@ -68,6 +70,22 @@ const config = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(
+            __dirname,
+            "src",
+            "credentialstore",
+            "bin",
+            "win32",
+            "creds.exe"
+          ),
+          to: "credentialstore/bin/win32/"
+        }
+      ],
+    })]
 };
 module.exports = config;

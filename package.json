@@ -479,7 +479,9 @@
 		"webpack": "webpack --mode development",
 		"webpack-dev": "webpack --mode development --watch",
 		"package": "webpack --mode production --devtool hidden-source-map",
-		"test-compile": "tsc -p ./ && copy ./src/credentialstore/bin/win32/creds.exe /out/credentialstore/bin/win32/creds.exe /Y"
+		"test-compile": "tsc -p ./",
+		"copy": "node ./copyDependecies.js",
+		"test": "npm run test-compile && npm run copy"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.3.3",
@@ -499,6 +501,8 @@
 		"@vscode/test-electron": "^2.1.0",
 		"azure-pipelines-task-lib": "^3.1.10",
 		"chai": "^4.3.6",
+		"copy-webpack-plugin": "^11.0.0",
+		"copyfiles": "^2.4.1",
 		"del": "^6.0.0",
 		"eslint": "^8.6.0",
 		"glob": "^7.2.0",
