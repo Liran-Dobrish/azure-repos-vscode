@@ -13,6 +13,7 @@ import { RepositoryType } from "../../../contexts/repositorycontext";
 describe("GitContext", function () {
     const TEST_REPOS_FOLDER: string = "testrepos";
     const DOT_GIT_FOLDER: string = "dotgit";
+    const CURRENT_GIT_BRANCH="webpack";
 
     beforeEach(function () {
         // console.log("__dirname: " + __dirname);
@@ -69,8 +70,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isFalse(gc.IsSsh);
         assert.isFalse(gc.IsTeamFoundation);
         assert.isFalse(gc.IsTeamServices);
@@ -102,8 +103,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isTrue(gc.IsSsh);
         assert.isTrue(gc.IsTeamFoundation);
         assert.isTrue(gc.IsTeamServices);
@@ -119,8 +120,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isTrue(gc.IsSsh);
         assert.isTrue(gc.IsTeamFoundation);
         assert.isTrue(gc.IsTeamServices);
@@ -136,8 +137,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isTrue(gc.IsSsh);
         assert.isTrue(gc.IsTeamFoundation);
         assert.isTrue(gc.IsTeamServices);
@@ -153,8 +154,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isFalse(gc.IsSsh);
         assert.isTrue(gc.IsTeamFoundation);
         assert.isFalse(gc.IsTeamServices);
@@ -169,8 +170,8 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "updates");
-        assert.equal(gc.CurrentRef, "refs/heads/updates");
+        assert.equal(gc.CurrentBranch, CURRENT_GIT_BRANCH);
+        assert.equal(gc.CurrentRef, "refs/heads/"+CURRENT_GIT_BRANCH);
         assert.isTrue(gc.IsSsh);
         //SSH isn't supported on server yet and that is indicated by isTeamFoundation === false
         assert.isFalse(gc.IsTeamFoundation);

@@ -20,6 +20,7 @@
 		"node_modules",
 		".vscode-test",
 		"webpack.config.js",
+		"copyDependecies.js",
 		"patches/vso-node-api/handlers/ntlm.js",
 		"out",
 		"dist"

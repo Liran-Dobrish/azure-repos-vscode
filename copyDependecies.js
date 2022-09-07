@@ -11,11 +11,20 @@ copyfiles(["./src/credentialstore/bin/win32/creds.exe", './out/credentialstore/b
   console.log('creds.exe was copied to [./out/credentialstore/bin/win32]');
 });
 
-copyfiles(['./src/tests/unit-tests/contexts/testrepos/**/*.*', './out/tests/unit-tests/contexts/testrepos/'], {
+copyfiles(['./src/tests/unit-tests/contexts/testrepos/**/*', './out/tests/unit-tests/contexts/testrepos/'], {
   "up": 5
 }, (err) => {
   if (err) {
     console.log("Error occurred while copying Directory testrepos", err);
   }
   console.log('contexts testrepo was copied to [./out/tests/unit-tests/contexts]');
+});
+
+copyfiles(['./src/tests/unit-tests/helpers/testrepos/**/*', './out/tests/unit-tests/helpers/testrepos/'], {
+  "up": 5
+}, (err) => {
+  if (err) {
+    console.log("Error occurred while copying Directory testrepos", err);
+  }
+  console.log('contexts testrepo was copied to [./out/tests/unit-tests/helpers]');
 });
