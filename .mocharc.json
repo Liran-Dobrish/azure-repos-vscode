@@ -1,9 +1,0 @@
-{
-  "mochaExplorer.launcherScript": "node_modules/mocha-explorer-launcher-scripts/vscode-test",
-  "mochaExplorer.autoload": false,
-  "mochaExplorer.ipcRole": "server",
-  "mochaExplorer.env": {
-    "VSCODE_VERSION": "1.63.2",
-    "ELECTRON_RUN_AS_NODE": null
-  }
-}
