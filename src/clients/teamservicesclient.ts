@@ -9,8 +9,10 @@ import { IRestResponse, IRequestOptions } from "typed-rest-client/RestClient";
 import { LocationsApi } from "azure-devops-node-api/LocationsApi";
 import { ConnectionData } from "azure-devops-node-api/interfaces/LocationsInterfaces";
 import { ClientApiBase } from "azure-devops-node-api/ClientApiBases";
+import { TfvcApi } from "azure-devops-node-api/TfvcApi";
 import { TfvcBranch, TypeInfo } from "azure-devops-node-api/interfaces/TfvcInterfaces";
 import { ClientVersioningData } from "azure-devops-node-api/VsoClient";
+import { Logger } from "../helpers/logger";
 
 export class TeamServicesApi extends ClientApiBase {
     handlers: IRequestHandler[];
@@ -40,6 +42,15 @@ export class TeamServicesApi extends ClientApiBase {
     }
 
     public async validateTfvcCollectionUrl(): Promise<boolean> {
+        try {
+            
+            let branches: TfvcBranch[] = await (new TfvcApi(this.baseUrl, this.handlers)).getBranches();
+            return (branches !== undefined);
+        } catch (error) {
+            throw error;
+        }
+    }
+    public async validateTfvcCollectionUrl3(): Promise<boolean> {
         return new Promise<boolean>(async (resolve, reject) => {
             try {
                 let routeValues: any = {
@@ -55,6 +66,7 @@ export class TeamServicesApi extends ClientApiBase {
                 let url: string = verData.requestUrl!;
                 let options: IRequestOptions = this.createRequestOptions('application/json', verData.apiVersion);
 
+                this.rest.client.handlers = this.handlers;
                 let res: IRestResponse<TfvcBranch[]>;
                 res = await this.rest.get<TfvcBranch[]>(url, options);
 
@@ -65,8 +77,27 @@ export class TeamServicesApi extends ClientApiBase {
                 resolve(ret !== undefined);
             }
             catch (err) {
-                reject(false);
+                console.log(err);
+                Logger.LogError('failed getting tfvc branch');
+                reject(err);
             }
         });
+    }
+
+    //Used to determine if the baseUrl points to a valid TFVC repository
+    public async validateTfvcCollectionUrl2(): Promise<any> {
+        //Create an instance of Promise since we're calling a function with the callback pattern but want to return a Promise
+        const promise: Promise<any> = new Promise<any>(async (resolve, reject) => {
+            /* tslint:disable:no-null-keyword */
+
+            const response: IRestResponse<any> = await this.rest.get<any>(this.vsoClient.resolveUrl("_apis/tfvc/branches")); //, "", null, null, (err: any, statusCode: number, obj: any) => {
+            /* tslint:enable:no-null-keyword */
+            if (response.statusCode !== 200) {
+                reject(response);
+            } else {
+                resolve(response);
+            }
+        });
+        return promise;
     }
 }

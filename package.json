@@ -2,7 +2,7 @@
 	"name": "argutec-azure-repos",
 	"displayName": "Argutec Azure Repos",
 	"description": "Connect to Azure Repos and work with Git and Team Foundation Version Control (TFVC) repositories. Manage your pull requests, work items, and more.",
-	"version": "1.2205.2",
+	"version": "1.2507.16",
 	"publisher": "argutec",
 	"icon": "assets/team.png",
 	"markdown": "standard",
@@ -30,11 +30,8 @@
 	"license": "SEE LICENSE IN LICENSE.txt",
 	"homepage": "https://github.com/argutec-sro/azure-repos-vscode/blob/master/README.md",
 	"engines": {
-		"vscode": "^1.60.0"
+		"vscode": "^1.75.0"
 	},
-	"activationEvents": [
-		"*"
-	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"menus": {
@@ -493,7 +490,7 @@
 		"@types/q": "^1.5.5",
 		"@types/underscore": "^1.11.4",
 		"@types/uuid": "^8.3.4",
-		"@types/vscode": "^1.60.0",
+		"@types/vscode": "^1.75.0",
 		"@types/xml2js": "^0.4.9",
 		"@types/xmldoc": "^1.1.6",
 		"@typescript-eslint/eslint-plugin": "^5.9.1",

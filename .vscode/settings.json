@@ -18,7 +18,7 @@
 	 "mochaExplorer.ipcRole": "server",
 	 "mochaExplorer.ipcTimeout": 100000,
 	 "mochaExplorer.env": {
-		 "VSCODE_VERSION": "1.63.2",
+		 "VSCODE_VERSION": "1.75.0",
 		 //"VSCODE_LAUNCH_ARGS": "--trace-deprecation",
 		 "ELECTRON_RUN_AS_NODE": null
 	 },

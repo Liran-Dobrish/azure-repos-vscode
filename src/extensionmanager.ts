@@ -201,7 +201,7 @@ export class ExtensionManager implements Disposable {
     //Ensures a folder is open before attempting to run any command already shown in
     //the Command Palette (and defined in package.json).
     public RunCommand(funcToTry: (args: any) => void, ...args: string[]): void {
-        if (!workspace || !workspace.rootPath) {
+        if (!workspace || !workspace.workspaceFolders) {
             this.DisplayErrorMessage(Strings.FolderNotOpened);
             return;
         }
@@ -253,7 +253,7 @@ export class ExtensionManager implements Disposable {
         }
 
         //Don't initialize if we don't have a workspace
-        if (!workspace || !workspace.rootPath) {
+        if (!workspace || !workspace.workspaceFolders) {
             return;
         }
 
@@ -264,13 +264,13 @@ export class ExtensionManager implements Disposable {
         //If Logging is enabled, the user must have used the extension before so we can enable
         //it here.  This will allow us to log errors when we begin processing TFVC commands.
         Telemetry.SendEvent(TelemetryEvents.Installed); //Send event that the extension is installed (even if not used)
-        this.logStart(this._settings.LoggingLevel!, workspace.rootPath);
+        this.logStart(this._settings.LoggingLevel!, workspace.workspaceFolders[0].uri.fsPath);
         this._teamServicesStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 100);
         this._feedbackStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 96);
 
         try {
             //RepositoryContext has some initial information about the repository (what we can get without authenticating with server)
-            this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.rootPath, this._settings);
+            this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.workspaceFolders[0].uri.fsPath, this._settings);
             if (this._repoContext) {
                 this.showFeedbackItem();
                 this.setupFileSystemWatcherOnHead();
@@ -545,7 +545,7 @@ export class ExtensionManager implements Disposable {
             const fsw: FileSystemWatcher = workspace.createFileSystemWatcher(pattern, true, false, true);
             fsw.onDidChange(async (/*uri*/) => {
                 Logger.LogInfo("HEAD has changed, re-parsing RepoContext object");
-                this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.rootPath!, this._settings!);
+                this._repoContext = await RepositoryContextFactory.CreateRepositoryContext(workspace.workspaceFolders![0].uri.fsPath, this._settings!);
                 Logger.LogInfo("CurrentBranch is: " + this._repoContext!.CurrentBranch);
                 this.notifyBranchChanged(/*this._repoContext.CurrentBranch*/);
             });
@@ -560,12 +560,12 @@ export class ExtensionManager implements Disposable {
     //Sets up a file system watcher on config so we can know when the remote origin has changed
     private async setupFileSystemWatcherOnConfig(): Promise<void> {
         //If we don't have a workspace, don't set up the file watcher
-        if (!workspace || !workspace.rootPath) {
+        if (!workspace || !workspace.workspaceFolders) {
             return;
         }
 
         if (this._repoContext && this._repoContext.Type === RepositoryType.GIT) {
-            const pattern: string = path.join(workspace.rootPath, ".git", "config");
+            const pattern: string = path.join(workspace.workspaceFolders[0].uri.fsPath, ".git", "config");
             //We want to listen to file creation, change and delete events
             const fsw: FileSystemWatcher = workspace.createFileSystemWatcher(pattern, false, false, false);
             fsw.onDidCreate((/*uri*/) => {
