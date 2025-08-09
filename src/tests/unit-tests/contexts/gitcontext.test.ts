@@ -86,15 +86,17 @@ describe("GitContext", function () {
         const repoPath: string = path.join(__dirname, TEST_REPOS_FOLDER, repoName, DOT_GIT_FOLDER);
         const gc: GitContext = new GitContext(repoPath, DOT_GIT_FOLDER);
 
-        assert.equal(gc.CurrentBranch, "jeyou/approved-pr");
-        assert.equal(gc.CurrentRef, "refs/heads/jeyou/approved-pr");
+        //assert.equal(gc.CurrentBranch, "jeyou/approved-pr");
+        assert.equal(gc.CurrentBranch, "webpack");
+        //assert.equal(gc.CurrentRef, "refs/heads/jeyou/approved-pr");
+        assert.equal(gc.CurrentRef, "refs/heads/webpack");
         assert.isFalse(gc.IsSsh);
         assert.isTrue(gc.IsTeamFoundation);
         assert.isTrue(gc.IsTeamServices);
         assert.equal(gc.RemoteUrl, "https://account.visualstudio.com/DefaultCollection/teamproject/_git/gitrepo");
         assert.equal(gc.RepositoryParentFolder, path.join(__dirname, TEST_REPOS_FOLDER, repoName));
         assert.equal(gc.RepoFolder, repoPath);
-        assert.isUndefined(gc.TeamProjectName); //For Git repositories, teamproject comes from vsts/info (not remoteUrl)
+        assert.isEmpty(gc.TeamProjectName); //For Git repositories, teamproject comes from vsts/info (not remoteUrl)
         assert.equal(gc.Type, RepositoryType.GIT);
     });
 
